@@ -1,239 +1,383 @@
 'use client'
-
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, Flame, Star, BarChart3, MessageSquare, PlayCircle, Edit3, Award, ArrowRight, MousePointer2, PaintBucket, Type, Eraser, Square, Circle, Triangle, Pencil, CheckCircle2, ChevronRight, Search, Plus, Send } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import {
+  getUserProgress,
+  getUserQuizResults,
+  getLeaderboard,
+  getTopicProgress,
+  subscribeToUserData,
+  updateStreak,
+} from '@/lib/firestore'
+import {
+  BookOpen, Star, Flame, BarChart3,
+  ChevronRight, ArrowUp
+} from 'lucide-react'
 import Link from 'next/link'
 
+const TOPIC_LABELS: Record<string, string> = {
+  planimetriya: 'Planimetriya',
+  uchburchaklar: 'Uchburchaklar',
+  tortburchaklar: "To'rtburchaklar",
+  doiralar: 'Doiralar',
+  koppurchaklar: "Ko'pburchaklar",
+  koordinatalar: 'Koordinatalar',
+  stereometriya: 'Stereometriya',
+}
+
 export default function DashboardPage() {
-  const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  const currentDate = new Date().toLocaleDateString('uz-UZ', dateOptions);
+  const { user, userData: ctxUserData } = useAuth()
+  const [userData, setUserData] = useState(ctxUserData)
+  const [topicProgress, setTopicProgress] = useState<any[]>([])
+  const [recentQuizzes, setRecentQuizzes] = useState<any[]>([])
+  const [leaderboard, setLeaderboard] = useState<any[]>([])
+  const [completedLessons, setCompletedLessons] = useState(0)
+  const [loading, setLoading] = useState(true)
 
-  const topics = [
-    { name: 'Planimetriya', progress: 75, color: 'from-indigo-600 to-indigo-400' },
-    { name: 'Uchburchaklar', progress: 60, color: 'from-blue-600 to-blue-400' },
-    { name: 'To\'rtburchaklar', progress: 45, color: 'from-indigo-600 to-indigo-400' },
-    { name: 'Doiralar', progress: 38, color: 'from-blue-600 to-blue-400' },
-    { name: 'Ko\'pburchaklar', progress: 25, color: 'from-indigo-600 to-indigo-400' },
-    { name: 'Koordinatalar', progress: 20, color: 'from-blue-600 to-blue-400' },
-    { name: 'Stereometriya', progress: 10, color: 'from-indigo-600 to-indigo-400' },
+  useEffect(() => {
+    if (!user) return
+
+    // Update streak on dashboard visit
+    updateStreak(user.uid)
+
+    // Real-time user data
+    const unsubscribe = subscribeToUserData(user.uid, (data) => {
+      setUserData(data)
+    })
+
+    // Load other data
+    async function loadData() {
+      try {
+        const [progress, quizzes, lb, topics] = await Promise.all([
+          getUserProgress(user!.uid),
+          getUserQuizResults(user!.uid),
+          getLeaderboard(),
+          getTopicProgress(user!.uid),
+        ])
+        setCompletedLessons(progress.length)
+        setRecentQuizzes(quizzes.slice(0, 5))
+        setLeaderboard(lb)
+        setTopicProgress(topics)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+    return () => unsubscribe()
+  }, [user])
+
+  const stats = [
+    {
+      icon: BookOpen,
+      value: `${completedLessons} / 9`,
+      label: 'Jami darslar',
+      color: 'indigo',
+      progress: Math.round((completedLessons / 9) * 100),
+    },
+    {
+      icon: Flame,
+      value: `${userData?.streak || 0} kun`,
+      label: 'Ketma-ket o\'qish',
+      color: 'amber',
+      sub: userData?.streak ? '🔥 Davom eting!' : 'Bugun boshlang!',
+    },
+    {
+      icon: Star,
+      value: userData?.xp?.toLocaleString() || '0',
+      label: 'Tajriba ballari',
+      color: 'purple',
+      sub: `Daraja ${userData?.level || 1}`,
+    },
+    {
+      icon: BarChart3,
+      value: recentQuizzes.length > 0
+        ? `${Math.round(recentQuizzes.reduce((a, b) => a + b.score, 0) / recentQuizzes.length)}%`
+        : '—',
+      label: "O'rtacha ball",
+      color: 'green',
+      sub: recentQuizzes.length > 0 ? 'So\'nggi testlar' : 'Hali test yo\'q',
+    },
   ]
 
-  const activities = [
-    { title: 'Uchburchaklar darsi', type: 'Dars', time: 'Bugun, 14:30', icon: '📐', bg: 'bg-blue-100', status: '✓', statusColor: 'bg-green-100 text-green-700' },
-    { title: 'Pifagor teoremasi testi', type: 'Test', time: 'Kecha', icon: '🧪', bg: 'bg-amber-100', status: '92%', statusColor: 'bg-green-100 text-green-700' },
-    { title: 'AI bilan suhbat', type: 'Chat', time: '2 kun oldin', icon: '💬', bg: 'bg-indigo-100', status: '✓', statusColor: 'bg-green-100 text-green-700' },
-    { title: 'Doiralar darsi', type: 'Dars', time: '3 kun oldin', icon: '📐', bg: 'bg-blue-100', status: '✓', statusColor: 'bg-green-100 text-green-700' },
-    { title: 'Planimetriya testi', type: 'Test', time: '5 kun oldin', icon: '🧪', bg: 'bg-amber-100', status: '78%', statusColor: 'bg-amber-100 text-amber-700' },
-  ]
+  const colorMap: Record<string, string> = {
+    indigo: 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400',
+    amber:  'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400',
+    purple: 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400',
+    green:  'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400',
+  }
 
-  const leaderboard = [
-    { rank: 1, name: 'Akbar Karimov', init: 'AK', xp: '4,200', medal: '🥇', isMe: false },
-    { rank: 2, name: 'Sardor Umarov', init: 'SU', xp: '3,850', medal: '🥈', isMe: false },
-    { rank: 3, name: 'Malika Rahimova', init: 'MR', xp: '3,100', medal: '🥉', isMe: false },
-    { rank: 4, name: 'Jasur Toshmatov', init: 'JT', xp: '2,980', medal: '', isMe: false },
-    { rank: 5, name: 'Yourself (you)', init: 'YN', xp: '2,840', medal: '', isMe: true },
-  ]
+  const displayName = userData?.displayName ||
+                      user?.displayName ||
+                      'Foydalanuvchi'
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 rounded-full border-2 border-indigo-500 
+                        border-t-transparent animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="max-w-7xl mx-auto space-y-6"
+      className="p-6 lg:p-8 max-w-7xl mx-auto"
     >
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Salom, Alisher! 👋</h1>
-          <p className="text-sm text-slate-500 mt-1">Bugun ham geometriya o'rganamizmi?</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+            Salom, {displayName.split(' ')[0]}! 👋
+          </h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+            Bugun ham geometriya o'rganamizmi?
+          </p>
         </div>
-        <div className="text-sm font-medium text-slate-400 mt-4 md:mt-0 bg-white/60 px-4 py-2 rounded-full border border-slate-100">
-          {currentDate}
-        </div>
+        <span className="text-sm font-medium text-slate-400 dark:text-slate-500 bg-white/50 px-3 py-1.5 rounded-lg border border-slate-100">
+          {new Date().toLocaleDateString('uz-UZ', {
+            weekday: 'long', day: 'numeric', month: 'long'
+          })}
+        </span>
       </div>
 
-      {/* STATS ROW */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-sm text-center md:text-left flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-2">
-            <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
-              <BookOpen className="w-5 h-5" />
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.1 }}
+            className="glass-card dark:bg-slate-800/60 
+                       dark:border-slate-700/40 p-5 bg-white shadow-sm border border-slate-100 rounded-3xl"
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center 
+                            justify-center mb-4 ${colorMap[stat.color]}`}>
+              <stat.icon size={20} strokeWidth={2.5} />
             </div>
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-slate-800">47 / 200</h3>
-            <p className="text-sm font-medium text-slate-500 mb-3">Jami darslar</p>
-            <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-              <div className="bg-indigo-600 h-full rounded-full" style={{ width: '23.5%' }}></div>
+            <div className="text-2xl font-bold text-slate-800 
+                            dark:text-slate-100 leading-tight">{stat.value}</div>
+            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+              {stat.label}
             </div>
-          </div>
-        </div>
-
-        <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-2">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
-              <Flame className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-medium bg-amber-50 text-amber-600 px-2 py-1 rounded-md">🔥 Davom eting!</span>
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-slate-800">12 kun</h3>
-            <p className="text-sm font-medium text-slate-500">Ketma-ket o'qish</p>
-          </div>
-        </div>
-
-        <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-2">
-            <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
-              <Star className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-medium bg-purple-50 text-purple-600 px-2 py-1 rounded-md">Daraja 6</span>
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-slate-800">2,840</h3>
-            <p className="text-sm font-medium text-slate-500">Tajriba ballari</p>
-          </div>
-        </div>
-
-        <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
-          <div className="flex justify-between items-start mb-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
-              <BarChart3 className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-medium bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md">+5% o'tgan haftadan</span>
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-slate-800">87%</h3>
-            <p className="text-sm font-medium text-slate-500">O'rtacha ball</p>
-          </div>
-        </div>
+            {stat.progress !== undefined && (
+              <div className="mt-4 h-2 bg-slate-100 dark:bg-slate-700 
+                              rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${stat.progress}%` }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="h-full bg-gradient-to-r from-indigo-500 
+                             to-blue-500 rounded-full"
+                />
+              </div>
+            )}
+            {stat.sub && (
+              <div className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-2 bg-slate-50 inline-block px-2 py-0.5 rounded-md border border-slate-100">
+                {stat.sub}
+              </div>
+            )}
+          </motion.div>
+        ))}
       </div>
 
-      {/* MAIN GRID */}
+      {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* LEFT TWO COLUMNS */}
+        {/* Left: topic progress + activity */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* MAVZULAR BO'YICHA PROGRESS */}
-          <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 sm:p-8 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-bold text-slate-800 mb-6">Mavzular bo'yicha progress</h2>
+          {/* Topic progress */}
+          <div className="glass-card dark:bg-slate-800/60 
+                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl">
+            <h2 className="text-base font-bold text-slate-800 
+                           dark:text-slate-100 mb-6 flex items-center gap-2">
+              <span className="w-2 h-6 bg-indigo-500 rounded-full" /> Mavzular bo'yicha daraja
+            </h2>
             <div className="space-y-5">
-              {topics.map((topic, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <span className="w-32 text-sm text-slate-700 font-medium truncate">{topic.name}</span>
-                  <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${topic.progress}%` }}
-                      transition={{ duration: 0.8, ease: "easeOut", delay: i * 0.1 }}
-                      className={`h-full rounded-full bg-gradient-to-r ${topic.color}`}
-                    />
-                  </div>
-                  <span className="w-10 text-right text-sm font-bold text-indigo-600">{topic.progress}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* SO'NGGI FAOLIYAT */}
-          <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 sm:p-8 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-bold text-slate-800 mb-6">So'nggi faoliyat</h2>
-            <div className="space-y-4">
-              {activities.map((act, i) => (
-                <div key={i} className="flex items-center justify-between p-3 sm:p-4 border border-slate-100 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${act.bg}`}>
-                      {act.icon}
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-800">{act.title}</h4>
-                      <p className="text-xs text-slate-500 font-medium mt-0.5">{act.type}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs text-slate-400 font-medium hidden sm:block">{act.time}</span>
-                    <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${act.statusColor}`}>
-                      {act.status}
+              {topicProgress.map((item, i) => (
+                <div key={i} className="group">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-semibold text-slate-600 
+                                     dark:text-slate-300">
+                      {TOPIC_LABELS[item.topic] || item.topic}
+                    </span>
+                    <span className="text-sm font-bold text-indigo-600 
+                                     dark:text-indigo-400">
+                      {item.progress}%
                     </span>
                   </div>
+                  <div className="h-2.5 bg-slate-100 dark:bg-slate-700 
+                                  rounded-full overflow-hidden shadow-inner">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${item.progress}%` }}
+                      transition={{ duration: 0.8, delay: i * 0.1 }}
+                      className="h-full bg-gradient-to-r from-indigo-500 
+                                 to-blue-500 rounded-full relative"
+                    >
+                       <div className="absolute inset-0 bg-white/20 w-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </motion.div>
+                  </div>
                 </div>
               ))}
+              {topicProgress.every(t => t.progress === 0) && (
+                <p className="text-sm font-medium text-slate-400 dark:text-slate-500 
+                              text-center py-6 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
+                  Hali test topshirilmagan. 
+                  <Link href="/lessons" className="text-indigo-500 hover:text-indigo-600 ml-1 underline decoration-indigo-200 underline-offset-2">
+                    Test boshlash →
+                  </Link>
+                </p>
+              )}
             </div>
           </div>
 
+          {/* Recent activity */}
+          <div className="glass-card dark:bg-slate-800/60 
+                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl">
+            <h2 className="text-base font-bold text-slate-800 
+                           dark:text-slate-100 mb-6 flex items-center gap-2">
+              <span className="w-2 h-6 bg-blue-500 rounded-full" /> So'nggi natijalar
+            </h2>
+            {recentQuizzes.length > 0 ? (
+              <div className="space-y-4">
+                {recentQuizzes.map((quiz, i) => (
+                  <div key={i} className="flex items-center gap-4 
+                                          p-4 rounded-2xl bg-slate-50 border border-slate-100 transition-colors hover:border-indigo-100 hover:shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-indigo-100 shadow-sm
+                                    dark:bg-indigo-900/40 flex items-center 
+                                    justify-center flex-shrink-0">
+                      <BarChart3 size={18} className="text-indigo-500" strokeWidth={2.5}/>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-slate-700 
+                                      dark:text-slate-200">
+                        {TOPIC_LABELS[quiz.topic] || quiz.topic} Testi
+                      </div>
+                      <div className="text-xs font-semibold text-slate-400 mt-0.5 flex items-center gap-1.5">
+                        <Clock size={12} />
+                        {quiz.completedAt?.toDate
+                          ? new Date(quiz.completedAt.toDate())
+                              .toLocaleDateString('uz-UZ', {day:'numeric', month:'short'})
+                          : '—'}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                        <span className={`text-xs font-extrabold px-3 py-1 
+                                        rounded-lg
+                                        ${quiz.score >= 80
+                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                            : quiz.score >= 60
+                                            ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+                                            : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
+                        {quiz.score}% Max
+                        </span>
+                        <div className="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+                            +{quiz.xpEarned} XP
+                        </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm font-medium text-slate-400 dark:text-slate-500 
+                            text-center py-6 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
+                Hali natijalar yo'q. 
+                <Link href="/lessons" className="text-indigo-500 hover:text-indigo-600 ml-1 underline decoration-indigo-200 underline-offset-2">
+                  Dars boshlash →
+                </Link>
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="space-y-6 lg:col-span-1">
+        {/* Right: quick actions + leaderboard */}
+        <div className="space-y-6">
           
-          {/* TEZKOR HARAKATLAR */}
-          <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Tezkor harakatlar</h2>
+          {/* Quick actions */}
+          <div className="glass-card dark:bg-slate-800/60 
+                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl">
+            <h2 className="text-base font-bold text-slate-800 
+                           dark:text-slate-100 mb-5">
+              Tezkor harakatlar
+            </h2>
             <div className="space-y-3">
-              <Link href="/chat" className="btn-gradient w-full py-3.5 px-4 rounded-xl text-white font-medium flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
-                <MessageSquare className="w-4 h-4" />
-                AI Muallim bilan gaplash
-              </Link>
-              <Link href="/lessons" className="w-full py-3.5 px-4 rounded-xl border border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50 font-medium flex items-center justify-center gap-2 transition-all">
-                <PlayCircle className="w-4 h-4" />
-                Dars davom ettirish
-              </Link>
-              <Link href="/quiz" className="w-full py-3.5 px-4 rounded-xl border border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50 font-medium flex items-center justify-center gap-2 transition-all">
-                <Star className="w-4 h-4" />
-                Test topshirish
-              </Link>
-              <Link href="/canvas" className="w-full py-3.5 px-4 rounded-xl border border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50 font-medium flex items-center justify-center gap-2 transition-all">
-                <Edit3 className="w-4 h-4" />
-                Geometriya chizish
-              </Link>
-            </div>
-          </div>
-
-          {/* KUNLIK MAQSAD */}
-          <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-sm text-center">
-            <h2 className="text-lg font-bold text-slate-800 mb-6 text-left">Bugungi maqsad</h2>
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" className="stroke-slate-100" strokeWidth="8" fill="none" />
-                <circle 
-                  cx="50" cy="50" r="40" 
-                  className="stroke-indigo-600 transition-all duration-1000 ease-out" 
-                  strokeWidth="8" fill="none" strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 40}`}
-                  strokeDashoffset={`${2 * Math.PI * 40 * (1 - 0.6)}`}
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold text-slate-800">3/5</span>
-                <span className="text-xs text-slate-500 font-medium">dars</span>
-              </div>
-            </div>
-            <p className="text-sm font-semibold text-slate-700 mb-1">5 ta darsdan 3 tasini tugatdingiz</p>
-            <p className="text-xs text-indigo-600 font-bold bg-indigo-50 inline-block px-3 py-1 rounded-full">+50 XP kutmoqda</p>
-          </div>
-
-          {/* REYTING */}
-          <div className="glass-card bg-white/80 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-sm">
-            <h2 className="text-lg font-bold text-slate-800 mb-6">Top o'quvchilar</h2>
-            <div className="space-y-4">
-              {leaderboard.map((user, i) => (
-                <div key={i} className={`flex items-center gap-3 p-2.5 rounded-xl ${user.isMe ? 'bg-indigo-50 border border-indigo-100' : ''}`}>
-                  <div className="w-6 text-center font-bold text-slate-400 text-sm">{user.medal || user.rank}</div>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${user.isMe ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
-                    {user.init}
-                  </div>
-                  <div className="flex-1 truncate">
-                    <h4 className={`text-sm font-semibold truncate ${user.isMe ? 'text-indigo-800' : 'text-slate-800'}`}>{user.name}</h4>
-                  </div>
-                  <div className="text-xs font-bold text-slate-500 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">
-                    {user.xp} XP
-                  </div>
-                </div>
+              {[
+                { label: 'AI Muallim bilan gaplashish', href: '/chat', primary: true, icon: '🤖' },
+                { label: 'Yangi dars boshlash', href: '/lessons', primary: false, icon: '📚' },
+                { label: 'Bilimni tekshirish', href: '/lessons', primary: false, icon: '🎯' }, // Default quiz happens inside lesson categories
+              ].map((btn, i) => (
+                <Link key={i} href={btn.href}
+                  className={`flex items-center justify-between w-full
+                             px-4 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-sm group
+                             ${btn.primary
+                               ? 'btn-gradient text-white hover:-translate-y-0.5 shadow-indigo-500/20'
+                               : 'bg-white border-2 border-slate-100 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/50'}`}>
+                  <span className="flex items-center gap-2"><span>{btn.icon}</span> {btn.label}</span>
+                  <ChevronRight size={16} className={btn.primary ? 'opacity-80 group-hover:opacity-100' : 'text-slate-400 group-hover:text-indigo-500'} />
+                </Link>
               ))}
             </div>
           </div>
 
+          {/* Leaderboard */}
+          <div className="glass-card dark:bg-slate-800/60 
+                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-6xl">🏆</div>
+            <h2 className="text-base font-bold text-slate-800 
+                           dark:text-slate-100 mb-5 relative z-10">
+              Top o'quvchilar
+            </h2>
+            <div className="space-y-3 relative z-10">
+              {leaderboard.slice(0, 5).map((u, i) => {
+                const isMe = u.uid === user?.uid
+                const initials = (u.displayName || 'U')
+                  .split(' ')
+                  .map((n: string) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2)
+                return (
+                  <div key={i}
+                    className={`flex items-center gap-3 px-4 py-3 
+                                rounded-2xl transition-all border
+                                ${isMe
+                                  ? 'bg-indigo-50/80 border-indigo-200/60 shadow-sm'
+                                  : 'bg-white border-transparent hover:border-slate-100 hover:bg-slate-50'}`}>
+                    <span className="text-sm font-black text-slate-400 
+                                     w-6 text-center">
+                      {i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br 
+                                    from-indigo-500 to-blue-500 flex items-center 
+                                    justify-center text-white text-xs font-bold shadow-sm">
+                      {initials}
+                    </div>
+                    <span className={`flex-1 text-sm truncate font-bold
+                                     ${isMe ? 'text-indigo-700' : 'text-slate-700 dark:text-slate-200'}`}>
+                      {isMe ? 'Siz' : u.displayName}
+                    </span>
+                    <span className="text-xs font-extrabold text-amber-500 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">
+                      {u.xp?.toLocaleString()}
+                    </span>
+                  </div>
+                )
+              })}
+              {leaderboard.length === 0 && (
+                <p className="text-sm font-medium text-slate-400 text-center py-6 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
+                  Hali ro'yxat bo'sh
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>
