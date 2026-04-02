@@ -3,41 +3,31 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Send, CheckCircle2, ChevronRight, X, Plus, Eraser } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 interface Message {
   id: string
-  role: 'user' | 'ai'
-  text: string
-  time: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
   isFormula?: boolean
 }
 
 export default function AIChatPage() {
-  const [input, setInput] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-
+  const { user } = useAuth()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      role: 'ai',
-      text: "Salom! Men GeoMind — geometriya bo'yicha shaxsiy muallimingizman. Bugun qaysi mavzuda yordam kerak?",
-      time: '14:25'
-    },
-    {
-      id: '2',
-      role: 'user',
-      text: "Pifagor teoremasi haqida tushuntiring",
-      time: '14:26'
-    },
-    {
-      id: '3',
-      role: 'ai',
-      isFormula: true,
-      text: "Pifagor teoremasi to'g'ri burchakli uchburchak uchun amal qiladi:\n\n[FORMULA]\n\nBu yerda:\n• a va b — katetlar (to'g'ri burchak yonidagi tomonlar)\n• c — gipotenuza (eng uzun tomon)\n\nMisol: agar a=3, b=4 bo'lsa:\n3² + 4² = 9 + 16 = 25\nc = √25 = 5\n\nKo'proq misol ko'rmoqchimisiz? 🎯",
-      time: '14:26'
+      role: 'assistant',
+      content: 'Salom! Men GeoMind AI — geometriya bo\'yicha shaxsiy muallimingizman. Bugun qaysi mavzuda yordam kerak?',
+      timestamp: new Date(),
     }
   ])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -45,7 +35,7 @@ export default function AIChatPage() {
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages, isTyping])
+  }, [messages, isLoading])
 
   const history = [
     { title: 'Pifagor teoremasi haqida', date: 'Bugun', active: true },
@@ -59,26 +49,73 @@ export default function AIChatPage() {
     "Pifagor teoremasi", "Uchburchak yuzi", "Doira uzunligi", "Ko'pburchak", "Stereometriya", "Koordinatalar"
   ]
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    
-    // Add User Message
-    const newMsg: Message = { id: Date.now().toString(), role: 'user', text: input, time: new Date().toLocaleTimeString('uz-UZ', {hour: '2-digit', minute:'2-digit'}) }
-    setMessages(prev => [...prev, newMsg])
+  async function sendMessage() {
+    if (!input.trim() || isLoading) return
+  
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input.trim(),
+      timestamp: new Date(),
+    }
+  
+    setMessages(prev => [...prev, userMessage])
     setInput('')
-    setIsTyping(true)
-
-    // Mock AI response
-    setTimeout(() => {
-      setIsTyping(false)
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'ai',
-        text: "Ajoyib savol! Bu mavzu bo'yicha batafsil tushuntiraman...",
-        time: new Date().toLocaleTimeString('uz-UZ', {hour: '2-digit', minute:'2-digit'})
+    setIsLoading(true)
+  
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage.content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+  
+      const data = await response.json()
+  
+      if (!response.ok) {
+        throw new Error(data.error || 'Xatolik yuz berdi')
       }
-      setMessages(prev => [...prev, aiResponse])
-    }, 1500)
+  
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: data.message,
+        timestamp: new Date(),
+      }
+  
+      setMessages(prev => [...prev, aiMessage])
+  
+      // Save chat to Firestore if user is logged in
+      if (user) {
+        try {
+          await addDoc(collection(db, 'chats'), {
+            userId: user.uid,
+            userMessage: userMessage.content,
+            aiMessage: aiMessage.content,
+            timestamp: serverTimestamp(),
+          })
+        } catch (e) {
+          console.error('Chat saqlashda xatolik:', e)
+        }
+      }
+  
+    } catch (error: any) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: error.message || 'Xatolik yuz berdi. Qaytadan urining.',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -108,7 +145,7 @@ export default function AIChatPage() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="flex-1 overflow-y-auto p-4 space-y-2 hidden-scrollbar">
           {history.map((item, i) => (
             <div key={i} className={`p-3 rounded-xl cursor-pointer transition-colors ${item.active ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-slate-100 text-slate-700'}`}>
               <p className={`text-sm font-medium truncate ${item.active ? 'text-white' : 'text-slate-700'}`}>{item.title}</p>
@@ -133,13 +170,13 @@ export default function AIChatPage() {
               <p className="text-xs text-slate-500 font-medium">Online</p>
             </div>
           </div>
-          <button className="text-slate-400 hover:text-red-500 transition-colors p-2" title="Tozalash">
+          <button className="text-slate-400 hover:text-red-500 transition-colors p-2" title="Tozalash" onClick={() => setMessages([messages[0]])}>
             <Eraser className="w-5 h-5" />
           </button>
         </div>
 
         {/* MESSAGES AREA */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 hidden-scrollbar">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex gap-4 max-w-[85%] ${msg.role === 'user' ? 'self-end ml-auto flex-row-reverse' : 'self-start'}`}>
               <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center shadow-sm text-sm font-bold mt-1 ${msg.role === 'user' ? 'bg-slate-200 text-slate-600' : 'bg-gradient-to-br from-indigo-500 to-blue-500 text-white'}`}>
@@ -151,45 +188,32 @@ export default function AIChatPage() {
                     ? 'btn-gradient text-white rounded-2xl rounded-tr-sm' 
                     : 'bg-indigo-600/5 border border-indigo-600/10 text-slate-800 rounded-2xl rounded-tl-sm'
                 }`}>
-                  
-                  {/* Handling AI Formula Blocks manually for the mock */}
-                  {msg.isFormula ? (
-                    <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                      Suvbat to'g'ri burchakli uchburchak uchun amal qiladi:
-                      
-                      <div className="bg-indigo-50 border-l-4 border-indigo-400 rounded-r-xl p-4 my-3 font-mono text-indigo-700 text-base font-bold shadow-sm whitespace-pre">
-                        a² + b² = c²
-                      </div>
-                      
-                      Bu yerda:
-                      • a va b — katetlar (to'g'ri burchak yonidagi tomonlar)
-                      • c — gipotenuza (eng uzun tomon)
-                      <br/><br/>
-                      Misol: agar a=3, b=4 bo'lsa:
-                      <br/>
-                      <span className="font-mono bg-white px-2 py-1 rounded text-indigo-700 font-bold border border-indigo-100 inline-block mt-1">3² + 4² = 9 + 16 = 25<br/>c = √25 = 5</span>
-                      <br/><br/>
-                      Ko'proq misol ko'rmoqchimisiz? 🎯
-                    </div>
-                  ) : (
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                  )}
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                 </div>
-                <span className={`text-[11px] text-slate-400 font-medium ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>{msg.time}</span>
+                <span className={`text-[11px] text-slate-400 font-medium ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+                  {msg.timestamp.toLocaleTimeString('uz-UZ', {hour: '2-digit', minute:'2-digit'})}
+                </span>
               </div>
             </div>
           ))}
 
-          {/* Typing Indicator */}
-          {isTyping && (
-            <div className="flex gap-4 self-start max-w-[85%]">
-              <div className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center shadow-sm text-sm font-bold bg-gradient-to-br from-indigo-500 to-blue-500 text-white">
+          {/* Loading Indicator */}
+          {isLoading && (
+            <div className="flex gap-3 items-start">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br 
+                              from-indigo-500 to-blue-500 flex items-center 
+                              justify-center text-white font-bold
+                              flex-shrink-0 shadow-sm mt-1">
                 G
               </div>
-              <div className="bg-indigo-600/5 border border-indigo-600/10 rounded-2xl rounded-tl-sm p-4 h-[52px] flex items-center gap-1.5 shadow-sm">
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="bg-indigo-50 border border-indigo-600/10 
+                              rounded-2xl rounded-tl-sm p-4 h-[52px] flex items-center gap-1.5 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-indigo-400 
+                                 animate-bounce [animation-delay:0ms]" />
+                <span className="w-2 h-2 rounded-full bg-indigo-400 
+                                 animate-bounce [animation-delay:150ms]" />
+                <span className="w-2 h-2 rounded-full bg-indigo-400 
+                                 animate-bounce [animation-delay:300ms]" />
               </div>
             </div>
           )}
@@ -198,7 +222,7 @@ export default function AIChatPage() {
         </div>
 
         {/* QUICK SUGGESTIONS */}
-        <div className="px-6 pb-3 pt-2 overflow-x-auto whitespace-nowrap noscrollbar shrink-0 flex gap-2">
+        <div className="px-6 pb-3 pt-2 overflow-x-auto whitespace-nowrap noscrollbar shrink-0 flex gap-2 hidden-scrollbar">
           {suggestions.map((s, i) => (
             <button 
               key={i}
@@ -228,7 +252,7 @@ export default function AIChatPage() {
             />
             <button 
               onClick={sendMessage}
-              disabled={!input.trim()}
+              disabled={!input.trim() || isLoading}
               className="w-12 h-12 shrink-0 rounded-full btn-gradient flex items-center justify-center text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 transition-all"
             >
               <Send className="w-5 h-5 -ml-0.5" />
