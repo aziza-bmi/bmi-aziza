@@ -41,12 +41,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser)
       if (firebaseUser) {
+        const token = await firebaseUser.getIdToken()
+        document.cookie = `firebase-auth-token=${token}; path=/; max-age=86400` // 1 kunga saqlash
+        
         const userRef = doc(db, 'users', firebaseUser.uid)
         const userSnap = await getDoc(userRef)
         if (userSnap.exists()) {
           setUserData(userSnap.data() as UserData)
         }
       } else {
+        document.cookie = "firebase-auth-token=; path=/; max-age=0"
         setUserData(null)
       }
       setLoading(false)
