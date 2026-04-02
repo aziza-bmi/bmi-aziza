@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         const genAI = new GoogleGenerativeAI(apiKey)
         
         const model = genAI.getGenerativeModel({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-2.5-flash',
           systemInstruction: SYSTEM_PROMPT,
           generationConfig: {
             temperature: 0.7,
@@ -61,10 +61,23 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        const chatHistory = (history || []).map((msg: any) => ({
+        let rawHistory = (history || []).map((msg: any) => ({
           role: msg.role === 'user' ? 'user' : 'model',
           parts: [{ text: msg.content }],
         }))
+        
+        let chatHistory: any[] = []
+        for (const msg of rawHistory) {
+           if (chatHistory.length === 0) {
+              if (msg.role === 'user') chatHistory.push(msg)
+           } else {
+              if (chatHistory[chatHistory.length - 1].role !== msg.role) {
+                 chatHistory.push(msg)
+              } else {
+                 chatHistory[chatHistory.length - 1].parts[0].text += '\n' + msg.parts[0].text
+              }
+           }
+        }
 
         const chat = model.startChat({ history: chatHistory })
         const result = await chat.sendMessage(message)
