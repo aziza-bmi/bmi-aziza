@@ -12,7 +12,7 @@ import {
 } from '@/lib/firestore'
 import {
   BookOpen, Star, Flame, BarChart3,
-  ChevronRight, ArrowUp
+  ChevronRight, ArrowUp, Clock
 } from 'lucide-react'
 import Link from 'next/link'
 

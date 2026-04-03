@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Send, CheckCircle2, ChevronRight, X, Plus, Eraser } from 'lucide-react'
+import { Search, Send, Plus, Eraser } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 
 interface Message {
@@ -27,6 +27,7 @@ export default function AIChatPage() {
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [chatHistory, setChatHistory] = useState<any[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -37,13 +38,37 @@ export default function AIChatPage() {
     scrollToBottom()
   }, [messages, isLoading])
 
-  const history = [
-    { title: 'Pifagor teoremasi haqida', date: 'Bugun', active: true },
-    { title: 'Doira va uning xossalari', date: 'Kecha', active: false },
-    { title: 'Uchburchak turlari', date: '2 kun oldin', active: false },
-    { title: 'To\'g\'ri burchakli uchburchak', date: '3 kun oldin', active: false },
-    { title: 'Ko\'pburchaklar perimetri', date: '1 hafta oldin', active: false },
-  ]
+  useEffect(() => {
+    if (!user) return
+    async function loadHistory() {
+      try {
+        const q = query(
+          collection(db, 'chats'),
+          where('userId', '==', user!.uid),
+          orderBy('timestamp', 'desc'),
+          limit(20)
+        )
+        const snap = await getDocs(q)
+        const grouped: Record<string, any> = {}
+        snap.docs.forEach(doc => {
+          const data = doc.data()
+          const date = data.timestamp?.toDate
+            ? data.timestamp.toDate().toLocaleDateString('uz-UZ')
+            : 'Bugun'
+          if (!grouped[date]) {
+            grouped[date] = {
+              title: (data.userMessage || '').slice(0, 30) + '...',
+              date,
+            }
+          }
+        })
+        setChatHistory(Object.values(grouped).slice(0, 8))
+      } catch (e) {
+        console.error('Chat history load error:', e)
+      }
+    }
+    loadHistory()
+  }, [user])
 
   const suggestions = [
     "Pifagor teoremasi", "Uchburchak yuzi", "Doira uzunligi", "Ko'pburchak", "Stereometriya", "Koordinatalar"
@@ -146,12 +171,18 @@ export default function AIChatPage() {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-2 hidden-scrollbar">
-          {history.map((item, i) => (
-            <div key={i} className={`p-3 rounded-xl cursor-pointer transition-colors ${item.active ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-slate-100 text-slate-700'}`}>
-              <p className={`text-sm font-medium truncate ${item.active ? 'text-white' : 'text-slate-700'}`}>{item.title}</p>
-              <p className={`text-xs mt-1 ${item.active ? 'text-indigo-200' : 'text-slate-400'}`}>{item.date}</p>
+          {chatHistory.length > 0 ? (
+            chatHistory.map((item: { title: string; date: string }, i: number) => (
+              <div key={i} className="px-3 py-2.5 rounded-xl cursor-pointer hover:bg-indigo-50 transition-colors">
+                <div className="text-sm text-slate-700 truncate font-medium">{item.title}</div>
+                <div className="text-xs text-slate-400 mt-0.5">{item.date}</div>
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-slate-400 text-center py-8 px-3 leading-relaxed">
+              Hali suhbat yo&apos;q.<br />AI bilan gaplashing!
             </div>
-          ))}
+          )}
         </div>
       </div>
 
