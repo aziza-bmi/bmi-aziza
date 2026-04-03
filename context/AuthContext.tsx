@@ -14,7 +14,7 @@ interface UserData {
   uid: string
   email: string
   displayName: string
-  photoURL?: string
+  photoURL: string | null
   level: number
   xp: number
   streak: number

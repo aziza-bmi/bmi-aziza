@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import ThemeToggle from '@/components/shared/ThemeToggle'
 
 const navLinks = [
   { href: '/', label: 'Bosh sahifa' },
@@ -48,6 +49,7 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <Link
           href="/login"
           className="text-sm px-4 py-2 rounded-lg border border-primary-DEFAULT/30 

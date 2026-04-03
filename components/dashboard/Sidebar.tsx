@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, BookOpen, MessageSquare, Award, Settings, LogOut, PenTool, User } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { logout } from '@/lib/auth'
+import ThemeToggle from '@/components/shared/ThemeToggle'
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -27,7 +28,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-100 flex flex-col h-screen sticky top-0">
+    <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex-col h-screen sticky top-0 hidden lg:flex">
       <div className="p-6 border-b border-slate-100">
         <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
           GeoMind
@@ -58,7 +59,7 @@ export default function Sidebar() {
         })}
       </div>
 
-      <div className="p-4 border-t border-slate-100 space-y-2">
+      <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
         {user && (
           <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 rounded-xl mb-2">
             <div className="w-8 h-8 flex-shrink-0 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
@@ -75,10 +76,13 @@ export default function Sidebar() {
           </div>
         )}
 
-        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors w-full font-medium text-sm">
-          <LogOut className="w-5 h-5 text-slate-400" />
-          Tizimdan chiqish
-        </button>
+        <div className="flex items-center justify-between">
+          <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors font-medium text-sm">
+            <LogOut className="w-5 h-5 text-slate-400" />
+            Chiqish
+          </button>
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   )
