@@ -186,6 +186,7 @@ function drawGridFn(ctx: CanvasRenderingContext2D, w: number, h: number, pan: Po
 export default function GeoLabPage() {
   const { user } = useAuth()
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const didDragRef = useRef(false)
   const [shapes,setShapes]=useState<Shape[]>([]); const [history,setHistory]=useState<Shape[][]>([[]]); const [historyIndex,setHistoryIndex]=useState(0)
   const [tool,setTool]=useState<Tool>('rect'); const [isDrawing,setIsDrawing]=useState(false); const [startPos,setStartPos]=useState<Point>({x:0,y:0})
   const [currentShape,setCurrentShape]=useState<Shape|null>(null); const [selectedShape,setSelectedShape]=useState<Shape|null>(null)
@@ -277,19 +278,41 @@ export default function GeoLabPage() {
   function clearAll(){pushHistory([]);setSelectedShape(null)}
 
   function handleMouseDown(e:React.MouseEvent<HTMLCanvasElement>){
+    didDragRef.current = false;
     if(tool==='hand'){setIsDrawing(true);setStartPos({x:e.clientX,y:e.clientY});return}
     const pos=getPos(e)
     if(tool==='eraser'){const h=[...shapes].reverse().find(s=>isInShape(s,pos));if(h){pushHistory(shapes.filter(s=>s.id!==h.id));setSelectedShape(null)};return}
-    if(tool==='select'){setSelectedShape([...shapes].reverse().find(s=>isInShape(s,pos))||null);return}
+    if(tool==='select'){
+      const hit = [...shapes].reverse().find(s=>isInShape(s,pos))||null;
+      setSelectedShape(hit);
+      if (hit) { setIsDrawing(true); setStartPos(pos); }
+      return
+    }
     setIsDrawing(true);setStartPos(pos)
     setCurrentShape({id:Date.now().toString(),type:tool==='polygon'?'polygon':tool==='vector'?'vector':tool as ShapeType,points:[pos,pos],color:selectedColor,strokeWidth,fillOpacity,sides:polygonSides})
   }
   function handleMouseMove(e:React.MouseEvent<HTMLCanvasElement>){
     if(isDrawing&&tool==='hand'){const dx=e.clientX-startPos.x,dy=e.clientY-startPos.y;setPan(p=>({x:p.x+dx,y:p.y+dy}));setStartPos({x:e.clientX,y:e.clientY});return}
+    if(isDrawing&&tool==='select'&&selectedShape){
+      didDragRef.current = true;
+      const pos = getPos(e);
+      const dx = pos.x - startPos.x;
+      const dy = pos.y - startPos.y;
+      const moved = {...selectedShape, points: selectedShape.points.map(p=>({x: p.x+dx, y: p.y+dy}))};
+      setShapes(shapes.map(s => s.id === moved.id ? moved : s));
+      setSelectedShape(moved);
+      setStartPos(pos);
+      return;
+    }
     if(!isDrawing||!currentShape)return;setCurrentShape({...currentShape,points:[startPos,getPos(e)]})
   }
   function handleMouseUp(){
     if(isDrawing&&tool==='hand'){setIsDrawing(false);return}
+    if(isDrawing&&tool==='select'&&selectedShape){
+      setIsDrawing(false);
+      if(didDragRef.current) pushHistory(shapes);
+      return;
+    }
     if(!isDrawing||!currentShape)return;setIsDrawing(false);const p=currentShape.points;if(Math.abs(p[1].x-p[0].x)>8||Math.abs(p[1].y-p[0].y)>8){pushHistory([...shapes,currentShape]);setSelectedShape(currentShape)};setCurrentShape(null)
   }
 
@@ -346,7 +369,7 @@ export default function GeoLabPage() {
       let sp=''
       if(aiMode==='ask')sp=`Siz GeoLab AI. Canvasdagi figuralar:\n${summary}\nQisqa javob. O'zbek tilida. LaTeX: $formula$. Markdown.`
       else if(aiMode==='draw')sp=`Siz GeoLab AI chizuvchi.\nJSON ob'ekt bering:\n\`\`\`json\n{"type":"rect|circle|triangle|polygon","width":10,"height":8,"radius":5,"a":3,"b":4,"sides":6,"color":"#4F46E5","labels":{"width":"10 sm","height":"8 sm","radius":"r=5 sm","a":"x"}}\n\`\`\`\nKeyin insoniy tushuntirish. O'zbek tilida.`
-      else sp=`Siz GeoLab AI o'qituvchi. Geometriya masalasi bering. O'lchamlar aniq bo'lsin lekin keraklisini so'roq '?' qilib JSON bilan yozing. DIQQAT: JSON kaddan oldin yoki keyin HECH QANDAY matn yozmang ("Chizma uchun JSON" degan so'z umuman kerakmas). So'ralayotgan ifodani labelga yozing, dxx: \`\`\`json\n{"type":"triangle","color":"#4F46E5","labels":{"a":"5","b":"?","c":"4"}}\n\`\`\` Canvas: ${summary}`
+      else sp=`Siz GeoLab AI o'qituvchi. O'zbek tilida geometriya masalasini yozing (matni bilan!). Masala ifodasi va shartlari tugagach, shu masaladagi shaklni chizish yuzasidan MATNNING ENG OXIRIGA faqat bitta JSON obyekt qo'shing. DIQQAT: JSON kodi boshlanishidan oldin "Chizma uchun JSON" deb aslo YOZMANG. Topilishi kerak bo'lgan tomonni esa label ichida '?' qilib chizib bering, masalan: \`\`\`json\n{"type":"triangle","color":"#4F46E5","labels":{"a":"5","b":"?","c":"4"}}\n\`\`\` Canvas: ${summary}`
       const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:userMsg,history:aiMessages.map(m=>({role:m.role,content:m.content})),systemPrompt:sp})})
       const data=await res.json();let aiText=data.message||'Xatolik.'
       const m=aiText.match(/```json\n([\s\S]*?)\n```/i);
