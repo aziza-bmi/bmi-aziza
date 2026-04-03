@@ -6,6 +6,7 @@ import { Search, Send, Plus, Eraser } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import MarkdownRenderer from '@/components/shared/MarkdownRenderer'
 
 interface Message {
   id: string
@@ -219,7 +220,14 @@ export default function AIChatPage() {
                     ? 'btn-gradient text-white rounded-2xl rounded-tr-sm' 
                     : 'bg-indigo-600/5 border border-indigo-600/10 text-slate-800 rounded-2xl rounded-tl-sm'
                 }`}>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  {msg.role === 'assistant' ? (
+                    <MarkdownRenderer
+                      content={msg.content}
+                      className="text-sm text-slate-800 dark:text-slate-100"
+                    />
+                  ) : (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  )}
                 </div>
                 <span className={`text-[11px] text-slate-400 font-medium ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                   {msg.timestamp.toLocaleTimeString('uz-UZ', {hour: '2-digit', minute:'2-digit'})}
