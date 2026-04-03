@@ -1,6 +1,6 @@
 'use client'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import Sidebar from '@/components/dashboard/Sidebar'
 import BottomNav from '@/components/dashboard/BottomNav'
@@ -12,6 +12,7 @@ export default function DashboardLayout({
 }) {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!loading && !user) router.push('/login')
@@ -36,18 +37,17 @@ export default function DashboardLayout({
 
   if (!user) return null
 
+  const isCanvas = pathname === '/canvas'
+
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <Sidebar />
-      <main className="flex-1 lg:ml-60 min-h-screen pb-20 lg:pb-0
-                       bg-gradient-to-br from-indigo-50 via-blue-50
-                       to-indigo-50 dark:from-slate-950
-                       dark:via-slate-900 dark:to-slate-950 p-8 overflow-y-auto">
-        <div className="max-w-6xl mx-auto">
+      <main className={`flex-1 flex flex-col ${!isCanvas ? 'min-h-screen pb-20 lg:pb-0 p-8 overflow-y-auto' : 'h-screen overflow-hidden'}`}>
+        <div className={`${!isCanvas ? 'max-w-6xl mx-auto w-full' : 'w-full h-full'}`}>
           {children}
         </div>
       </main>
-      <BottomNav />
+      {!isCanvas && <BottomNav />}
     </div>
   )
 }

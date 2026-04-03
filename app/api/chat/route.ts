@@ -49,7 +49,7 @@ QOIDALAR:
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, history } = await request.json()
+    const { message, history, systemPrompt } = await request.json()
 
     if (!message?.trim()) {
       return NextResponse.json(
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         
         const model = genAI.getGenerativeModel({
           model: 'gemini-2.5-flash',
-          systemInstruction: SYSTEM_PROMPT,
+          systemInstruction: systemPrompt || SYSTEM_PROMPT,
           generationConfig: {
             temperature: 0.7,
             topP: 0.8,

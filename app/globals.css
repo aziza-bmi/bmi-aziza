@@ -52,6 +52,25 @@ body {
   transition: all 0.25s ease;
 }
 
+.glass.btn-gradient:hover {
+  filter: brightness(1.1);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(circle at 2px 2px, #cbd5e1 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.dark .bg-dot-pattern {
+  background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.1) 1px, transparent 0);
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .gradient-text {
   background: linear-gradient(135deg, #4F46E5, #3B82F6);
   -webkit-background-clip: text;
