@@ -551,6 +551,194 @@ $$\\cos\\theta = \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{a}| \\cdot |\\vec{b}|}$
             ]
           }
         ]
+      },
+      {
+        id: 'oxshashlik',
+        title: "O'xshashlik va simmetriya",
+        order: 6,
+        topics: [
+          {
+            id: 'uchburchak-oxshashligi',
+            title: "Uchburchaklar o'xshashligi",
+            duration: 14,
+            difficulty: 'intermediate',
+            xpReward: 50,
+            order: 1,
+            content: `## Uchburchaklar o'xshashligi
+
+Ikki uchburchak **o'xshash** deyiladi, agar ularning burchaklari teng va tomonlari proporsional bo'lsa.
+
+### O'xshashlik alomatlari
+
+**1-alamoat (burchak-burchak):**
+Ikkita burchagi teng bo'lsa, uchburchaklar o'xshash.
+$$\\alpha_1 = \\alpha_2, \\quad \\beta_1 = \\beta_2$$
+
+**2-alamoat (tomon-burchak-tomon):**
+$$\\frac{a_1}{a_2} = \\frac{b_1}{b_2}, \\quad \\gamma_1 = \\gamma_2$$
+
+**3-alamoat (tomon-tomon-tomon):**
+$$\\frac{a_1}{a_2} = \\frac{b_1}{b_2} = \\frac{c_1}{c_2}$$
+
+### O'xshashlik koeffitsienti
+$$k = \\frac{a_1}{a_2}$$
+
+Yuzalar nisbati:
+$$\\frac{S_1}{S_2} = k^2$$`,
+            examples: [
+              "k=2 bo'lsa, yuzalar nisbati = 4",
+              "Tomonlari 3,4,5 va 6,8,10 — o'xshash (k=2)",
+            ],
+            hasQuiz: true,
+            quiz: [
+              {
+                question: "O'xshashlik koeffitsienti 3 bo'lsa, yuzalar nisbati?",
+                options: ["3", "6", "9", "12"],
+                correctIndex: 2,
+                explanation: "Yuzalar nisbati = k² = 3² = 9"
+              },
+              {
+                question: "Qaysi alomatda 2 ta burchak tengligidan o'xshashlik kelib chiqadi?",
+                options: ["1-alamoat", "2-alamoat", "3-alamoat", "Hech qaysi"],
+                correctIndex: 0,
+                explanation: "1-alamoat: ikki burchak teng bo'lsa — o'xshash."
+              }
+            ]
+          },
+          {
+            id: 'simmetriya',
+            title: "Simmetriya turlari",
+            duration: 12,
+            difficulty: 'intermediate',
+            xpReward: 40,
+            order: 2,
+            content: `## Simmetriya turlari
+
+### O'q simmetriyasi
+Figura bir to'g'ri chiziq (o'q) ga nisbatan simmetrik.
+
+> Agar $A$ nuqtaning simmetrik nuqtasi $A'$ bo'lsa, 
+> o'q $AA'$ ni teng ikkiga bo'ladi va unga perpendikulyar.
+
+### Markaz simmetriyasi
+Figura $O$ markaz ga nisbatan simmetrik:
+$$O = \\frac{A + A'}{2}$$
+
+### Parallel ko'chirish (Translyatsiya)
+Figura $\\vec{a}$ vektor bo'yicha ko'chiriladi:
+$$A' = A + \\vec{a}$$
+
+### Aylantirish (Rotatsiya)
+Figura $O$ markaz atrofida $\\alpha$ burchakka aylanadi.`,
+            examples: [
+              "Doira — cheksiz ko'p o'q simmetriyasiga ega",
+              "Kvadrat — 4 ta o'q va 1 ta markaz simmetriyasi",
+              "Teng yonli uchburchak — 1 ta o'q simmetriyasi",
+            ],
+            hasQuiz: true,
+            quiz: [
+              {
+                question: "Kvadrat nechta o'q simmetriyasiga ega?",
+                options: ["2", "4", "8", "1"],
+                correctIndex: 1,
+                explanation: "Kvadratning 4 ta simmetriya o'qi bor: 2 ta diagonal + 2 ta o'rta chiziq."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'trigonometriya',
+        title: 'Trigonometriya asoslari',
+        order: 7,
+        topics: [
+          {
+            id: 'sinus-kosinus',
+            title: 'Sinus, kosinus, tангенс',
+            duration: 18,
+            difficulty: 'advanced',
+            xpReward: 65,
+            order: 1,
+            content: `## Trigonometrik nisbatlar
+
+To'g'ri burchakli uchburchakda $\\alpha$ o'tkir burchak uchun:
+
+$$\\sin\\alpha = \\frac{\\text{qarshi katet}}{\\text{gipotenuza}}$$
+
+$$\\cos\\alpha = \\frac{\\text{yonma-yon katet}}{\\text{gipotenuza}}$$
+
+$$\\tan\\alpha = \\frac{\\sin\\alpha}{\\cos\\alpha} = \\frac{\\text{qarshi katet}}{\\text{yonma-yon katet}}$$
+
+### Asosiy tenglik
+$$\\sin^2\\alpha + \\cos^2\\alpha = 1$$
+
+### Muhim qiymatlar
+| $\\alpha$ | $\\sin\\alpha$ | $\\cos\\alpha$ | $\\tan\\alpha$ |
+|-----------|---------------|---------------|---------------|
+| 0° | 0 | 1 | 0 |
+| 30° | 1/2 | √3/2 | 1/√3 |
+| 45° | √2/2 | √2/2 | 1 |
+| 60° | √3/2 | 1/2 | √3 |
+| 90° | 1 | 0 | — |`,
+            examples: [
+              "sin 30° = 0.5, cos 60° = 0.5",
+              "Gipotenuza 10, burchak 30° → qarshi katet = 10·0.5 = 5",
+              "sin²45° + cos²45° = 0.5 + 0.5 = 1 ✓"
+            ],
+            hasQuiz: true,
+            quiz: [
+              {
+                question: "sin 60° qiymatiga teng?",
+                options: ["1/2", "√2/2", "√3/2", "1"],
+                correctIndex: 2,
+                explanation: "sin 60° = √3/2 ≈ 0.866"
+              },
+              {
+                question: "sin²α + cos²α = ?",
+                options: ["0", "1/2", "1", "2"],
+                correctIndex: 2,
+                explanation: "Bu trigonometriyaning asosiy tenglamasi — har doim 1 ga teng."
+              }
+            ]
+          },
+          {
+            id: 'sinuslar-kosinuslar',
+            title: 'Sinuslar va kosinuslar teoremasi',
+            duration: 16,
+            difficulty: 'advanced',
+            xpReward: 60,
+            order: 2,
+            content: `## Sinuslar va kosinuslar teoremasi
+
+### Sinuslar teoremasi
+$$\\frac{a}{\\sin A} = \\frac{b}{\\sin B} = \\frac{c}{\\sin C} = 2R$$
+
+Bu yerda $R$ — aylananing radiusi.
+
+### Kosinuslar teoremasi
+$$c^2 = a^2 + b^2 - 2ab\\cos C$$
+
+Bu Pifagor teoremasyasining umumlashmasi:
+- Agar $C = 90°$ bo'lsa: $c^2 = a^2 + b^2$
+
+### Qo'llanish
+**Sinuslar teoremasi:** ikki burchak va bir tomon ma'lum bo'lganda.
+**Kosinuslar teoremasi:** ikki tomon va ular orasidagi burchak ma'lum bo'lganda.`,
+            examples: [
+              "a=7, A=30°, B=45° → b = 7·sin45°/sin30° = 7√2",
+              "a=5, b=7, C=60° → c² = 25+49-35 = 39 → c≈6.24",
+            ],
+            hasQuiz: true,
+            quiz: [
+              {
+                question: "Kosinuslar teoremasi Pifagordan qachon farq qilmaydi?",
+                options: ["C=45°", "C=60°", "C=90°", "C=180°"],
+                correctIndex: 2,
+                explanation: "C=90° da cos90°=0 bo'lgani uchun c²=a²+b² — Pifagor."
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -809,6 +997,97 @@ $$\\frac{V_{shar}}{V_{tashqi silindr}} = \\frac{2}{3}$$`,
                 options: ["3.14", "4.19", "6.28", "12.56"],
                 correctIndex: 1,
                 explanation: "V = 4/3·π·1 = 4/3·3.14 ≈ 4.19 sm³"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'hajm-hisoblash',
+        title: 'Hajm va sirt yuzi hisoblash',
+        order: 4,
+        topics: [
+          {
+            id: 'kesimlari',
+            title: "Ko'pyoqlar kesimlari",
+            duration: 16,
+            difficulty: 'advanced',
+            xpReward: 65,
+            order: 1,
+            content: `## Ko'pyoqlar kesimlari
+
+**Kesim** — tekislik ko'pyoqni kesib o'tadigan figura.
+
+### Parallelepipedning kesimlari
+
+**Diagonal kesim** — diagonal va ikkita parallel qirra orqali.
+
+To'g'ri burchakli parallelepipedda:
+$$d = \\sqrt{a^2 + b^2 + c^2}$$
+
+**Diagonal kesim yuzi:**
+$$S = d \\cdot b = \\sqrt{a^2+c^2} \\cdot b$$
+
+### Prizmaaning kesimlari
+**To'g'ri kesim** — qirralarga perpendikulyar tekislik bilan.
+**Qiyshiq kesim** — qirralar bilan burchak hosil qiluvchi.
+
+### Piramidaning kesimlari
+Tepalikka parallel kesim o'xshash asosli kichik piramida hosil qiladi:
+$$\\frac{S_{kesim}}{S_{asos}} = \\left(\\frac{h_1}{h}\\right)^2$$`,
+            examples: [
+              "a=3, b=4, c=5 parallelepiped: d=√50≈7.07",
+              "Balandlikning yarmi bo'lgan kesim: yuzi 1/4 asosdan",
+            ],
+            hasQuiz: true,
+            quiz: [
+              {
+                question: "Kubning kenglik, balandlik va uzunligi 3,4,5. Diagonal?",
+                options: ["5", "6", "√50", "√14"],
+                correctIndex: 2,
+                explanation: "d = √(9+16+25) = √50 ≈ 7.07"
+              }
+            ]
+          },
+          {
+            id: 'kombinatsiyalar',
+            title: "Jismlar kombinatsiyasi",
+            duration: 18,
+            difficulty: 'advanced',
+            xpReward: 70,
+            order: 2,
+            content: `## Jismlar kombinatsiyasi
+
+Ko'pincha masalalarda bir jism ichiga boshqasi joylashtirilgan bo'ladi.
+
+### Sharning prizmagaо o'ralishi
+Sharning diametri prizmaning diagonal kesmasi bilan bog'liq.
+
+### Piramidaga ichki shar
+$$r = \\frac{3V}{S_{to'liq}}$$
+
+### Piramidaga tashqi shar
+To'g'ri piramidada tashqi shar radiusi:
+$$R = \\frac{l^2}{2h}$$
+
+### Silindrga ichki konus
+Silindr va konus teng asosli bo'lsa:
+$$V_{konus} = \\frac{1}{3} V_{silindr}$$
+
+### Sharni silindrlash
+$$V_{shar} = \\frac{2}{3} V_{silindr}$$`,
+            examples: [
+              "Kub ichiga shar: r = a/2",
+              "Konus ichiga shar: r = r_asos·h / (l + r_asos)",
+              "Shar V=36π, silindr V=54π (bir xil r va h=2r)"
+            ],
+            hasQuiz: true,
+            quiz: [
+              {
+                question: "Shar hajmi uni o'rab turgan silindr hajmining necha qismi?",
+                options: ["1/2", "2/3", "3/4", "1/3"],
+                correctIndex: 1,
+                explanation: "V_shar = 2/3 · V_silindr (teng r va h=2r bo'lganda)"
               }
             ]
           }

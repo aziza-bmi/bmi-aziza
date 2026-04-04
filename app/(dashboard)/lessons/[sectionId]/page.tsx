@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore'
 import {
   ChevronRight, BookOpen, Star,
-  Clock, CheckCircle2, ArrowLeft
+  Clock, CheckCircle2, ArrowLeft, Info, Trophy
 } from 'lucide-react'
 import PageLoader from '@/components/shared/PageLoader'
 
@@ -144,6 +144,104 @@ export default function SectionPage() {
                 {completedTopics.length} bajarildi
               </span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="glass-card dark:bg-slate-800/60
+                      dark:border-slate-700/40 p-6 mb-6">
+        <h2 className="text-base font-medium text-slate-800
+                       dark:text-slate-100 mb-4 flex items-center gap-2">
+          <Info size={18} className="text-indigo-500" />
+          Bu bo'lim haqida
+        </h2>
+
+        <p className="text-sm text-slate-600 dark:text-slate-300
+                      leading-relaxed mb-4">
+          {section.id === 'planimetriya'
+            ? `Planimetriya — tekislikdagi geometriya bo'limi. 
+               Bu bo'limda siz nuqta, chiziq, burchaklar, 
+               uchburchaklar, to'rtburchaklar, doiralar va 
+               ko'pburchaklar kabi tekis figuralar bilan 
+               ishlashni o'rganasiz. Pifagor teoremasi, 
+               figuralar yuzi va perimetrini hisoblash, 
+               vektorlar va koordinatalar tizimi kabi 
+               muhim mavzular kiritilgan.`
+            : `Stereometriya — fazoviy geometriya bo'limi. 
+               Bu bo'limda siz uch o'lchovli figuralar: 
+               prizma, parallelepiped, piramida, silindr, 
+               konus va shar kabi jismlar bilan ishlashni 
+               o'rganasiz. Ularning hajmi, sirt yuzi, 
+               kesmlari va fazodagi o'rnini tushunasiz.`}
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            {
+              icon: BookOpen,
+              label: 'Boblar',
+              value: section.chaptersCount,
+              color: 'indigo',
+            },
+            {
+              icon: Star,
+              label: 'Mavzular',
+              value: section.topicsCount,
+              color: 'purple',
+            },
+            {
+              icon: Clock,
+              label: 'Taxminiy vaqt',
+              value: `${section.topicsCount * 13} daq`,
+              color: 'blue',
+            },
+            {
+              icon: Trophy,
+              label: 'Max XP',
+              value: `${section.topicsCount * 45} XP`,
+              color: 'amber',
+            },
+          ].map((item, i) => (
+            <div key={i}
+              className="bg-slate-50 dark:bg-slate-800/50
+                         rounded-xl p-3 text-center">
+              <item.icon size={18}
+                className={`mx-auto mb-1.5
+                           ${item.color === 'indigo'
+                             ? 'text-indigo-500'
+                             : item.color === 'purple'
+                             ? 'text-purple-500'
+                             : item.color === 'blue'
+                             ? 'text-blue-500'
+                             : 'text-amber-500'}`} />
+              <div className="text-sm font-medium text-slate-800
+                              dark:text-slate-100">{item.value}</div>
+              <div className="text-xs text-slate-400 mt-0.5">{item.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-slate-100
+                        dark:border-slate-700/40">
+          <p className="text-xs font-medium text-slate-500
+                        dark:text-slate-400 mb-2">
+            Nimalarni o'rganasiz:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(section.id === 'planimetriya'
+              ? ['Burchaklar', 'Uchburchaklar', 'Pifagor', "To'rtburchaklar",
+                 'Doiralar', "Ko'pburchaklar", 'Vektorlar', 'Koordinatalar']
+              : ['Prizma', 'Parallelepiped', 'Piramida', 'Silindr',
+                 'Konus', 'Shar', 'Fazoviy tekislik', 'Hajm hisoblash']
+            ).map((tag, i) => (
+              <span key={i}
+                className="text-xs px-2.5 py-1 rounded-full
+                           bg-indigo-50 dark:bg-indigo-900/30
+                           text-indigo-700 dark:text-indigo-300
+                           border border-indigo-100 dark:border-indigo-800/40">
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
       </div>
