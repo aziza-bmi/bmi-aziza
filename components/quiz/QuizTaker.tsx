@@ -49,31 +49,13 @@ export default function QuizTaker({ topicId, config }: QuizTakerProps) {
         const response = await fetch(`/api/lessons/${topicId}`)
         const data = await response.json()
         
-        let quizPool = data.quizData || []
-
-        // Agar DB da tayyor savollar bo'lmasa, uni AI orqali yozib olamiz
-        if (quizPool.length === 0 && data.content) {
-            const aiResponse = await fetch('/api/generate-quiz', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                   content: data.content, 
-                   topic: data.title || topicId, 
-                   count: Math.max(config.count, 10) 
-                })
-            })
-            const aiData = await aiResponse.json()
-            if (aiData.questions && Array.isArray(aiData.questions)) {
-                quizPool = aiData.questions.map((q: any) => ({
-                    ...q,
-                    id: Math.random().toString(36).substr(2, 9),
-                    difficulty: config.difficulty // AI tushuntirgan darajasi bo'lmasa, user so'ragan daraja qo'yiladi
-                }))
-                
-                // Opsional: Buni DB ga Firebase orqali saqlashimiz mumkin edi, 
-                // lekin vaqtincha faqat joriy seansda ushlab turamiz.
-            }
-        }
+        let rawQuiz = data.quiz || data.quizData || []
+        
+        let quizPool = rawQuiz.map((q: any) => ({
+             ...q,
+             id: q.id || Math.random().toString(36).substr(2, 9),
+             correctAnswer: q.correctAnswer !== undefined ? q.correctAnswer : q.correctAnswerIndex
+        }))
 
         if (quizPool.length > 0) {
           // Filter by difficulty and limit count

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Star, Clock, List, X, Play, BrainCircuit } from 'lucide-react'
-import { collection, query, getDocs, where, Timestamp, orderBy } from 'firebase/firestore'
+import { collection, query, getDocs, where, Timestamp, orderBy, collectionGroup } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { getDueQuestions } from '@/lib/db/repetition'
@@ -13,7 +13,7 @@ interface Topic {
   id: string
   title: string
   topic: string
-  quizData?: any[]
+  quiz?: any[]
   difficulty: 'beginner' | 'intermediate' | 'advanced'
 }
 
@@ -39,10 +39,13 @@ export default function QuizSelectionPage() {
     async function fetchData() {
       if (!user) return
       try {
-        // Fetch topics
-        const q = query(collection(db, 'lessons'), orderBy('order', 'asc'))
+        // Fetch topics that have quiz data available
+        const q = collectionGroup(db, 'topics')
         const snap = await getDocs(q)
-        const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as Topic))
+        const docs = snap.docs
+           .map(doc => ({ id: doc.id, ...doc.data() } as unknown as Topic))
+           .filter(topic => topic.quiz && topic.quiz.length > 0)
+           
         setTopics(docs)
 
         // Fetch due questions from Spaced Repetition
@@ -153,7 +156,7 @@ export default function QuizSelectionPage() {
               </div>
               
               <h3 className="text-xl font-bold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors">{item.title}</h3>
-              <p className="text-sm font-medium text-slate-500 mb-6">{item.quizData?.length || 0} ta mavjud savol</p>
+              <p className="text-sm font-medium text-slate-500 mb-6">{item.quiz?.length || 0} ta mavjud savol</p>
 
               <div className="mt-auto border-t border-slate-100 pt-5 flex items-center justify-between">
                 <div className="flex -space-x-2">
@@ -207,7 +210,7 @@ export default function QuizSelectionPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-700">{selectedTopic.title}</h4>
-                    <p className="text-xs text-slate-500 font-medium">Ushbu bobdan {selectedTopic.quizData?.length} ta savol mavjud</p>
+                    <p className="text-xs text-slate-500 font-medium">Ushbu bobdan {selectedTopic.quiz?.length} ta savol mavjud</p>
                   </div>
                 </div>
 
