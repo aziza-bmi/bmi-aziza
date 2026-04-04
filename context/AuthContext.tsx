@@ -18,6 +18,7 @@ interface UserData {
   level: number
   xp: number
   streak: number
+  role: 'student' | 'admin'
 }
 
 interface AuthContextType {
@@ -43,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         const token = await firebaseUser.getIdToken()
         document.cookie = `firebase-auth-token=${token}; path=/; max-age=86400` // 1 kunga saqlash
-        
+
         const userRef = doc(db, 'users', firebaseUser.uid)
         const userSnap = await getDoc(userRef)
         if (userSnap.exists()) {

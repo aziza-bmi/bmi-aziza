@@ -75,12 +75,12 @@ export default function ActiveQuizPage() {
     const xp = await saveQuizResult(
       user.uid,
       t,
-      finalPercentage,
       correct,
       total,
-      timeTaken
+      timeTaken,
+      {}
     )
-    setXpEarned(xp || 0)
+    setXpEarned(xp.xpEarned || 0)
     setQuizFinished(true)
   }
 

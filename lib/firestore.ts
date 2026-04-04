@@ -18,6 +18,7 @@ export interface UserDocument {
   totalLessonsCompleted: number
   totalQuizzesTaken: number
   averageQuizScore: number
+  role: 'student' | 'admin'
   createdAt: Timestamp
   lastActiveAt: Timestamp
 }
@@ -51,6 +52,25 @@ export interface QuizResultDocument {
   timeTaken: number            // seconds
   xpEarned: number
   completedAt: Timestamp
+}
+
+export interface QuizQuestion {
+  id: string
+  text: string
+  options: string[]
+  correctIndex: number
+  explanation: string
+  difficulty: 'easy' | 'medium' | 'hard'
+  chapterId: string
+  createdAt: Timestamp
+}
+
+export interface UserQuestionState {
+  userId: string
+  questionId: string
+  status: 'correct' | 'incorrect'
+  totalAttempts: number
+  lastAttemptAt: Timestamp
 }
 
 export interface ChatDocument {
@@ -142,34 +162,53 @@ export async function completeLesson(uid: string, lessonId: string, xpReward: nu
 // Save quiz result
 export async function saveQuizResult(
   uid: string,
-  topic: string,
-  score: number,
-  correct: number,
-  total: number,
-  timeTaken: number
+  topicId: string,
+  score: number, // correct count
+  total: number, // total questions
+  timeTaken: number, // seconds
+  config: any
 ) {
-  const xpEarned = Math.round((score / 100) * 50)
+  const percentage = Math.round((score / total) * 100)
+  
+  // Calculate XP reward
+  let xpEarned = 0
+  if (percentage === 100) xpEarned = 50
+  else if (percentage >= 80) xpEarned = 35
+  else if (percentage >= 60) xpEarned = 20
+  else if (percentage >= 40) xpEarned = 10
 
+  // Record detailed attempt
   await addDoc(collection(db, 'quizResults'), {
     userId: uid,
-    topic,
-    score,
-    correctAnswers: correct,
+    topicId,
+    score: percentage,
+    correctAnswers: score,
     totalQuestions: total,
     timeTaken,
     xpEarned,
+    config,
     completedAt: serverTimestamp(),
   })
 
-  await updateDoc(doc(db, 'users', uid), {
+  // Update user statistics
+  const userRef = doc(db, 'users', uid)
+  await updateDoc(userRef, {
     totalQuizzesTaken: increment(1),
+    [`stats.totalCorrectAnswers`]: increment(score),
+    [`stats.totalQuestionsSeen`]: increment(total),
     lastActiveAt: serverTimestamp(),
   })
 
-  await addXP(uid, xpEarned)
+  // Add XP and handle level up
+  const xpResult = await addXP(uid, xpEarned)
   await updateStreak(uid)
 
-  return xpEarned
+  return { 
+    xpEarned, 
+    percentage, 
+    leveledUp: xpResult?.leveledUp || false,
+    newLevel: xpResult?.newLevel || 1
+  }
 }
 
 // Get user progress for all lessons
