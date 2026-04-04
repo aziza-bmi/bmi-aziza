@@ -559,12 +559,13 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                               </button>
                               {expandedChapter===ch.id && ch.topics?.map((t:any) => {
                                 const topicKey = t.id?.split('-').slice(-1)[0] || t.id
-                                const hasDetail = !!THEORY_DATA[topicKey] || !!THEORY_DATA[t.id]
+                                const hasDetail = true // All Firestore items have content
                                 return (
                                 <div key={t.id} className="border-t border-slate-100 dark:border-slate-700/30 flex items-center">
-                                  <button onClick={()=>hasDetail?setSelectedTopicId(THEORY_DATA[t.id]?t.id:topicKey):null}
-                                    className={`flex-1 text-left px-4 py-2 text-xs transition-colors ${ hasDetail ? 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer' : 'text-slate-500 dark:text-slate-400 cursor-default'}`}>
-                                    {t.title}
+                                  <button onClick={()=>setSelectedTopicId(THEORY_DATA[t.id]?t.id:topicKey)}
+                                    className="flex-1 flex justify-between items-center px-4 py-2 text-xs transition-colors text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer">
+                                    <span>{t.title}</span>
+                                    <ChevronRight size={13} className="opacity-50"/>
                                   </button>
                                   <button onClick={()=>{setAiMode('quiz');setRightPanelOpen(true);sendAIMessage(`Menga "${t.title}" mavzusidan masala bering.`, 'quiz');}} title="AI masala" className="px-3 py-2.5 text-slate-300 hover:text-indigo-500 transition-colors border-l border-slate-100 dark:border-slate-700/30">
                                     <Target size={13}/>
@@ -581,12 +582,12 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                   // Flat topic fallback
                   const topicKey = sec.id?.split('-').slice(-1)[0] || sec.id
                   const detailKey = Object.keys(THEORY_DATA).find(k=>THEORY_DATA[k].title===sec.title) || (THEORY_DATA[sec.id] ? sec.id : topicKey)
-                  const hasDetail = !!THEORY_DATA[detailKey]
                   return (
                     <div key={sec.id} className="border border-slate-200 dark:border-slate-700/40 rounded-xl mb-1 flex items-center overflow-hidden bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                      <button onClick={()=>hasDetail ? setSelectedTopicId(detailKey) : null}
-                        className={`flex-1 text-left px-3 py-2.5 text-xs font-semibold transition-colors ${ hasDetail ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-200 cursor-default'}`}>
-                        {sec.title}
+                      <button onClick={()=>setSelectedTopicId(detailKey)}
+                        className="flex-1 flex justify-between items-center px-3 py-2.5 text-xs font-semibold transition-colors text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer">
+                        <span>{sec.title}</span>
+                        <ChevronRight size={13} className="opacity-50"/>
                       </button>
                       <button onClick={()=>{setAiMode('quiz');setRightPanelOpen(true);sendAIMessage(`Menga "${sec.title}" mavzusidan masala bering.`, 'quiz');}} title="AI masala" className="px-3 py-2.5 text-slate-300 hover:text-indigo-500 transition-colors border-l border-slate-100 dark:border-slate-700/30">
                         <Target size={14}/>

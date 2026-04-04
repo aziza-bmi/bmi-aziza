@@ -142,8 +142,13 @@ export function drawShapeFn(ctx: CanvasRenderingContext2D, shape: Shape, selecte
     const midX=(p[0].x+p[1].x)/2
     ctx.beginPath(); ctx.moveTo(midX,p[0].y); ctx.lineTo(p[1].x,p[1].y); ctx.lineTo(p[0].x,p[1].y); ctx.closePath(); ctx.fill(); ctx.stroke()
     if (selected) { ctx.fillStyle=shape.color; ctx.font=`bold ${12/zoom}px Inter`; ctx.fillText('A',midX-4/zoom,p[0].y-8/zoom); ctx.fillText('B',p[1].x+4/zoom,p[1].y+4/zoom); ctx.fillText('C',p[0].x-14/zoom,p[1].y+4/zoom) }
-    const aText = shape.labels?.a || Math.round(Math.sqrt((p[1].x-p[0].x)**2)/10) + ' sm'
-    if(p[1].x-p[0].x>20) drawLabel(aText.toString(), midX, p[1].y + 14/zoom)
+    
+    if (p[1].x-p[0].x>20) {
+      const aText = shape.labels?.a || Math.round(Math.sqrt((p[1].x-p[0].x)**2)/10) + ' sm'
+      drawLabel(aText.toString(), midX, p[1].y + 14/zoom)
+      if (shape.labels?.b) drawLabel(shape.labels.b.toString(), (p[1].x + midX)/2 + 16/zoom, (p[1].y + p[0].y)/2)
+      if (shape.labels?.c) drawLabel(shape.labels.c.toString(), (p[0].x + midX)/2 - 16/zoom, (p[1].y + p[0].y)/2)
+    }
   } else if (shape.type === 'line' && p.length >= 2) {
     ctx.beginPath(); ctx.moveTo(p[0].x,p[0].y); ctx.lineTo(p[1].x,p[1].y); ctx.stroke()
     const lenText = shape.labels?.length || Math.round(Math.sqrt((p[1].x-p[0].x)**2 + (p[1].y-p[0].y)**2)/10) + ' sm'
@@ -186,6 +191,17 @@ export function draw3DShape(
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
 
+  const drawLabel = (text: string, lx: number, ly: number) => {
+    ctx.save()
+    ctx.fillStyle = isDark ? '#F1F5F9' : '#1E293B'
+    ctx.font = `bold ${11/zoom}px Inter`
+    ctx.textAlign = 'center'
+    ctx.shadowColor = isDark ? '#0f172a' : '#ffffff'
+    ctx.shadowBlur = 4 / zoom
+    ctx.fillText(text, lx, ly)
+    ctx.restore()
+  }
+
   if (shape.type === 'cube') {
     // Front face
     ctx.beginPath()
@@ -210,10 +226,10 @@ export function draw3DShape(
     ctx.fillStyle = color + '18'
     ctx.fill(); ctx.stroke()
     // Labels
-    if (selected) {
-      ctx.fillStyle = color
-      ctx.font = `bold ${11/zoom}px Inter`
-      ctx.fillText('a', x + (w-depth)/2 - 4/zoom, y + h - depth/2 + 16/zoom)
+    const aText = shape.labels?.a || shape.labels?.width || 'a'
+    drawLabel(aText.toString(), x + (w-depth)/2, y + h - depth/2 + 16/zoom)
+    if (shape.labels?.depth || shape.labels?.c) {
+      drawLabel((shape.labels.depth || shape.labels.c).toString(), x + w - depth/2 + 16/zoom, y + h - depth/4)
     }
   }
 
@@ -248,6 +264,14 @@ export function draw3DShape(
     ctx.moveTo(x + w - depth, y + h)
     ctx.lineTo(x + w, y + h - depth/2)
     ctx.stroke()
+    // Labels
+    const wText = shape.labels?.width || shape.labels?.a || 'a'
+    const hText = shape.labels?.height || shape.labels?.b || 'b'
+    drawLabel(wText.toString(), x + (w-depth)/2, y + h + 16/zoom)
+    drawLabel(hText.toString(), x - 16/zoom, y + h/2 + depth/4)
+    if (shape.labels?.depth || shape.labels?.c) {
+      drawLabel((shape.labels.depth || shape.labels.c).toString(), x + w - depth/2 + 16/zoom, y + h - depth/4)
+    }
   }
 
   else if (shape.type === 'pyramid') {
