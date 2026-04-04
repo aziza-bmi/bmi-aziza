@@ -7,5 +7,5 @@ export interface Shape {
   strokeWidth: number; fillOpacity: number; sides?: number
   labels?: Record<string, string | number>
 }
-export interface AIMessage { role: 'user' | 'assistant'; content: string }
+export interface AIMessage { role: 'user' | 'assistant'; content: string; isQuiz?: boolean }
 export type AIMode = 'ask' | 'draw' | 'quiz'

@@ -324,7 +324,7 @@ export default function GeoLabPage() {
 
   function getCanvasSummary():string{if(shapes.length===0)return"Canvas bo'sh.";return shapes.map((s,i)=>{const info=calcShapeInfo(s);return`${i+1}. ${s.type} (${Object.entries(info).map(([k,v])=>`${k}:${v}`).join(', ')})`}).join('\n')}
 
-  function executeDrawCommand(cmd:any){
+  function executeDrawCommand(cmd:any, clearCanvas: boolean = false){
     const c=canvasRef.current;if(!c)return;
     const cx=c.width/2 - pan.x/zoom, cy=c.height/2 - pan.y/zoom, sc=10;
     let ns:Shape|null=null
@@ -337,14 +337,22 @@ export default function GeoLabPage() {
     else if(cmd.type==='polygon'){const r=(cmd.radius||6)*sc;ns={id:Date.now().toString(),type:'polygon',points:[{x:cx,y:cy},{x:cx+r,y:cy}],color,strokeWidth:2,fillOpacity:0.08,sides:cmd.sides||6,labels:cmd.labels}}
     else if(cmd.type==='line'){const l=(cmd.length||10)*sc;ns={id:Date.now().toString(),type:'line',points:[{x:cx-l/2,y:cy},{x:cx+l/2,y:cy}],color,strokeWidth:2,fillOpacity:0.08,labels:cmd.labels}}
     // 3D Shapes
-    else if(cmd.type==='cube'){const a=(cmd.a||5)*sc;ns={id:Date.now().toString(),type:'cube',points:[{x:cx-a/2,y:cy-a/2},{x:cx+a/2,y:cy+a/2}],color,strokeWidth:2,fillOpacity:0.08}}
-    else if(cmd.type==='prism'){const w=(cmd.width||6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'prism',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08}}
-    else if(cmd.type==='pyramid'){const w=(cmd.width||6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'pyramid',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08}}
-    else if(cmd.type==='cylinder'){const w=(cmd.radius?cmd.radius*2:6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'cylinder',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08}}
-    else if(cmd.type==='cone'){const w=(cmd.radius?cmd.radius*2:6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'cone',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08}}
-    else if(cmd.type==='sphere'){const r=(cmd.radius||5)*sc;ns={id:Date.now().toString(),type:'sphere',points:[{x:cx-r,y:cy-r},{x:cx+r,y:cy+r}],color,strokeWidth:2,fillOpacity:0.08}}
+    else if(cmd.type==='cube'){const a=(cmd.a||5)*sc;ns={id:Date.now().toString(),type:'cube',points:[{x:cx-a/2,y:cy-a/2},{x:cx+a/2,y:cy+a/2}],color,strokeWidth:2,fillOpacity:0.08,labels:cmd.labels}}
+    else if(cmd.type==='prism'){const w=(cmd.width||6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'prism',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08,labels:cmd.labels}}
+    else if(cmd.type==='pyramid'){const w=(cmd.width||6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'pyramid',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08,labels:cmd.labels}}
+    else if(cmd.type==='cylinder'){const w=(cmd.radius?cmd.radius*2:6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'cylinder',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08,labels:cmd.labels}}
+    else if(cmd.type==='cone'){const w=(cmd.radius?cmd.radius*2:6)*sc,h=(cmd.height||8)*sc;ns={id:Date.now().toString(),type:'cone',points:[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2}],color,strokeWidth:2,fillOpacity:0.08,labels:cmd.labels}}
+    else if(cmd.type==='sphere'){const r=(cmd.radius||5)*sc;ns={id:Date.now().toString(),type:'sphere',points:[{x:cx-r,y:cy-r},{x:cx+r,y:cy+r}],color,strokeWidth:2,fillOpacity:0.08,labels:cmd.labels}}
     
-    if(ns){pushHistory([...shapes,ns]);setSelectedShape(ns)}
+    if(ns){
+      if(clearCanvas) {
+        setShapes([ns])
+        pushHistory([ns])
+      } else {
+        pushHistory([...shapes,ns])
+      }
+      setSelectedShape(ns)
+    }
   }
 
   function handleLabelEdit(dimension: string, val: string) {
@@ -402,23 +410,26 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
       if (m) {
         jsonStr = m[1];
       } else {
-        const rawMatch = aiText.match(/\{[\s\S]*"type"[\s\S]*"color"[\s\S]*\}/i);
+        const rawMatch = aiText.match(/\{[\s\S]*"type"\s*:\s*"[^"]+"[\s\S]*\}/i);
         if (rawMatch) jsonStr = rawMatch[0];
       }
       
+      const isQuizMode = currentMode==='quiz' || (currentMode==='ask' && !!jsonStr);
+      
       if(jsonStr) {
-        try { executeDrawCommand(JSON.parse(jsonStr)) } catch(e) { console.error(e) }
+        try { executeDrawCommand(JSON.parse(jsonStr), isQuizMode) } catch(e) { console.error(e) }
       }
       
       let cleanText = aiText.replace(/```json[\s\S]*?```/gi, '').replace(/```[\s\S]*?```/gi, '');
       if (!m && jsonStr) cleanText = cleanText.replace(jsonStr, '');
       cleanText = cleanText.replace(/Chizma uchun (JSON)?(kodi)?:?\n?/gi, '').trim()
       
-      if(currentMode==='quiz' || currentMode==='ask' && jsonStr) {
+      if(isQuizMode) {
         setAiMode('quiz');
         setAiQuizContent(cleanText);
       }
-      setAiMessages(p=>[...p,{role:'assistant',content:cleanText}])
+      
+      setAiMessages(p=>[...p,{role:'assistant',content:cleanText, isQuiz: isQuizMode}])
     }catch{setAiMessages(p=>[...p,{role:'assistant',content:'Xatolik yuz berdi.'}])}finally{setAiLoading(false)}
   }
 
@@ -756,7 +767,7 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                 </div>
               </div>
             )}
-            {aiMessages.map((msg,i)=>(<div key={i} className={`flex gap-2 ${msg.role==='user'?'flex-row-reverse':''}`}>
+            {aiMessages.filter(m => !m.isQuiz).map((msg,i)=>(<div key={i} className={`flex gap-2 ${msg.role==='user'?'flex-row-reverse':''}`}>
               {msg.role==='assistant'&&(<div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">AI</div>)}
               <div className={`max-w-[85%] rounded-2xl px-3 py-2.5 text-xs leading-relaxed ${msg.role==='assistant'?'bg-indigo-50 dark:bg-indigo-900/20 text-slate-800 dark:text-slate-100 rounded-tl-sm':'bg-gradient-to-br from-indigo-500 to-blue-500 text-white rounded-tr-sm break-words'}`}>
                 {msg.role==='assistant'?(<ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} components={{p:({children})=>(<p className="mb-1.5 last:mb-0">{children}</p>),strong:({children})=>(<strong className="font-semibold text-indigo-700 dark:text-indigo-300">{children}</strong>),li:({children})=>(<li className="flex items-start gap-1.5"><span className="w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0 mt-1.5"/><span>{children}</span></li>),ul:({children})=>(<ul className="space-y-0.5 my-1">{children}</ul>)}}>{msg.content}</ReactMarkdown>):msg.content}
