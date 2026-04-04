@@ -2,7 +2,7 @@ import {
   doc, getDoc, setDoc, updateDoc, addDoc,
   collection, query, where, orderBy, limit,
   getDocs, onSnapshot, increment, serverTimestamp,
-  Timestamp
+  Timestamp, getCountFromServer
 } from 'firebase/firestore'
 import { db } from './firebase'
 
@@ -234,18 +234,28 @@ export async function getUserQuizResults(uid: string) {
   return snap.docs.map(d => d.data())
 }
 
-// Get leaderboard (top 10 users by XP)
-export async function getLeaderboard() {
+// Get leaderboard (top users by XP)
+export async function getLeaderboard(limitCount = 10) {
   const q = query(
     collection(db, 'users'),
     orderBy('xp', 'desc'),
-    limit(10)
+    limit(limitCount)
   )
   const snap = await getDocs(q)
   return snap.docs.map((d, i) => ({
     rank: i + 1,
     ...d.data() as UserDocument
   }))
+}
+
+// Get user rank based on XP (Counts how many users have more XP)
+export async function getUserRank(xp: number): Promise<number> {
+  const q = query(
+    collection(db, 'users'),
+    where('xp', '>', xp)
+  )
+  const snapshot = await getCountFromServer(q)
+  return snapshot.data().count + 1 
 }
 
 // Get topic progress percentages

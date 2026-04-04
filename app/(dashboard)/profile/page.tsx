@@ -2,8 +2,10 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
-import { getUserProgress, getUserQuizResults, subscribeToUserData } from '@/lib/firestore'
-import { Mail, Calendar, Edit3, BookOpen, Star, Flame, BarChart3, Trophy } from 'lucide-react'
+import { getUserProgress, getUserQuizResults, subscribeToUserData, getUserRank } from '@/lib/firestore'
+import { Mail, Calendar, Edit3, BookOpen, Star, Flame, BarChart3, Trophy, ChevronRight } from 'lucide-react'
+
+import Link from 'next/link'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -11,6 +13,7 @@ export default function ProfilePage() {
   const [completedLessons, setCompletedLessons] = useState(0)
   const [quizResults, setQuizResults] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentRank, setCurrentRank] = useState<number | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -20,18 +23,36 @@ export default function ProfilePage() {
     })
 
     async function loadStats() {
-      const [progress, quizzes] = await Promise.all([
-        getUserProgress(user!.uid),
-        getUserQuizResults(user!.uid),
-      ])
-      setCompletedLessons(progress.length)
-      setQuizResults(quizzes)
-      setLoading(false)
+      try {
+        const [progress, quizzes] = await Promise.all([
+          getUserProgress(user!.uid).catch(() => []),
+          getUserQuizResults(user!.uid).catch(() => []),
+        ])
+        setCompletedLessons(progress?.length || 0)
+        setQuizResults(quizzes || [])
+      } catch (error) {
+        console.error("Stats yuklashda xatolik:", error)
+        setCompletedLessons(0)
+        setQuizResults([])
+      } finally {
+        setLoading(false)
+      }
     }
 
     loadStats()
     return () => unsubscribe()
   }, [user])
+
+  useEffect(() => {
+    if (userData?.xp !== undefined) {
+      getUserRank(userData.xp)
+        .then(rank => setCurrentRank(rank))
+        .catch(err => {
+           console.error("Reytingni yuklashda xatolik:", err)
+           setCurrentRank(null)
+        })
+    }
+  }, [userData?.xp])
 
   const avgScore = quizResults.length > 0
     ? Math.round(quizResults.reduce((a, b) => a + b.score, 0) / quizResults.length)
@@ -114,6 +135,25 @@ export default function ProfilePage() {
           <Edit3 size={14} />
           Tahrirlash
         </button>
+      </div>
+
+      {/* Current Standing Slider/Widget */}
+      <div className="glass-card dark:bg-slate-800/60 dark:border-slate-700/40 p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl text-indigo-600 dark:text-indigo-400">
+            <Trophy size={24} />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-slate-800 dark:text-slate-100">Reytingdagi o&apos;rningiz</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {currentRank !== null ? `Umumiy ro'yxatda #${currentRank}-o'rinda` : "Hisoblanmoqda..."}
+            </p>
+          </div>
+        </div>
+        <Link href="/leaderboard" className="btn-gradient px-4 py-2.5 flex items-center justify-center gap-2 rounded-xl font-medium w-full sm:w-auto whitespace-nowrap text-sm shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.4)] transition-shadow">
+          To&apos;liq reyting
+          <ChevronRight size={16} />
+        </Link>
       </div>
 
       {/* Stats */}

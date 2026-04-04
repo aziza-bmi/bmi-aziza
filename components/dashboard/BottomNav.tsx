@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, MessageCircle,
-  BookOpen, FlaskConical, PenTool
+  BookOpen, FlaskConical, PenTool, Trophy
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: '/chat',      icon: MessageCircle,   label: 'AI' },
   { href: '/lessons',   icon: BookOpen,        label: 'Darslar' },
   { href: '/quiz',      icon: FlaskConical,    label: 'Test' },
+  { href: '/leaderboard',icon: Trophy,         label: 'Reyting' },
   { href: '/canvas',    icon: PenTool,         label: 'Chizma' },
 ]
 

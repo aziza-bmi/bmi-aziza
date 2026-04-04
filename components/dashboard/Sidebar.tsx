@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, BookOpen, MessageSquare, Award, Settings, LogOut, PenTool, User, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { LayoutDashboard, BookOpen, MessageSquare, Award, Settings, LogOut, PenTool, User, PanelLeftClose, PanelLeftOpen, Trophy } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { logout } from '@/lib/auth'
 import ThemeToggle from '@/components/shared/ThemeToggle'
@@ -19,6 +19,7 @@ export default function Sidebar() {
     { name: 'Darslar', href: '/lessons', icon: BookOpen },
     { name: 'AI Muallim', href: '/chat', icon: MessageSquare },
     { name: 'Testlar', href: '/quiz', icon: Award },
+    { name: 'Reyting', href: '/leaderboard', icon: Trophy },
     { name: 'Chizuvchi', href: '/canvas', icon: PenTool },
     { name: 'Profil', href: '/profile', icon: User },
     { name: 'Sozlamalar', href: '/settings', icon: Settings },

@@ -49,12 +49,38 @@ export default function QuizTaker({ topicId, config }: QuizTakerProps) {
         const response = await fetch(`/api/lessons/${topicId}`)
         const data = await response.json()
         
-        if (data.quizData) {
+        let quizPool = data.quizData || []
+
+        // Agar DB da tayyor savollar bo'lmasa, uni AI orqali yozib olamiz
+        if (quizPool.length === 0 && data.content) {
+            const aiResponse = await fetch('/api/generate-quiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                   content: data.content, 
+                   topic: data.title || topicId, 
+                   count: Math.max(config.count, 10) 
+                })
+            })
+            const aiData = await aiResponse.json()
+            if (aiData.questions && Array.isArray(aiData.questions)) {
+                quizPool = aiData.questions.map((q: any) => ({
+                    ...q,
+                    id: Math.random().toString(36).substr(2, 9),
+                    difficulty: config.difficulty // AI tushuntirgan darajasi bo'lmasa, user so'ragan daraja qo'yiladi
+                }))
+                
+                // Opsional: Buni DB ga Firebase orqali saqlashimiz mumkin edi, 
+                // lekin vaqtincha faqat joriy seansda ushlab turamiz.
+            }
+        }
+
+        if (quizPool.length > 0) {
           // Filter by difficulty and limit count
-          let filtered = data.quizData.filter((q: any) => q.difficulty === config.difficulty)
+          let filtered = quizPool.filter((q: any) => q.difficulty === config.difficulty)
           if (filtered.length < config.count) {
               // If not enough of specific difficulty, add others
-              const others = data.quizData.filter((q: any) => q.difficulty !== config.difficulty)
+              const others = quizPool.filter((q: any) => q.difficulty !== config.difficulty)
               filtered = [...filtered, ...others].slice(0, config.count)
           } else {
               filtered = filtered.slice(0, config.count)
@@ -62,6 +88,8 @@ export default function QuizTaker({ topicId, config }: QuizTakerProps) {
 
           // Shuffle questions
           setQuestions(filtered.sort(() => Math.random() - 0.5))
+        } else {
+          setQuestions([])
         }
       } catch (err) {
         console.error('Error loading quiz:', err)

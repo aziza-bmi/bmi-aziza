@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Star, Clock, List, X, Play, BrainCircuit } from 'lucide-react'
-import { collection, query, getDocs, where, Timestamp } from 'firebase/firestore'
+import { collection, query, getDocs, where, Timestamp, orderBy } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { getDueQuestions } from '@/lib/db/repetition'
@@ -40,9 +40,9 @@ export default function QuizSelectionPage() {
       if (!user) return
       try {
         // Fetch topics
-        const q = query(collection(db, 'lessons'), where('quizData', '!=', null))
+        const q = query(collection(db, 'lessons'), orderBy('order', 'asc'))
         const snap = await getDocs(q)
-        const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Topic))
+        const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as Topic))
         setTopics(docs)
 
         // Fetch due questions from Spaced Repetition
