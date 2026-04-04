@@ -459,30 +459,43 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
             {leftTab==='theory'&&(<div className="space-y-2">
               {/* If a topic is selected, show detail card */}
               {selectedTopicId ? (() => {
+                // 1. Check static THEORY_DATA first
                 let theoryEntry: any = THEORY_DATA[selectedTopicId] || Object.values(THEORY_DATA).find((t:any) => t.title === selectedTopicId);
-                let customContent = null;
-                
+                let customContent: string | null = null;
+
+                // 2. If not found, deep-search in theorySections
                 if (!theoryEntry) {
-                   let found = theorySections.find(s => s.id === selectedTopicId);
-                   if (!found) {
-                     for (const sec of theorySections) {
-                       if (sec.topics) {
-                         const t = sec.topics.find((x:any) => x.id === selectedTopicId);
-                         if (t) { found = t; break; }
-                       }
-                     }
-                   }
-                   if (found) {
-                      if (found.content) customContent = found.content;
-                      theoryEntry = {
-                         title: found.title,
-                         definition: found.description || found.content || '',
-                         formula: found.formula || '',
-                         properties: found.properties || [],
-                         example: found.examples ? found.examples.join('\\n') : ''
+                  let found: any = null;
+                  for (const sec of theorySections) {
+                    if (sec.id === selectedTopicId) { found = sec; break; }
+                    if (sec.chapters) {
+                      for (const ch of sec.chapters) {
+                        if (ch.id === selectedTopicId) { found = ch; break; }
+                        if (ch.topics) {
+                          const t = ch.topics.find((x:any) => x.id === selectedTopicId);
+                          if (t) { found = t; break; }
+                        }
                       }
-                   }
+                    }
+                    if (sec.topics) {
+                      const t = sec.topics.find((x:any) => x.id === selectedTopicId);
+                      if (t) { found = t; break; }
+                    }
+                    if (found) break;
+                  }
+                  if (found) {
+                    customContent = found.content || null;
+                    theoryEntry = {
+                      title: found.title || selectedTopicId,
+                      definition: found.description || (!found.content ? found.content : '') || '',
+                      formula: found.formula || '',
+                      properties: found.properties || [],
+                      example: found.examples ? found.examples.join('\n') : '',
+                    };
+                  }
                 }
+
+                const topicTitle = theoryEntry?.title || selectedTopicId;
 
                 return theoryEntry ? (
                   <div className="space-y-3">
@@ -525,14 +538,14 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                     )}
                     <div className="flex gap-2">
                       <button onClick={()=>{const ls=LIBRARY_SHAPES.find(s=>s.type===selectedTopicId);if(ls)addLibraryShape(ls)}} className="flex-1 btn-gradient py-2 rounded-xl text-xs font-medium">Canvas →</button>
-                      <button onClick={()=>{setAiInput(`"${theoryEntry.title}" mavzusini tahlil qilib ber`);setAiMode('ask');setRightPanelOpen(true);sendAIMessage(`"${theoryEntry.title}" mavzusini tahlil qilib ber`, 'ask')}} className="flex-1 py-2 rounded-xl text-xs font-medium border border-indigo-300 dark:border-indigo-700 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors">AI tahlil</button>
+                      <button onClick={()=>{setAiMode('ask');setRightPanelOpen(true);sendAIMessage(`"${topicTitle}" mavzusini tahlil qilib ber`, 'ask')}} className="flex-1 py-2 rounded-xl text-xs font-medium border border-indigo-300 dark:border-indigo-700 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors">AI tahlil</button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <button onClick={()=>setSelectedTopicId(null)} className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 mb-2"><ChevronLeft size={14}/>Orqaga</button>
-                    <p className="text-xs text-slate-400">Ma&apos;lumot topilmadi</p>
-                    <button onClick={()=>{setAiMode('quiz');setRightPanelOpen(true);sendAIMessage(`Menga "${selectedTopicId}" mavzusidan masala bering.`, 'quiz');}} className="w-full btn-gradient py-2 rounded-xl text-xs font-medium">AI masala so&apos;ra</button>
+                    <p className="text-xs text-slate-500 bg-slate-50 dark:bg-slate-800 rounded-xl p-3">Bu mavzu haqida ma&apos;lumot baza ichiga qo&apos;shilmagan. AI dan so&apos;rang.</p>
+                    <button onClick={()=>{setAiMode('ask');setRightPanelOpen(true);sendAIMessage(`"${selectedTopicId}" mavzusini tushuntir`, 'ask');}} className="w-full btn-gradient py-2 rounded-xl text-xs font-medium">AI tahlil so&apos;ra</button>
                   </div>
                 )
               })() : (
