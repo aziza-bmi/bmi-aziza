@@ -95,3 +95,15 @@ export async function getDueQuestions(userId: string) {
   const snap = await getDocs(q)
   return snap.docs.map(doc => doc.data() as QuestionState)
 }
+
+/** Returns only the due questions for a specific topic — used in review mode */
+export async function getDueQuestionsByTopic(userId: string, topicId: string) {
+  const q = query(
+    collection(db, 'userQuestionStates'),
+    where('userId', '==', userId),
+    where('topicId', '==', topicId),
+    where('nextReviewAt', '<=', Timestamp.now())
+  )
+  const snap = await getDocs(q)
+  return snap.docs.map(doc => doc.data() as QuestionState)
+}

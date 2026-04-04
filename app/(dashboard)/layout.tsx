@@ -40,9 +40,9 @@ export default function DashboardLayout({
   const isCanvas = pathname === '/canvas'
 
   return (
-    <div className="flex min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <Sidebar />
-      <main className={`flex-1 flex flex-col ${!isCanvas ? 'min-h-screen pb-20 lg:pb-0 p-8 overflow-y-auto' : 'h-screen overflow-hidden'}`}>
+      <main className={`flex-1 flex flex-col ${!isCanvas ? 'overflow-y-auto pb-20 lg:pb-0 p-8' : 'overflow-hidden'}`}>
         <div className={`${!isCanvas ? 'max-w-6xl mx-auto w-full' : 'w-full h-full'}`}>
           {children}
         </div>

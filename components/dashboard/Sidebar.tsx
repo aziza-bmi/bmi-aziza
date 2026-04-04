@@ -31,7 +31,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className={`${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex-col h-screen sticky top-0 hidden lg:flex shrink-0`}>
+    <aside className={`${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex-col h-full hidden lg:flex shrink-0`}>
       <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
         {!isCollapsed && (
           <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500 overflow-hidden whitespace-nowrap">

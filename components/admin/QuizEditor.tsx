@@ -64,9 +64,12 @@ export default function QuizEditor({
     setIsSaving(true)
     try {
       const docRef = doc(db, 'sections', sectionId, 'chapters', chapterId, 'topics', topicId)
-      await updateDoc(docRef, {
-        quiz: questions
-      })
+      // Stamp a stable `id` field so spaced repetition can reference questions reliably
+      const questionsWithIds = questions.map((q, idx) => ({
+        ...q,
+        id: (q as any).id || `${topicId}_q${idx}`,
+      }))
+      await updateDoc(docRef, { quiz: questionsWithIds })
       alert('Testlar muvaffaqiyatli saqlandi!')
     } catch (err) {
       console.error('Save failed:', err)
