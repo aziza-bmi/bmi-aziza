@@ -1,45 +1,16 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const protectedRoutes = [
-  '/dashboard',
-  '/chat',
-  '/lessons',
-  '/quiz',
-  '/canvas',
-  '/profile',
-  '/settings',
-]
-
+// Middleware tahrirlandi: Firebase Client Auth bilan cookie sinxronizatsiyasi
+// ba'zan server yuborgan so'rovlarda uzulib qoladi (masalan, dynamic route fetch'larda).
+// Shuning uchun himoyani to'g'ridan-to'g'ri app/(dashboard)/layout.tsx da 
+// Client Context orqali tekshirish eng ishonchli (bu allaqachon mantiqan sozlangan).
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
-  const isProtected = protectedRoutes.some(route =>
-    pathname.startsWith(route)
-  )
-
-  if (isProtected) {
-    const token = request.cookies.get('__session') ||
-                  request.cookies.get('firebase-auth-token')
-    
-    if (!token) {
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(loginUrl)
-    }
-  }
-
   return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/chat/:path*',
-    '/lessons/:path*',
-    '/quiz/:path*',
-    '/canvas/:path*',
-    '/profile/:path*',
-    '/settings/:path*',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
