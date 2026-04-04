@@ -403,7 +403,7 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
  Canvas: ${summary}`
 
       const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:userMsg,history:aiMessages.map(m=>({role:m.role,content:m.content})),systemPrompt:sp})})
-      const data=await res.json();let aiText=data.message||'Xatolik.'
+      const data=await res.json();let aiText=data.message || data.error || 'Noma\'lum xatolik API-da'
       
       let jsonStr = '';
       const m = aiText.match(/```json\s*([\s\S]*?)\s*```/i);
@@ -580,8 +580,7 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                   }
 
                   // Flat topic fallback
-                  const topicKey = sec.id?.split('-').slice(-1)[0] || sec.id
-                  const detailKey = Object.keys(THEORY_DATA).find(k=>THEORY_DATA[k].title===sec.title) || (THEORY_DATA[sec.id] ? sec.id : topicKey)
+                  const detailKey = Object.keys(THEORY_DATA).find(k=>THEORY_DATA[k].title===sec.title) || sec.id
                   return (
                     <div key={sec.id} className="border border-slate-200 dark:border-slate-700/40 rounded-xl mb-1 flex items-center overflow-hidden bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50">
                       <button onClick={()=>setSelectedTopicId(detailKey)}
@@ -626,7 +625,15 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                 </div>
               </div>
             )}
-            {leftTab==='layers'&&(<div className="space-y-2">{shapes.length===0?(<div className="text-center py-8"><Layers size={28} className="text-slate-300 mx-auto mb-2"/><p className="text-xs text-slate-400">Hali figura yo&apos;q</p></div>):shapes.map((s,i)=>(<div key={s.id} onClick={()=>setSelectedShape(selectedShape?.id===s.id?null:s)} className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer border transition-all ${selectedShape?.id===s.id?'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700':'border-slate-200 dark:border-slate-700/40 hover:bg-slate-50 dark:hover:bg-slate-800'}`}><div className="w-5 h-5 rounded flex-shrink-0" style={{background:s.color}}/><span className="text-xs text-slate-700 dark:text-slate-200 flex-1 capitalize">{i+1}. {s.type}</span><button onClick={e=>{e.stopPropagation();pushHistory(shapes.filter(sh=>sh.id!==s.id));if(selectedShape?.id===s.id)setSelectedShape(null)}} className="text-slate-300 hover:text-red-400 transition-colors"><X size={14}/></button></div>))}</div>)}
+            {leftTab==='layers'&&(<div className="space-y-2">{shapes.length===0?(<div className="text-center py-8"><Layers size={28} className="text-slate-300 mx-auto mb-2"/><p className="text-xs text-slate-400">Hali figura yo&apos;q</p></div>):shapes.map((s,i)=>(<div key={s.id} onClick={()=>{
+              if(selectedShape?.id===s.id){setSelectedShape(null)}else{
+                setSelectedShape(s);
+                const c = canvasRef.current;
+                if(c && s.points.length > 0){
+                   setPan({ x: c.width/2 - s.points[0].x * zoom, y: c.height/2 - s.points[0].y * zoom });
+                }
+              }
+            }} className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer border transition-all ${selectedShape?.id===s.id?'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700':'border-slate-200 dark:border-slate-700/40 hover:bg-slate-50 dark:hover:bg-slate-800'}`}><div className="w-5 h-5 rounded flex-shrink-0" style={{background:s.color}}/><span className="text-xs text-slate-700 dark:text-slate-200 flex-1 capitalize">{i+1}. {s.type}</span><button onClick={e=>{e.stopPropagation();pushHistory(shapes.filter(sh=>sh.id!==s.id));if(selectedShape?.id===s.id)setSelectedShape(null)}} className="text-slate-300 hover:text-red-400 transition-colors"><X size={14}/></button></div>))}</div>)}
           </div>
           <div onMouseDown={()=>{isDraggingLeft.current=true}} className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-indigo-500/50 transition-colors z-50"/>
         </motion.div>)}
