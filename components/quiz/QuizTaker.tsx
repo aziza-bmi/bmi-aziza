@@ -118,23 +118,55 @@ export default function QuizTaker({
             return
           }
 
-          const dueIds = new Set(dueStates.map(s => s.questionId))
-          finalQuestions = allQuestions.filter(q => dueIds.has(q.id))
+          // In this updated flow, the generated question text is stored inside the state
+          const validDue = dueStates.filter(s => !!s.questionData)
+          if (validDue.length === 0) {
+            // Edge case: Old history doesn't have questionData saved, we can't show them!
+            setReviewEmpty(true)
+            setLoading(false)
+            return
+          }
 
-          // Fallback: if IDs didn't match (old data format) show all due
-          if (finalQuestions.length === 0) finalQuestions = shuffleArray(allQuestions).slice(0, dueStates.length)
+          finalQuestions = validDue.map(s => s.questionData!)
         } else {
-          // ── New mode: apply difficulty + count filters ─────────────────
-          let filtered = difficulty === 'all'
-            ? [...allQuestions]
-            : allQuestions.filter(q => q.difficulty === difficulty)
+          // ── New mode: dynamic AI generation on the fly ─────────────────
+          const lessonContent = data.content || data.chapterContent || ''
+          
+          if (!lessonContent) {
+            // Fallback to static if no content to generate from
+            let filtered = difficulty === 'all'
+              ? [...allQuestions]
+              : allQuestions.filter(q => q.difficulty === difficulty)
 
-          // If difficulty filter returned 0, fallback to all
-          if (filtered.length === 0) filtered = [...allQuestions]
-
-          // Shuffle then slice to requested count (0 = all)
-          const shuffled = shuffleArray(filtered)
-          finalQuestions  = count > 0 ? shuffled.slice(0, count) : shuffled
+            if (filtered.length === 0) filtered = [...allQuestions]
+            const shuffled = shuffleArray(filtered)
+            finalQuestions  = count > 0 ? shuffled.slice(0, count) : shuffled
+          } else {
+            // Make AI call to generate tests!
+            const genRes = await fetch('/api/generate-quiz', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                topic: data.title || topicId,
+                content: lessonContent,
+                count: count > 0 ? count : 10,
+                difficulty: difficulty !== 'all' ? difficulty : undefined
+              })
+            })
+            
+            if (!genRes.ok) throw new Error('AI generation failed')
+            const genData = await genRes.json()
+            const genQuestions = genData.questions || []
+            
+            finalQuestions = genQuestions.map((q: any, idx: number) => ({
+              id: `gen_${Date.now()}_${idx}`, // unique stable id for tracking
+              question: q.question || '',
+              options: q.options || [],
+              correctAnswer: q.correctAnswer ?? 0,
+              explanation: q.explanation || '',
+              difficulty: q.difficulty || 'medium',
+            }))
+          }
         }
 
         // Auto-calculate time: 90 seconds per question
@@ -190,7 +222,13 @@ export default function QuizTaker({
 
     // Update SM-2 state with stable question ID
     try {
-      await updateQuestionState(user.uid, questions[currentIndex].id, topicId, isCorrect)
+      await updateQuestionState(
+        user.uid, 
+        questions[currentIndex].id, 
+        topicId, 
+        isCorrect, 
+        questions[currentIndex] // pass the questionData
+      )
     } catch (err) {
       console.error('Error updating question state:', err)
     }

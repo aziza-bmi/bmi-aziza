@@ -11,6 +11,7 @@ export interface QuestionState {
   nextReviewAt: Timestamp
   interval: number // in days
   easeFactor: number
+  questionData?: any // Stores the generated question locally
 }
 
 /**
@@ -39,7 +40,8 @@ export async function updateQuestionState(
   userId: string,
   questionId: string,
   topicId: string,
-  isCorrect: boolean
+  isCorrect: boolean,
+  questionData?: any
 ) {
   const stateId = `${userId}_${questionId}`
   const stateRef = doc(db, 'userQuestionStates', stateId)
@@ -73,7 +75,7 @@ export async function updateQuestionState(
   const nextReviewDate = new Date()
   nextReviewDate.setDate(nextReviewDate.getDate() + interval)
 
-  const updateData = {
+  const updateData: any = {
     ...currentState,
     correctCount: increment(isCorrect ? 1 : 0),
     incorrectCount: increment(isCorrect ? 0 : 1),
@@ -81,6 +83,10 @@ export async function updateQuestionState(
     nextReviewAt: Timestamp.fromDate(nextReviewDate),
     interval: interval,
     easeFactor: ease
+  }
+
+  if (questionData) {
+    updateData.questionData = questionData
   }
 
   await setDoc(stateRef, updateData, { merge: true })
