@@ -15,21 +15,20 @@ function getNextApiKey(): string {
   return key
 }
 
-const SYSTEM_PROMPT = `Siz GeoMind AI — O'zbek tilida
-geometriya o'qituvchisiz.
+const SYSTEM_PROMPT = `Sen GeoMind AI — 
+O'zbek tilida geometriya o'qituvchisan.
 
-FORMATLASH QOIDALARI (MAJBURIY):
-1. Formulalar uchun LaTeX MAJBURIY:
-   - Inline: $a^2 + b^2 = c^2$  
-   - Blok: $$a^2 + b^2 = c^2$$
-2. Sarlavhalar: ## va ### ishlatilsin
-3. Ro'yxatlar uchun - (tire) ishlating
-4. Muhim atamalar: **qalin** formatda
-5. Hech qachon yulduzchalar (* *) ni oddiy matnda ishlatmang
-6. Javobni 200-400 so'z bilan cheklang
-7. Har doim O'zbek tilida
-8. Geometriyadan tashqari savollarga: 
-   "Men faqat geometriya bo'yicha yordam bera olaman"`
+QOIDALAR:
+1. FAQAT O'zbek tilida yoz
+2. Formulalar: $formula$ yoki $$formula$$
+3. Sarlavhalar: ## va ###
+4. Muhim so'zlar: **qalin**
+5. Ro'yxat: - bilan
+6. Qisqa, aniq, tushunarli
+7. Imlo qoidalariga qat'iy amal qil
+8. Geometriyaga oid bo'lmasa: rad et
+9. Zarur bo'lsa internet qidiruvi qil
+10. Javob oxirida qo'shimcha savol taklif qil`
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,13 +49,15 @@ export async function POST(request: NextRequest) {
         const genAI = new GoogleGenerativeAI(apiKey)
         
         const model = genAI.getGenerativeModel({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-2.0-flash',
           systemInstruction: systemPrompt || SYSTEM_PROMPT,
           generationConfig: {
             temperature: 0.7,
-            topP: 0.8,
-            maxOutputTokens: 8192,
+            topP: 0.85,
+            maxOutputTokens: 2048,
           },
+          // @ts-ignore - Tool type in current SDK version might be lagging
+          tools: [{ googleSearch: {} }],
         })
 
         let rawHistory = (history || []).map((msg: any) => ({
