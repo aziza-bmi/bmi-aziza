@@ -64,13 +64,37 @@ export default function QuizPage() {
       .finally(() => setPageLoading(false))
   }, [])
 
-  // ── Load due questions ──────────────────────────────────────────────────────
+  // ── Load due questions & Missing Topics ────────────────────────────────────
   useEffect(() => {
     if (!user) return
-    getDueQuestions(user.uid).then(due => {
+    getDueQuestions(user.uid).then(async due => {
       const grouped: Record<string, number> = {}
       due.forEach(d => { grouped[d.topicId] = (grouped[d.topicId] || 0) + 1 })
       setDueByTopic(grouped)
+
+      // Fetch missing topics globally since we need their titles for the review tab
+      const missingIds = Object.keys(grouped).filter(id => !topicMap[id])
+      if (missingIds.length > 0) {
+        try {
+          const { collectionGroup } = await import('firebase/firestore')
+          const snap = await getDocs(collectionGroup(db, 'topics'))
+          setTopicMap(p => {
+            const n = { ...p }
+            snap.docs.forEach(d => {
+              const pathParts = d.ref.path.split('/')
+              n[d.id] = {
+                id: d.id,
+                sectionId: pathParts.length > 1 ? pathParts[1] : '',
+                chapterId: pathParts.length > 3 ? pathParts[3] : '',
+                ...d.data()
+              } as Topic
+            })
+            return n
+          })
+        } catch (error) {
+          console.error("Failed to fetch topics collection group:", error)
+        }
+      }
     }).catch(console.error)
   }, [user])
 
@@ -361,22 +385,22 @@ export default function QuizPage() {
               </div>
             ) : (
               Object.entries(dueByTopic).map(([topicId, dueCount]) => {
-                const topic = topicMap[topicId]
-                if (!topic) return null
+                const topic = topicMap[topicId] || { title: `Noma'lum mavzu (${topicId.slice(0, 4)}...)`, id: topicId }
+                
                 return (
                   <div key={topicId} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-rose-50 dark:bg-rose-950 rounded-xl flex items-center justify-center text-rose-500">
+                      <div className="w-10 h-10 bg-rose-50 dark:bg-rose-950 rounded-xl flex items-center justify-center text-rose-500 shrink-0">
                         <RotateCcw className="w-5 h-5" />
                       </div>
-                      <div>
-                        <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">{topic.title}</p>
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate pr-2">{topic.title}</p>
                         <p className="text-xs text-rose-500 font-semibold mt-0.5">{dueCount} ta takrorlanadigan savol</p>
                       </div>
                     </div>
                     <button
                       onClick={() => router.push(`/quiz/take?topicId=${topicId}&mode=review&difficulty=all&count=0`)}
-                      className="px-4 py-2 bg-rose-500 text-white rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-rose-600 transition-colors"
+                      className="shrink-0 px-4 py-2 bg-rose-500 text-white rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-rose-600 transition-colors shadow-sm"
                     >
                       <Play className="w-4 h-4" /> Boshlash
                     </button>
