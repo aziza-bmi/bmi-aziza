@@ -222,16 +222,24 @@ export function draw3DShape(
   }
 
   if (shape.type === 'cube') {
-    const a = Math.min(w, h)
-    ctx.beginPath(); ctx.rect(x, y + depth/2, w - depth, h - depth); ctx.fill(); ctx.stroke()
+    const a = Math.min(w, h)          // cube side — always square front face
+    const d = a * 0.40                // isometric depth offset
+    const ox = d * 0.70              // x offset for back face
+    const oy = d * 0.40              // y offset for back face
+    // front face
+    ctx.beginPath(); ctx.rect(x, y, a, a); ctx.fill(); ctx.stroke()
+    // top face
     ctx.beginPath()
-    ctx.moveTo(x, y + depth/2); ctx.lineTo(x + depth, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w - depth, y + depth/2)
-    ctx.closePath(); ctx.fillStyle = color + '44'; ctx.fill(); ctx.stroke()
+    ctx.moveTo(x,    y);     ctx.lineTo(x+ox,  y-oy)
+    ctx.lineTo(x+a+ox, y-oy); ctx.lineTo(x+a,  y)
+    ctx.closePath(); ctx.fillStyle = color + '55'; ctx.fill(); ctx.stroke()
+    // right face
     ctx.beginPath()
-    ctx.moveTo(x + w - depth, y + depth/2); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + h - depth); ctx.lineTo(x + w - depth, y + h)
-    ctx.closePath(); ctx.fillStyle = color + '18'; ctx.fill(); ctx.stroke()
+    ctx.moveTo(x+a,   y);     ctx.lineTo(x+a+ox, y-oy)
+    ctx.lineTo(x+a+ox, y+a-oy); ctx.lineTo(x+a,  y+a)
+    ctx.closePath(); ctx.fillStyle = color + '22'; ctx.fill(); ctx.stroke()
     const aVal = shape.labels?.a || shape.labels?.width || (a * 0.1).toFixed(1) + ' sm'
-    drawLabel('a=' + aVal.toString().replace(/^a=/,''), x + (w-depth)/2, y + h - depth/2 + 16/zoom)
+    drawLabel('a=' + aVal.toString().replace(/^a=/,''), x + a/2, y + a + 14/zoom)
   }
 
   else if (shape.type === 'prism') {

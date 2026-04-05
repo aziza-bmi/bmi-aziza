@@ -406,6 +406,173 @@ $$S = \\frac{1}{2} \\cdot a \\cdot b$$`,
 | Shar | $\\frac{4}{3}\\pi r^3$ | $4\\pi r^2$ |
 | Piramida | $\\frac{1}{3}Sh$ | $S + \\frac{1}{2}Pl$ |`,
   },
+  // ── IDs matching lessonsData.ts exactly ──────────────────────────────
+  'uchburchak-turlari': {
+    title: 'Uchburchak turlari',
+    definition: "Uchburchak — uchta nuqta va ularni bog'lovchi uchta kesmadan iborat figura.",
+    formula: '**Perimetr:** $P = a + b + c$\n\n**Yuza:** $S = \\frac{1}{2} \\cdot a \\cdot h$',
+    properties: ["Teng tomonli: a=b=c","Teng yonli: a=b≠c","To'g'ri burchakli: bir burchag 90°","Burchaklar yig'indisi 180°"],
+    example: 'Tomonlari 3,4,5 → to\'g\'ri burchakli',
+    content: `## Uchburchak turlari
+
+**Uchburchak** — uchta nuqta va ularni bog'lovchi uchta kesmadan iborat figura.
+
+### Tomonlari bo'yicha
+- **Teng tomonli** — barcha 3 tomoni teng: $a = b = c$
+- **Teng yonli** — ikki tomoni teng: $a = b$
+- **Har xil tomonli** — barcha tomonlar har xil
+
+### Burchaklari bo'yicha
+- **O'tkir burchakli** — barcha burchaklar o'tkir $(< 90°)$
+- **To'g'ri burchakli** — bir burchagi $90°$
+- **O'tmas burchakli** — bir burchagi o'tmas $(> 90°)$
+
+### Asosiy xususiyat
+$$\\alpha + \\beta + \\gamma = 180°$$
+
+### Perimetr va yuza
+$$P = a + b + c$$
+$$S = \\frac{1}{2} \\cdot a \\cdot h_a$$`,
+  },
+  'doira-elementlari': {
+    title: 'Doira elementlari va formulalar',
+    definition: "Aylana — markazdan teng masofadagi nuqtalar to'plami. Doira — aylana va uning ichki qismi.",
+    formula: '**Aylanasi:** $C = 2\\pi r$\n\n**Yuza:** $S = \\pi r^2$\n\n**Yoy:** $l = \\frac{\\pi r n}{180}$',
+    properties: ["r — radius","d = 2r diametr","Vatar — aylana ichidagi kesma","Yoy — aylana qismi","Sektor — doira qismi"],
+    example: 'r=7 → C=43.98 sm, S=153.94 sm²',
+    content: `## Doira va Aylana
+
+**Aylana** — markazdan teng masofadagi nuqtalar to'plami.
+**Doira** — aylana va uning ichki qismi.
+
+### Asosiy formulalar
+$$C = 2\\pi r = \\pi d$$
+$$S = \\pi r^2$$
+
+### Yoy va Sektor
+Yoy uzunligi ($n$ — daraja):
+$$l = \\frac{\\pi r n}{180}$$
+
+Sektor yuzi:
+$$S_{sek} = \\frac{\\pi r^2 n}{360}$$
+
+### π qiymati
+$$\\pi \\approx 3.14159$$`,
+  },
+  'koppurchaklar': {
+    title: "Ko'pburchaklar",
+    definition: "Ko'pburchak — uchdan ortiq kesmalar bilan o'ralgan yassi figura.",
+    formula: "**Burchaklar yig'indisi:** $\\Sigma = (n-2) \\cdot 180°$\n\n**Bir burchak:** $\\alpha = \\frac{(n-2)\\cdot 180°}{n}$",
+    properties: ["n — tomonlar soni","Muntazam: barcha tomonlar teng","Ichki burchak: (n-2)·180°/n"],
+    example: 'Oltiburchak: burchak = 120°',
+    content: `## Ko'pburchaklar
+
+**Ko'pburchak** — uchdan ortiq kesmalar bilan o'ralgan figura.
+
+### Ichki burchaklar yig'indisi
+$$\\Sigma = (n-2) \\cdot 180°$$
+
+### Muntazam ko'pburchak — bir burchak
+$$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
+
+| n | Shakl | Burchak |
+|---|-------|---------|
+| 3 | Uchburchak | 60° |
+| 4 | To'rtburchak | 90° |
+| 5 | Beshburchak | 108° |
+| 6 | Oltiburchak | 120° |
+| 8 | Sakkizburchak | 135° |`,
+  },
+  'parallelogramm': {
+    title: 'Parallelogramm va trapetsiya',
+    definition: "Parallelogramm — qarama-qarshi tomonlari parallel va teng bo'lgan to'rtburchak.",
+    formula: '**Parallelogramm:** $S = a \\cdot h$\n\n**Trapetsiya:** $S = \\frac{(a+b)}{2} \\cdot h$',
+    properties: ["AB∥CD, AD∥BC","AB=CD, AD=BC","Diagonallar o'rtasida kesishadi","Trapetsiya: faqat bir juft parallel tomon"],
+    example: 'Parallelogramm: a=6, h=4 → S=24 sm²',
+    content: `## Parallelogramm va Trapetsiya
+
+### Parallelogramm
+Qarama-qarshi tomonlari parallel va teng bo'lgan to'rtburchak.
+
+$$S = a \\cdot h \\qquad P = 2(a+b)$$
+
+### Trapetsiya
+Faqat **bir juft** tomonlari parallel bo'lgan to'rtburchak.
+
+$$S = \\frac{(a + b)}{2} \\cdot h$$
+
+Bu yerda $a$ va $b$ — asoslar, $h$ — balandlik.
+
+### O'rta chiziq
+$$m = \\frac{a + b}{2}$$`,
+  },
+  'kvadrat-turtburchak': {
+    title: "Kvadrat, to'g'ri to'rtburchak, romb",
+    definition: "To'g'ri to'rtburchak — barcha burchaklari 90° bo'lgan parallelogramm.",
+    formula: "**To'g'ri to'rtburchak:** $S = a \\cdot b$\n\n**Kvadrat:** $S = a^2$\n\n**Romb:** $S = \\frac{d_1 \\cdot d_2}{2}$",
+    properties: ["To'g'ri to'rtburchak: 4 ta 90° burchak","Kvadrat: teng tomonlar va burchaklar","Romb: teng tomonlar","Diagonal formulasi: d=√(a²+b²)"],
+    example: 'Kvadrat a=5 → S=25 sm², d=7.07 sm',
+    content: `## Kvadrat, to'g'ri to'rtburchak, romb
+
+### To'g'ri to'rtburchak
+$$S = a \\cdot b \\qquad P = 2(a+b) \\qquad d = \\sqrt{a^2+b^2}$$
+
+### Kvadrat
+$$S = a^2 \\qquad P = 4a \\qquad d = a\\sqrt{2}$$
+
+### Romb
+Barcha tomonlari teng bo'lgan parallelogramm.
+$$S = a \\cdot h = \\frac{d_1 \\cdot d_2}{2}$$
+
+Bu yerda $d_1$, $d_2$ — diagonallar.`,
+  },
+  'vektor-tushunchasi': {
+    title: 'Vektor va koordinatalar',
+    definition: "Vektor — uzunligi va yo'nalishi bor kattalik. Nuqtadan nuqtaga qaratilgan o'q bilan ifodalanadi.",
+    formula: '**Moduli:** $|\\vec{a}| = \\sqrt{x^2+y^2}$\n\n**Skalyar:** $\\vec{a}\\cdot\\vec{b} = a_x b_x + a_y b_y$',
+    properties: ["Koordinataları: (x₂-x₁, y₂-y₁)","Moduli — uzunlik","Skalyar ko'paytma — burchakni aniqlaydi","Perpendikulyar: a·b = 0"],
+    example: 'a=(3,4) → |a|=5',
+    content: `## Vektorlar
+
+**Vektor** — uzunligi va yo'nalishi bor kattalik.
+$\\vec{AB}$ — $A$ dan $B$ ga yo'nalgan vektor.
+
+### Vektor koordinatalari
+$$\\vec{a} = (x_2 - x_1, \\; y_2 - y_1)$$
+
+### Vektor moduli (uzunligi)
+$$|\\vec{a}| = \\sqrt{x^2 + y^2}$$
+
+### Skalyar ko'paytma
+$$\\vec{a} \\cdot \\vec{b} = a_x b_x + a_y b_y$$
+
+### Burchak
+$$\\cos\\theta = \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{a}| \\cdot |\\vec{b}|}$$`,
+  },
+  'uchburchak-oxshashligi': {
+    title: "Uchburchaklar o'xshashligi",
+    definition: "Ikki uchburchak o'xshash deyiladi, agar ularning burchaklari teng va tomonlari proporsional bo'lsa.",
+    formula: "**Nisbat:** $\\frac{a_1}{a_2} = \\frac{b_1}{b_2} = k$\n\n**Yuzalar:** $\\frac{S_1}{S_2} = k^2$",
+    properties: ["Burchak-Burchak alomati","Tomon-Burchak-Tomon alomati","Tomon-Tomon-Tomon alomati","Yuzalar nisbati = k²"],
+    example: 'k=2 bo\'lsa yuzalar nisbati=4',
+    content: `## Uchburchaklar o'xshashligi
+
+Ikki uchburchak **o'xshash** deyiladi, agar ularning burchaklari teng va tomonlari proporsional bo'lsa.
+
+### O'xshashlik alomatlari
+
+**1-alamoat (Burchak-Burchak):**
+$$\\alpha_1 = \\alpha_2, \\quad \\beta_1 = \\beta_2$$
+
+**2-alamoat (Tomon-Burchak-Tomon):**
+$$\\frac{a_1}{a_2} = \\frac{b_1}{b_2}, \\quad \\gamma_1 = \\gamma_2$$
+
+**3-alamoat (Tomon-Tomon-Tomon):**
+$$\\frac{a_1}{a_2} = \\frac{b_1}{b_2} = \\frac{c_1}{c_2}$$
+
+### Yuzalar nisbati
+$$\\frac{S_1}{S_2} = k^2$$`,
+  },
 }
 
 const LIBRARY_SHAPES = [
@@ -1032,45 +1199,116 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
 
           {/* Interactive Inputs Layer - 2D + 3D shape labels */}
           <div className="absolute inset-0 pointer-events-none">
-            {selectedShape && selectedShape.type === 'rect' && (
-              <>
-                <input value={selectedShape.labels?.width || Math.round(Math.abs(selectedShape.points[1].x-selectedShape.points[0].x)/10)} onChange={e=>handleLabelEdit('width', e.target.value)} onFocus={e=>e.target.select()} className="absolute w-12 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-xs font-bold shadow-md outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400" style={{ left: (Math.min(selectedShape.points[0].x,selectedShape.points[1].x)+Math.abs(selectedShape.points[1].x-selectedShape.points[0].x)/2)*zoom+pan.x, top: Math.min(selectedShape.points[0].y,selectedShape.points[1].y)*zoom+pan.y - 15, transform: 'translate(-50%, -50%)' }} />
-                <input value={selectedShape.labels?.height || Math.round(Math.abs(selectedShape.points[1].y-selectedShape.points[0].y)/10)} onChange={e=>handleLabelEdit('height', e.target.value)} onFocus={e=>e.target.select()} className="absolute w-12 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-xs font-bold shadow-md outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400" style={{ left: Math.max(selectedShape.points[0].x,selectedShape.points[1].x)*zoom+pan.x + 24, top: (Math.min(selectedShape.points[0].y,selectedShape.points[1].y)+Math.abs(selectedShape.points[1].y-selectedShape.points[0].y)/2)*zoom+pan.y, transform: 'translate(-50%, -50%)' }} />
-              </>
-            )}
-            {selectedShape && selectedShape.type === 'circle' && (
-              <input value={selectedShape.labels?.radius || Math.round(Math.sqrt((selectedShape.points[1].x-selectedShape.points[0].x)**2+(selectedShape.points[1].y-selectedShape.points[0].y)**2)/10)} onChange={e=>handleLabelEdit('radius', e.target.value)} onFocus={e=>e.target.select()} className="absolute w-12 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-xs font-bold shadow-md outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400" style={{ left: (selectedShape.points[0].x + (selectedShape.points[1].x-selectedShape.points[0].x)/2)*zoom+pan.x, top: (selectedShape.points[0].y + (selectedShape.points[1].y-selectedShape.points[0].y)/2)*zoom+pan.y - 15, transform: 'translate(-50%, -50%)' }} />
-            )}
-            {selectedShape && selectedShape.type === 'triangle' && (
-              <input value={selectedShape.labels?.a || Math.round(Math.max(selectedShape.points[1].x-selectedShape.points[0].x,1)/10)} onChange={e=>handleLabelEdit('a', e.target.value)} onFocus={e=>e.target.select()} className="absolute w-12 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-xs font-bold shadow-md outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400" style={{ left: ((selectedShape.points[0].x+selectedShape.points[1].x)/2)*zoom+pan.x, top: selectedShape.points[1].y*zoom+pan.y + 15, transform: 'translate(-50%, -50%)' }} />
-            )}
-            {/* 3D shape labels */}
-            {selectedShape && ['cube','prism','pyramid','cylinder','cone','sphere'].includes(selectedShape.type) && (() => {
-              const p=selectedShape.points
-              const minX=Math.min(p[0].x,p[1].x), maxX=Math.max(p[0].x,p[1].x)
-              const minY=Math.min(p[0].y,p[1].y), maxY=Math.max(p[0].y,p[1].y)
-              const w=Math.round(Math.abs(p[1].x-p[0].x)/10), h=Math.round(Math.abs(p[1].y-p[0].y)/10)
-              const wLabel = selectedShape.type==='sphere'?'r':'a'
+            {/* RECT inputs */}
+            {selectedShape && selectedShape.type === 'rect' && (() => {
+              const p = selectedShape.points
+              const w = (Math.abs(p[1].x-p[0].x)*0.1).toFixed(1)
+              const h = (Math.abs(p[1].y-p[0].y)*0.1).toFixed(1)
+              const x0=Math.min(p[0].x,p[1].x), y0=Math.min(p[0].y,p[1].y)
+              const x1=Math.max(p[0].x,p[1].x), y1=Math.max(p[0].y,p[1].y)
               return (
                 <>
-                  {/* Width label (bottom center) */}
+                  <input value={selectedShape.labels?.width ?? w} onChange={e=>handleLabelEdit('width', e.target.value)} onFocus={e=>e.target.select()}
+                    placeholder={w}
+                    className="absolute w-16 text-center bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded text-xs font-bold shadow-md outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400 px-1 py-0.5"
+                    style={{ left: (x0+(x1-x0)/2)*zoom+pan.x, top: y0*zoom+pan.y-18, transform: 'translate(-50%,0)' }} />
+                  <input value={selectedShape.labels?.height ?? h} onChange={e=>handleLabelEdit('height', e.target.value)} onFocus={e=>e.target.select()}
+                    placeholder={h}
+                    className="absolute w-16 text-center bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-600 rounded text-xs font-bold shadow-md outline-none pointer-events-auto text-emerald-600 dark:text-emerald-400 px-1 py-0.5"
+                    style={{ left: x1*zoom+pan.x+18, top: (y0+(y1-y0)/2)*zoom+pan.y, transform: 'translate(0,-50%)' }} />
+                </>
+              )
+            })()}
+            {/* CIRCLE input */}
+            {selectedShape && selectedShape.type === 'circle' && (() => {
+              const p = selectedShape.points
+              const r = (Math.sqrt((p[1].x-p[0].x)**2+(p[1].y-p[0].y)**2)*0.1).toFixed(1)
+              return (
+                <input value={selectedShape.labels?.radius ?? r} onChange={e=>handleLabelEdit('radius', e.target.value)} onFocus={e=>e.target.select()}
+                  placeholder={r}
+                  className="absolute w-16 text-center bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded text-xs font-bold shadow-md outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400 px-1 py-0.5"
+                  style={{ left: (p[0].x+(p[1].x-p[0].x)/2)*zoom+pan.x, top: (p[0].y+(p[1].y-p[0].y)/2)*zoom+pan.y-18, transform: 'translate(-50%,0)' }} />
+              )
+            })()}
+            {/* TRIANGLE inputs — all 3 sides */}
+            {selectedShape && selectedShape.type === 'triangle' && (() => {
+              const p = selectedShape.points
+              const midX = (p[0].x+p[1].x)/2
+              const bw = Math.abs(p[1].x-p[0].x), bh = Math.abs(p[1].y-p[0].y)
+              const sideB = Math.sqrt((p[1].x-midX)**2 + bh**2)
+              const sideC = Math.sqrt((midX-p[0].x)**2 + bh**2)
+              const aVal = (bw*0.1).toFixed(1), bVal = (sideB*0.1).toFixed(1), cVal = (sideC*0.1).toFixed(1)
+              return (
+                <>
+                  {/* base a — bottom center */}
+                  <input value={selectedShape.labels?.a ?? aVal} onChange={e=>handleLabelEdit('a', e.target.value)} onFocus={e=>e.target.select()}
+                    placeholder={aVal}
+                    className="absolute w-14 text-center bg-white dark:bg-slate-800 border border-indigo-300 rounded text-xs font-bold shadow outline-none pointer-events-auto text-indigo-600 px-1 py-0.5"
+                    style={{ left: midX*zoom+pan.x, top: p[1].y*zoom+pan.y+16, transform:'translate(-50%,0)' }} />
+                  {/* side b — right */}
+                  <input value={selectedShape.labels?.b ?? bVal} onChange={e=>handleLabelEdit('b', e.target.value)} onFocus={e=>e.target.select()}
+                    placeholder={bVal}
+                    className="absolute w-14 text-center bg-white dark:bg-slate-800 border border-emerald-300 rounded text-xs font-bold shadow outline-none pointer-events-auto text-emerald-600 px-1 py-0.5"
+                    style={{ left: ((p[1].x+midX)/2+14)*zoom+pan.x, top: ((p[1].y+p[0].y)/2)*zoom+pan.y, transform:'translate(0,-50%)' }} />
+                  {/* side c — left */}
+                  <input value={selectedShape.labels?.c ?? cVal} onChange={e=>handleLabelEdit('c', e.target.value)} onFocus={e=>e.target.select()}
+                    placeholder={cVal}
+                    className="absolute w-14 text-center bg-white dark:bg-slate-800 border border-amber-300 rounded text-xs font-bold shadow outline-none pointer-events-auto text-amber-600 px-1 py-0.5"
+                    style={{ left: ((p[0].x+midX)/2-14)*zoom+pan.x, top: ((p[1].y+p[0].y)/2)*zoom+pan.y, transform:'translate(-100%,-50%)' }} />
+                </>
+              )
+            })()}
+            {/* 3D shape labels — width/radius (a/r), height (h), and depth (d) */}
+            {selectedShape && ['cube','prism','pyramid','cylinder','cone','sphere'].includes(selectedShape.type) && (() => {
+              const p = selectedShape.points
+              const minX=Math.min(p[0].x,p[1].x), maxX=Math.max(p[0].x,p[1].x)
+              const minY=Math.min(p[0].y,p[1].y), maxY=Math.max(p[0].y,p[1].y)
+              const rawW = Math.abs(p[1].x-p[0].x), rawH = Math.abs(p[1].y-p[0].y)
+              // for cylinder/cone, actual radius drawn is (w - w*0.4)/2
+              const depth = rawW * 0.4
+              const cylRx = (rawW - depth) / 2
+              const defW = selectedShape.type==='sphere' ? (Math.min(rawW,rawH)/2*0.1).toFixed(1)
+                         : selectedShape.type==='cylinder'||selectedShape.type==='cone' ? (cylRx*0.1).toFixed(1)
+                         : (rawW*0.1).toFixed(1)
+              const defH = (rawH*0.1).toFixed(1)
+              const defD = (depth*0.1).toFixed(1)
+              const isS = selectedShape.type === 'sphere'
+              const wKey = isS ? 'radius' : 'a'
+
+              return (
+                <>
+                  {/* Width/radius label — bottom center */}
                   <input
-                    title={selectedShape.type==='sphere'?'Radius':'Kenglik'}
-                    value={selectedShape.labels?.width || selectedShape.labels?.a || selectedShape.labels?.radius || w}
-                    onChange={e=>handleLabelEdit(wLabel, e.target.value)}
+                    title={isS ? 'Radius' : 'Kenglik (a)'}
+                    placeholder={defW}
+                    value={selectedShape.labels?.[wKey] ?? defW}
+                    onChange={e=>handleLabelEdit(wKey, e.target.value)}
                     onFocus={e=>e.target.select()}
-                    className="absolute w-14 text-center bg-white/95 dark:bg-slate-800/95 border border-indigo-300 dark:border-indigo-700 rounded text-xs font-bold shadow-lg outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400 px-1 py-0.5"
-                    style={{ left: ((minX+maxX)/2)*zoom+pan.x, top: maxY*zoom+pan.y+14, transform: 'translate(-50%, 0)' }}
+                    className="absolute w-16 text-center bg-white/95 dark:bg-slate-800/95 border border-indigo-300 dark:border-indigo-700 rounded text-xs font-bold shadow-lg outline-none pointer-events-auto text-indigo-600 dark:text-indigo-400 px-1 py-0.5"
+                    style={{ left: ((minX+maxX)/2)*zoom+pan.x, top: maxY*zoom+pan.y+16, transform: 'translate(-50%, 0)' }}
                   />
-                  {/* Height label (right center), skip sphere */}
-                  {selectedShape.type !== 'sphere' && (
+                  {/* Height label — right center, skip sphere */}
+                  {!isS && (
                     <input
-                      title="Balandlik"
-                      value={selectedShape.labels?.height || selectedShape.labels?.h || h}
+                      title="Balandlik (h)"
+                      placeholder={defH}
+                      value={selectedShape.labels?.height ?? selectedShape.labels?.h ?? defH}
                       onChange={e=>handleLabelEdit('height', e.target.value)}
                       onFocus={e=>e.target.select()}
-                      className="absolute w-14 text-center bg-white/95 dark:bg-slate-800/95 border border-emerald-300 dark:border-emerald-700 rounded text-xs font-bold shadow-lg outline-none pointer-events-auto text-emerald-600 dark:text-emerald-400 px-1 py-0.5"
-                      style={{ left: maxX*zoom+pan.x+16, top: ((minY+maxY)/2)*zoom+pan.y, transform: 'translate(0, -50%)' }}
+                      className="absolute w-16 text-center bg-white/95 dark:bg-slate-800/95 border border-emerald-300 dark:border-emerald-700 rounded text-xs font-bold shadow-lg outline-none pointer-events-auto text-emerald-600 dark:text-emerald-400 px-1 py-0.5"
+                      style={{ left: maxX*zoom+pan.x+20, top: ((minY+maxY)/2)*zoom+pan.y, transform: 'translate(0, -50%)' }}
+                    />
+                  )}
+                  {/* Depth label — top right, prism/pyramid/cube only */}
+                  {['cube','prism','pyramid'].includes(selectedShape.type) && (
+                    <input
+                      title="Chuqurlik (d)"
+                      placeholder={defD}
+                      value={selectedShape.labels?.depth ?? selectedShape.labels?.d ?? defD}
+                      onChange={e=>handleLabelEdit('d', e.target.value)}
+                      onFocus={e=>e.target.select()}
+                      className="absolute w-16 text-center bg-white/95 dark:bg-slate-800/95 border border-violet-300 dark:border-violet-700 rounded text-xs font-bold shadow-lg outline-none pointer-events-auto text-violet-600 dark:text-violet-400 px-1 py-0.5"
+                      style={{ left: maxX*zoom+pan.x+20, top: minY*zoom+pan.y, transform: 'translate(0, 0)' }}
                     />
                   )}
                 </>
