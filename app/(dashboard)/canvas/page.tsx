@@ -24,13 +24,34 @@ const ConeIcon = ({size=16}:any) => <svg width={size} height={size} viewBox="0 0
 
 const COLORS = ['#4F46E5','#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#1E293B']
 
-const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;properties:string[];example:string}> = {
+const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;properties:string[];example:string;content?:string}> = {
   triangle: {
     title: 'Uchburchak',
     definition: 'Uchburchak — uchta nuqta va ularni birlashtiruvchi uchta kesmadan iborat geometrik figura.',
     formula: '**Yuza:** $S = \\frac{1}{2} \\cdot a \\cdot h$\n\n**Perimetr:** $P = a + b + c$\n\n**Pifagor:** $c^2 = a^2 + b^2$',
     properties: ["Burchaklar yig'indisi 180°","Istalgan ikki tomon yig'indisi uchinchidan katta","Teng yonli: ikki tomoni teng","To'g'ri burchakli: bir burchagi 90°"],
     example: 'a=3, b=4, c=5 → S = 6 sm²',
+    content: `## Uchburchak
+
+**Uchburchak** — uchta nuqta va ularni birlashtiruvchi uchta kesmadan iborat geometrik figura.
+
+### Tomonlari bo'yicha
+- **Teng tomonli**: $a = b = c$
+- **Teng yonli**: $a = b \\neq c$
+- **Har xil tomonli**: $a \\neq b \\neq c$
+
+### Burchaklari bo'yicha
+- **O'tkir burchakli**: barcha burchaklar $< 90°$
+- **To'g'ri burchakli**: bir burchagi $= 90°$
+- **O'tmas burchakli**: bir burchagi $> 90°$
+
+### Formulalar
+$$\\alpha + \\beta + \\gamma = 180°$$
+$$P = a + b + c$$
+$$S = \\frac{1}{2} \\cdot a \\cdot h$$
+
+### Geron formulasi
+$$s = \\frac{a+b+c}{2}, \\quad S = \\sqrt{s(s-a)(s-b)(s-c)}$$`,
   },
   circle: {
     title: 'Doira',
@@ -38,6 +59,22 @@ const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;
     formula: '**Uzunlik:** $C = 2\\pi r$\n\n**Yuza:** $S = \\pi r^2$\n\n**Diametr:** $d = 2r$',
     properties: ['Barcha radiuslar teng','Diametr — eng uzun vatar','π ≈ 3.14159','Yoy — doira qismi'],
     example: 'r=5 → S = 78.54 sm²',
+    content: `## Doira va Aylana
+
+**Aylana** — markazdan teng masofadagi nuqtalar to'plami.
+**Doira** — aylana va uning ichki qismi.
+
+### Formulalar
+$$C = 2\\pi r = \\pi d$$
+$$S = \\pi r^2$$
+
+### Yoy uzunligi ($n$ — daraja)
+$$l = \\frac{\\pi r n}{180}$$
+
+### Sektor yuzi
+$$S_{sek} = \\frac{\\pi r^2 n}{360}$$
+
+$$\\pi \\approx 3.14159$$`,
   },
   rect: {
     title: "To'rtburchak",
@@ -45,6 +82,22 @@ const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;
     formula: '**Yuza:** $S = a \\cdot b$\n\n**Perimetr:** $P = 2(a + b)$\n\n**Diagonal:** $d = \\sqrt{a^2 + b^2}$',
     properties: ["Barcha burchaklar 90°","Qarama-qarshi tomonlar teng","Diagonallar teng","Kvadrat: a = b"],
     example: 'a=4, b=6 → S = 24 sm²',
+    content: `## To'rtburchaklar
+
+### To'g'ri to'rtburchak
+$$S = a \\cdot b \\qquad P = 2(a+b) \\qquad d = \\sqrt{a^2+b^2}$$
+
+### Kvadrat
+$$S = a^2 \\qquad P = 4a \\qquad d = a\\sqrt{2}$$
+
+### Parallelogramm
+$$S = a \\cdot h \\qquad P = 2(a+b)$$
+
+### Romb
+$$S = \\frac{d_1 \\cdot d_2}{2} \\qquad P = 4a$$
+
+### Trapetsiya
+$$S = \\frac{(a+b)}{2} \\cdot h$$`,
   },
   polygon: {
     title: "Ko'pburchak",
@@ -52,6 +105,23 @@ const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;
     formula: "**Burchaklar yig'indisi:** $\\Sigma = (n-2) \\cdot 180°$\n\n**Bir burchak:** $\\alpha = \\frac{(n-2)\\cdot 180°}{n}$",
     properties: ["n — tomonlar soni","Muntazam: barcha tomonlar teng","Ichki burchak: (n-2)·180°/n","Tashqi burchaklar yig'indisi: 360°"],
     example: 'Muntazam oltiburchak: 6 teng tomon',
+    content: `## Ko'pburchaklar
+
+**Ko'pburchak** — uchdan ortiq kesmalar bilan o'ralgan figura.
+
+### Ichki burchaklar yig'indisi
+$$\\Sigma = (n-2) \\cdot 180°$$
+
+### Muntazam ko'pburchak — bir burchak
+$$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
+
+| n | Shakl | Burchak |
+|---|-------|---------|
+| 3 | Uchburchak | 60° |
+| 4 | To'rtburchak | 90° |
+| 5 | Beshburchak | 108° |
+| 6 | Oltiburchak | 120° |
+| 8 | Sakkizburchak | 135° |`,
   },
   cube: {
     title: 'Kub',
@@ -88,13 +158,27 @@ const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;
     properties: ['Ikki parallel asos','Yon yuzlar — to\'rtburchak','h — balandlik','P — perimetr'],
     example: 'Asos: 3x4, h=5 → V = 60 sm³',
   },
-  // Firestore legacy topic ids
+  // Firestore / LESSONS_SEED topic ids
   'nuqta-chiziq-kesma': {
     title: "Nuqta, to'g'ri chiziq va kesma",
     definition: "Geometriyaning asosiy tushunchalari: nuqta (o'lchovsiz), to'g'ri chiziq (cheksiz uzun), kesma (chegaralangan).",
     formula: "**Kesma uzunligi:** $AB = \\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}$\n\n**O'rta nuqta:** $M = \\left(\\frac{x_1+x_2}{2}, \\frac{y_1+y_2}{2}\\right)$",
     properties: ["Ikki nuqta orqali bitta to'g'ri chiziq o'tadi","Kesma — to'g'ri chiziq bo'lagi","Nuqta o'lchamsiz"],
     example: 'A(1,0), B(5,0) → AB = 4 birlik',
+    content: `## Nuqta, to'g'ri chiziq va kesma
+
+**Nuqta** — geometriyaning eng asosiy elementi. Harflar bilan: $A$, $B$, $C$
+
+**To'g'ri chiziq** — ikki tomonga cheksiz uzaygan.
+> Ikki nuqta orqali faqat **bitta** to'g'ri chiziq o'tadi.
+
+**Kesma** $AB$ uzunligi:
+$$AB = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$$
+
+**O'rta nuqta M:**
+$$M = \\left(\\frac{x_1+x_2}{2},\\ \\frac{y_1+y_2}{2}\\right)$$
+
+**Tekislik** — ikki o'lchovli sirt. 3 ta bir chiziqda bo'lmagan nuqta tekislikni aniqlaydi.`,
   },
   'burchak-turlari': {
     title: 'Burchak va uning turlari',
@@ -102,6 +186,22 @@ const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;
     formula: "**Radianlar:** $\\alpha_{rad} = \\alpha_{deg} \\cdot \\frac{\\pi}{180}$",
     properties: ["O'tkir: 0° < α < 90°", "To'g'ri: α = 90°", "O'tmas: 90° < α < 180°", "Yoyilgan: α = 180°"],
     example: 'Burchak 45° — o\'tkir burchak',
+    content: `## Burchak va uning turlari
+
+**Burchak** — bir nuqtadan chiquvchi ikki nurdan hosil bo'lgan figura.
+
+| Tur | O'lchov |
+|-----|---------|
+| O'tkir | $0° < \\alpha < 90°$ |
+| To'g'ri | $\\alpha = 90°$ |
+| O'tmas | $90° < \\alpha < 180°$ |
+| Yoziq | $\\alpha = 180°$ |
+
+### Qo'shni burchaklar
+$$\\alpha + \\beta = 180°$$
+
+### Vertikal burchaklar
+$$\\alpha_1 = \\alpha_2$$`,
   },
   'pifagor-teoremasi': {
     title: 'Pifagor teoremasi',
@@ -109,6 +209,202 @@ const THEORY_DATA: Record<string,{title:string;definition:string;formula:string;
     formula: '**Pifagor:** $c^2 = a^2 + b^2$\n\n**Katet:** $a = \\sqrt{c^2 - b^2}$',
     properties: ["Faqat to'g'ri burchakli uchburchaklarda","c — gipotenuza (eng uzun tomon)","a, b — katetlar","Pifagor uchlik: (3,4,5), (5,12,13)"],
     example: 'a=3, b=4 → c=5',
+    content: `## Pifagor teoremasi
+
+To'g'ri burchakli uchburchakda:
+
+$$a^2 + b^2 = c^2$$
+
+- $a$, $b$ — **katetlar**
+- $c$ — **gipotenuza** (eng uzun tomon)
+
+### Pifagor uchliglar
+| $a$ | $b$ | $c$ |
+|-----|-----|-----|
+| 3 | 4 | 5 |
+| 5 | 12 | 13 |
+| 8 | 15 | 17 |
+
+### Balandlik formulasi
+$$h = \\frac{a \\cdot b}{c}$$`,
+  },
+  // Chapter/section level entries
+  'planimetriya': {
+    title: 'Planimetriya',
+    definition: "Planimetriya — tekislikdagi geometriya bo'limi. Nuqta, chiziq, burchak, uchburchak, to'rtburchak, doira va ko'pburchaklarni o'rganadi.",
+    formula: '**Perimetr:** $P = a + b + c$\n\n**Uchburchak yuzi:** $S = \\frac{1}{2} \\cdot a \\cdot h$',
+    properties: ["Tekislikdagi figuralar","Nuqta, chiziq, burchak — asosiy tushunchalar","Yuza va perimetr formulalari","Ko'pburchaklar va doiralar"],
+    example: 'Uchburchak: a=3, b=4, c=5 → S=6 sm²',
+    content: `## Planimetriya asoslari
+
+**Planimetriya** — tekislikdagi geometriya bo'limi.
+
+### Asosiy ob'ektlar
+- **Nuqta** — o'lchamsiz geometrik element
+- **To'g'ri chiziq** — ikki tomonga cheksiz
+- **Kesma** — ikki nuqta orasidagi chiziq
+- **Burchak** — bir nuqtadan chiquvchi ikki nur
+
+### Tekislik aksiomasi
+Uchta bir chiziqda bo'lmagan nuqta yagona tekislikni aniqlaydi.
+
+### Asosiy formulalar
+$$P = a + b + c \\quad \\text{(perimetr)}$$
+$$S = \\frac{1}{2} \\cdot a \\cdot h \\quad \\text{(uchburchak yuzi)}$$`,
+  },
+  'asosiy-tushunchalar': {
+    title: "Dastlabki tushunchalar",
+    definition: "Nuqta, to'g'ri chiziq, kesma va tekislik geometriyaning asosiy tushunchalari.",
+    formula: "**Kesma:** $AB = \\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}$",
+    properties: ["Nuqta — o'lchamsiz","To'g'ri chiziq — cheksiz","Kesma — chegaralangan","Tekislik — ikki o'lchovli sirt"],
+    example: 'A(0,0), B(3,4) → AB=5',
+    content: `## Dastlabki geometrik tushunchalar
+
+### Nuqta, Chiziq, Tekislik
+
+**Nuqta** — geometriyaning eng asosiy elementi.
+**To'g'ri chiziq** — ikki tomonga cheksiz uzaygan figura.
+**Tekislik** — ikki o'lchovli sirt.
+
+### Kesma uzunligi
+$$AB = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$$
+
+### O'rta nuqta
+$$M = \\left(\\frac{x_1+x_2}{2}, \\frac{y_1+y_2}{2}\\right)$$`,
+  },
+  'uchburchaklar': {
+    title: "Uchburchaklar",
+    definition: "Uchburchak — uchta nuqta va ularni birlashtiruvchi uchta kesmadan iborat figura.",
+    formula: '**Yuza:** $S = \\frac{1}{2} a h$\n\n**Perimetr:** $P = a+b+c$',
+    properties: ["Burchaklar yig'indisi 180°","Teng tomonli, teng yonli, har xil tomonli","To'g'ri burchakli: Pifagor teoremasi qo'llanadi"],
+    example: 'a=5, b=12, c=13 — to\'g\'ri burchakli',
+    content: `## Uchburchak turlari
+
+### Tomonlari bo'yicha
+- **Teng tomonli**: $a = b = c$
+- **Teng yonli**: $a = b \\neq c$
+- **Har xil tomonli**: $a \\neq b \\neq c$
+
+### Burchaklari bo'yicha
+- **O'tkir burchakli**: barcha burchaklar $< 90°$
+- **To'g'ri burchakli**: bir burchagi $= 90°$
+- **O'tmas burchakli**: bir burchagi $> 90°$
+
+### Asosiy xususiyat
+$$\\alpha + \\beta + \\gamma = 180°$$
+
+### Perimetr va yuza
+$$P = a + b + c$$
+$$S = \\frac{1}{2} \\cdot a \\cdot h$$`,
+  },
+  'tortburchaklar': {
+    title: "To'rtburchaklar",
+    definition: "To'rtburchak — to'rtta tomonli yassi figura.",
+    formula: '**Yuza:** $S = a \\cdot b$\n\n**Parallelogramm:** $S = a \\cdot h$',
+    properties: ["To'g'ri to'rtburchak: 90° burchaklar","Kvadrat: teng tomonlar","Romb: teng tomonlar, har xil burchaklar","Trapetsiya: faqat ikki tomoni parallel"],
+    example: 'a=4, b=6 → S=24 sm²',
+    content: `## To'rtburchaklar
+
+### To'g'ri to'rtburchak
+$$S = a \\cdot b \\qquad P = 2(a+b) \\qquad d = \\sqrt{a^2+b^2}$$
+
+### Kvadrat
+$$S = a^2 \\qquad P = 4a \\qquad d = a\\sqrt{2}$$
+
+### Parallelogramm
+$$S = a \\cdot h \\qquad P = 2(a+b)$$
+
+### Romb
+$$S = \\frac{d_1 \\cdot d_2}{2} \\qquad P = 4a$$
+
+### Trapetsiya
+$$S = \\frac{(a+b)}{2} \\cdot h$$`,
+  },
+  'doira': {
+    title: "Doira",
+    definition: "Doira — markaz va radiusga ega aylananing ichki qismi.",
+    formula: '**Aylanasi:** $C = 2\\pi r$\n\n**Yuza:** $S = \\pi r^2$',
+    properties: ["r — radius","d=2r diametr","π ≈ 3.14159","Vatar, yoy, sektor"],
+    example: 'r=7 → C=43.98 sm, S=153.94 sm²',
+    content: `## Doira va Aylana
+
+**Aylana** — markazdan teng masofadagi nuqtalar to'plami.
+**Doira** — aylana va uning ichki qismi.
+
+### Formulalar
+$$C = 2\\pi r = \\pi d$$
+$$S = \\pi r^2$$
+
+### Yoy uzunligi
+$$l = \\frac{\\pi r n}{180}$$
+
+### Sektor yuzi
+$$S_{sek} = \\frac{\\pi r^2 n}{360}$$`,
+  },
+  'kobpurchaklar': {
+    title: "Ko'pburchaklar",
+    definition: "Ko'pburchak — uchdan ortiq kesmalar bilan o'ralgan yassi figura.",
+    formula: "**Burchaklar yig'indisi:** $\\Sigma = (n-2) \\cdot 180°$",
+    properties: ["n — tomonlar soni","Muntazam: teng tomonlar","Ichki burchak: (n-2)·180°/n"],
+    example: 'Oltiburchak: burchak = 120°',
+    content: `## Ko'pburchaklar
+
+**Ko'pburchak** — uchdan ortiq kesmalar bilan o'ralgan figura.
+
+### Ichki burchaklar yig'indisi
+$$\\Sigma = (n-2) \\cdot 180°$$
+
+### Muntazam ko'pburchak
+$$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
+
+| n | Shakl | Burchak |
+|---|-------|---------|
+| 3 | Uchburchak | 60° |
+| 4 | To'rtburchak | 90° |
+| 5 | Beshburchak | 108° |
+| 6 | Oltiburchak | 120° |
+| 8 | Sakkizburchak | 135° |`,
+  },
+  'uchburchak-yuzi': {
+    title: "Uchburchak yuzi va perimetri",
+    definition: "Uchburchakning yuzi va perimetrini hisoblash usullari.",
+    formula: '**Yuza:** $S = \\frac{1}{2} a h$\n\n**Geron:** $S = \\sqrt{s(s-a)(s-b)(s-c)}$',
+    properties: ["h — asosga tushgan balandlik","s — yarim perimetr","Geron formulasi — barcha uchburchaklar uchun"],
+    example: 'a=3,b=4,c=5 → s=6, S=6 sm²',
+    content: `## Uchburchak yuzi va perimetri
+
+### Perimetr
+$$P = a + b + c$$
+
+### Yuza — asosiy formula
+$$S = \\frac{1}{2} \\cdot a \\cdot h_a$$
+
+### Geron formulasi
+$$s = \\frac{a+b+c}{2}$$
+$$S = \\sqrt{s(s-a)(s-b)(s-c)}$$
+
+### To'g'ri burchakli uchburchak
+$$S = \\frac{1}{2} \\cdot a \\cdot b$$`,
+  },
+  'stereometriya': {
+    title: 'Stereometriya',
+    definition: "Stereometriya — fazodagi geometriya bo'limi. Kub, prizma, piramida, silindr, konus va shar kabi jismlarni o'rganadi.",
+    formula: '**Kub hajmi:** $V = a^3$\n\n**Silindr:** $V = \\pi r^2 h$\n\n**Shar:** $V = \\frac{4}{3}\\pi r^3$',
+    properties: ["Kub, prizma, piramida","Silindr, konus, shar","Hajm va sirt yuzi formulalari","3 o'lchovli figuralar"],
+    example: 'Kub a=3 → V=27 sm³',
+    content: `## Stereometriya asoslari
+
+**Stereometriya** — fazodagi geometriya bo'limi.
+
+### Asosiy jismlar
+
+| Jism | Hajm | Sirt |
+|------|------|------|
+| Kub | $a^3$ | $6a^2$ |
+| Silindr | $\\pi r^2 h$ | $2\\pi r(r+h)$ |
+| Konus | $\\frac{1}{3}\\pi r^2 h$ | $\\pi r(r+l)$ |
+| Shar | $\\frac{4}{3}\\pi r^3$ | $4\\pi r^2$ |
+| Piramida | $\\frac{1}{3}Sh$ | $S + \\frac{1}{2}Pl$ |`,
   },
 }
 
@@ -170,6 +466,10 @@ export default function GeoLabPage() {
   const [pan,setPan]=useState<Point>({x:0,y:0})
   const [zoom,setZoom]=useState(1)
 
+  const [panelPos, setPanelPos] = useState({ x: 0, y: 0 })
+  const [panelDragging, setPanelDragging] = useState(false)
+  const [panelDragStart, setPanelDragStart] = useState({ x: 0, y: 0 })
+
   const [leftWidth, setLeftWidth] = useState(280)
   const [rightWidth, setRightWidth] = useState(300)
   const isDraggingLeft = useRef(false)
@@ -199,6 +499,9 @@ export default function GeoLabPage() {
         setRightWidth(Math.max(200, Math.min(window.innerWidth - e.clientX, window.innerWidth - 300)))
         redraw()
       }
+      if (panelDragging) {
+        setPanelPos(prev => ({ x: e.clientX - panelDragStart.x, y: prev.y }))
+      }
     }
     const handleUp = () => {
       if(isDraggingLeft.current || isDraggingRight.current) {
@@ -206,11 +509,12 @@ export default function GeoLabPage() {
         isDraggingRight.current = false
         document.body.style.cursor = 'default'
       }
+      if (panelDragging) setPanelDragging(false)
     }
     document.addEventListener('mousemove', handleMove)
     document.addEventListener('mouseup', handleUp)
     return () => { document.removeEventListener('mousemove', handleMove); document.removeEventListener('mouseup', handleUp) }
-  }, [redraw])
+  }, [redraw, panelDragging, panelDragStart])
 
   useEffect(() => {
     try {
@@ -687,15 +991,44 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
         {/* Canvas */}
         <div className="flex-1 relative overflow-hidden bg-dot-pattern flex items-center justify-center">
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{cursor:tool==='select'?'default':tool==='hand'?(isDrawing?'grabbing':'grab'):tool==='eraser'?'cell':'crosshair'}} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}/>
-          {selectedShape&&shapeInfo&&(<motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-3 shadow-xl flex items-center justify-center gap-5 w-max max-w-[95%] overflow-x-auto hidden-scrollbar pointer-events-auto">
-            {Object.entries(shapeInfo).map(([k,v])=>(<div key={k} className="text-center whitespace-nowrap"><div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{k}</div><div className="text-sm font-bold text-slate-800 dark:text-slate-100 mt-0.5">{v}</div></div>))}
-            <div className="w-px h-8 bg-slate-200 dark:border-slate-700 shrink-0"/>
-            <div className="flex items-center gap-2">
-              <button onClick={analyzeShape} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"><Target size={16}/></button>
-              <button onClick={()=>pushHistory(shapes.filter(s=>s.id!==selectedShape.id))} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"><Trash2 size={16}/></button>
-              <button onClick={()=>setSelectedShape(null)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"><X size={16}/></button>
-            </div>
-          </motion.div>)}
+          {selectedShape&&shapeInfo&&(
+            <motion.div
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+              style={{
+                position:'absolute',
+                bottom: 16,
+                left:`calc(50% + ${panelPos.x}px)`,
+                transform:'translateX(-50%)',
+                cursor: panelDragging ? 'grabbing' : 'grab',
+                userSelect:'none',
+                zIndex:20,
+              }}
+              onMouseDown={(e)=>{
+                e.stopPropagation()
+                setPanelDragging(true)
+                setPanelDragStart({x: e.clientX - panelPos.x, y: e.clientY})
+              }}
+              className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-indigo-200 dark:border-indigo-700/40 rounded-2xl shadow-lg max-w-[90vw] pointer-events-auto"
+            >
+              {/* Drag handle */}
+              <div className="flex items-center justify-center pt-2 pb-1">
+                <div className="w-8 h-1 rounded-full bg-slate-300 dark:bg-slate-600"/>
+              </div>
+              {/* Properties */}
+              <div className="flex items-center gap-5 px-4 pb-3 overflow-x-auto max-w-[600px] hidden-scrollbar">
+                {Object.entries(shapeInfo).map(([k,v])=>(
+                  <div key={k} className="text-center flex-shrink-0">
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wide whitespace-nowrap">{k}</div>
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100 mt-0.5 whitespace-nowrap">{v}</div>
+                  </div>
+                ))}
+                <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 flex-shrink-0"/>
+                <button onClick={analyzeShape} className="btn-gradient px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap"><Bot size={12}/>AI tahlil</button>
+                <button onClick={()=>pushHistory(shapes.filter(s=>s.id!==selectedShape.id))} className="w-7 h-7 rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"><Trash2 size={13}/></button>
+                <button onClick={()=>setSelectedShape(null)} className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 flex-shrink-0"><X size={13}/></button>
+              </div>
+            </motion.div>
+          )}
 
           {/* Interactive Inputs Layer - 2D + 3D shape labels */}
           <div className="absolute inset-0 pointer-events-none">

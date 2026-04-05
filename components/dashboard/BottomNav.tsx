@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { href: '/lessons',   icon: BookOpen,        label: 'Darslar' },
   { href: '/quiz',      icon: FlaskConical,    label: 'Test' },
   { href: '/leaderboard',icon: Trophy,         label: 'Reyting' },
-  { href: '/canvas',    icon: PenTool,         label: 'Chizma' },
+  { href: '/canvas',    icon: FlaskConical,    label: 'Lab' },
 ]
 
 export default function BottomNav() {
