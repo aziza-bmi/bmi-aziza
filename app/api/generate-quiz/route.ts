@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60 // 60s timeout for Vercel
+export const maxDuration = 60
 
 const API_KEYS = [
   process.env.GEMINI_API_KEY_1,
@@ -11,24 +11,31 @@ const API_KEYS = [
 ].filter(Boolean) as string[]
 
 let currentKeyIndex = 0
-
 function getNextApiKey(): string {
-  if (API_KEYS.length === 0) {
-    return process.env.GEMINI_API_KEY || ''
-  }
+  if (API_KEYS.length === 0) return process.env.GEMINI_API_KEY || ''
   const key = API_KEYS[currentKeyIndex]
   currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length
   return key
+}
+
+function robustParseJSON(raw: string) {
+  let t = raw.replace(/^```[\w]*\n?/i, '').replace(/```\s*$/i, '').trim()
+  const s = t.indexOf('['), e = t.lastIndexOf(']')
+  if (s === -1 || e === -1) throw new Error('JSON array topilmadi')
+  t = t.slice(s, e + 1)
+  // Fix unescaped backslashes (LaTeX artifacts break JSON.parse)
+  t = t.replace(/\\(?!["\\/bfnrtu])/g, '\\\\')
+  return JSON.parse(t)
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const {
-      chapterContent, content,       
-      chapterTitle, topic,           
-      count = 10,                    
-      difficulty                     
+      chapterContent, content,
+      chapterTitle, topic,
+      count = 25,
+      difficulty
     } = body
 
     const lessonContent = chapterContent || content || ''
@@ -38,63 +45,55 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Dars matni (content) talab qilinadi' }, { status: 400 })
     }
 
-    const diffInstruction = difficulty && difficulty !== 'all' 
-      ? `Savollar faqat "${difficulty}" qiyinchilik darajasida bo'lsin.` 
-      : 'Savollar turli qiyinchilik darajasida bo\'lsin: "easy", "medium", "hard"'
+    const diffInstruction = difficulty && difficulty !== 'all'
+      ? `Savollar FAQAT "${difficulty}" darajasida bo'lsin.`
+      : '5 ta "easy", 10 ta "medium", 10 ta "hard" taqsimotda bo\'lsin.'
 
     const prompt = `
-Sen geometriya bo'yicha bilimdon o'qituvchisan.
-Quyidagi dars matni asosida ${count} ta yuqori sifatli test savoli tuz.
+Sen GEOMETRIYA fanidan tajribali olimpiada o'qituvchisi.
 
-Mavzu: ${lessonTopic}
-Matn: ${lessonContent.slice(0, 4000)}
+MAVZU: "${lessonTopic}"
+DARS MATNI: ${lessonContent.slice(0, 4000)}
 
-QOIDALAR:
-1. Har bir savol dars mazmuniga aniq mos bo'lsin
-2. Har bir savolda 4 ta variant bo'lsin (biri to'g'ri)
-3. ${diffInstruction}
-4. To'g'ri javob indeksi 0 dan 3 gacha (correctAnswer)
-5. Izoh (explanation) mazmunli va qisqa bo'lsin
-6. Javobni FAQAT JSON array formatida qaytaring — boshqa hech narsa yozma
+VAZIFA: Bu mavzu bo'yicha aynan ${count} ta professional test savoli tuz.
 
-Format:
+QIYINCHILIK: ${diffInstruction}
+
+SIFAT TALABLARI (QAT'IY):
+1. To'g'ridan-to'g'ri formulaga son qo'yib hisoblash savollari MUTLAQO TAQIQLANGAN.
+2. Har bir savol o'quvchini o'ylashga MAJBUR qilsin — parametr chiqarish, kombinatsiya, tahlil.
+3. Chalg'ituvchilar — o'quvchi YO'L QO'YISHI mumkin bo'lgan REAL xatolar asosida.
+4. explanation — bosqichma-bosqich aniq yechim (kamida 2 qadam).
+5. Formulalar: backslash (\\) YOZMANG — JSON buziladi. "S = (a*h)/2", "a^2+b^2=c^2" shaklida.
+
+FAQAT sof JSON array (markdown yo'q, backtick yo'q, izoh yo'q):
 [
   {
     "question": "Savol matni",
-    "options": ["A variant", "B variant", "C variant", "D variant"],
+    "options": ["A javob", "B javob", "C javob", "D javob"],
     "correctAnswer": 0,
-    "explanation": "Tushuntirish...",
-    "difficulty": "${difficulty && difficulty !== 'all' ? difficulty : 'medium'}"
+    "explanation": "1-qadam: ... 2-qadam: ... Natija: ...",
+    "difficulty": "easy|medium|hard"
   }
-]
-`
+]`
 
-    let lastError: Error | null = null
     const keysToTry = API_KEYS.length > 0 ? API_KEYS.length : 1
+    let lastError: Error | null = null
 
     for (let attempt = 0; attempt < keysToTry; attempt++) {
       try {
-        const apiKey = getNextApiKey()
-        const genAI = new GoogleGenerativeAI(apiKey)
-        
-        const model = genAI.getGenerativeModel({ 
-          model: 'gemini-2.5-flash',
+        const genAI = new GoogleGenerativeAI(getNextApiKey())
+        const model = genAI.getGenerativeModel({
+          model: 'gemini-3.1-flash-lite-preview',
+          generationConfig: { temperature: 0.9, maxOutputTokens: 8192 },
         })
-        const result  = await model.generateContent(prompt)
-        const rawText = result.response.text()
-
-        // Extract JSON array robustly
-        const match = rawText.match(/\[[\s\S]*\]/);
-        const jsonStr = match ? match[0] : rawText;
-        const questions = JSON.parse(jsonStr)
-
+        const result    = await model.generateContent(prompt)
+        const questions = robustParseJSON(result.response.text())
         return NextResponse.json({ questions })
       } catch (err: any) {
-        console.error(`Gemini API key error (attempt ${attempt + 1}):`, err)
+        console.error(`Gemini attempt ${attempt + 1} error:`, err?.message)
         lastError = err
-        if (err.status === 429 || err.message?.includes('quota')) {
-          continue
-        }
+        if (err.status === 429 || err.message?.includes('quota')) continue
         throw err
       }
     }
