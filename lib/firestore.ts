@@ -87,6 +87,15 @@ export async function getUserData(uid: string) {
   return snap.exists() ? snap.data() as UserDocument : null
 }
 
+// Update basic user profile
+export async function updateUserDocument(uid: string, data: Partial<UserDocument>) {
+  const userRef = doc(db, 'users', uid)
+  await updateDoc(userRef, {
+    ...data,
+    lastActiveAt: serverTimestamp(),
+  })
+}
+
 // Update user XP and level
 export async function addXP(uid: string, amount: number) {
   const userRef = doc(db, 'users', uid)
@@ -245,6 +254,57 @@ export async function getLeaderboard(limitCount = 10) {
   return snap.docs.map((d, i) => ({
     rank: i + 1,
     ...d.data() as UserDocument
+  }))
+}
+
+// Get periodic leaderboard by aggregating quizResults
+export async function getPeriodicLeaderboard(period: 'weekly' | 'monthly', limitCount = 50) {
+  const now = new Date()
+  const days = period === 'weekly' ? 7 : 30
+  const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
+
+  const q = query(
+    collection(db, 'quizResults'),
+    where('completedAt', '>=', Timestamp.fromDate(cutoff))
+  )
+  const snap = await getDocs(q)
+  
+  const userXp: Record<string, number> = {}
+  snap.docs.forEach(doc => {
+    const data = doc.data()
+    userXp[data.userId] = (userXp[data.userId] || 0) + (data.xpEarned || 0)
+  })
+
+  const sortedUids = Object.entries(userXp)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, limitCount)
+
+  if (sortedUids.length === 0) return []
+
+  const topUsers: any[] = []
+  
+  for (let i = 0; i < sortedUids.length; i += 10) {
+    const chunk = sortedUids.slice(i, i + 10).map(u => u[0])
+    if (chunk.length === 0) continue
+    
+    const uq = query(collection(db, 'users'), where('uid', 'in', chunk))
+    const uSnap = await getDocs(uq)
+    const usersMap: Record<string, any> = {}
+    uSnap.docs.forEach(d => { usersMap[d.id] = d.data() })
+    
+    sortedUids.slice(i, i + 10).forEach(([uid, xp]) => {
+      if (usersMap[uid]) {
+         topUsers.push({
+           ...usersMap[uid],
+           xp, // overwrite their total XP with period XP
+         })
+      }
+    })
+  }
+
+  return topUsers.map((u, i) => ({
+    rank: i + 1,
+    ...u
   }))
 }
 

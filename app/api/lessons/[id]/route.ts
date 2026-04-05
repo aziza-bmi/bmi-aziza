@@ -24,7 +24,22 @@ export async function GET(
       return NextResponse.json({ id: lessonDoc.id, ...lessonDoc.data() });
     }
 
-    return NextResponse.json({ id: targetDoc.id, ...targetDoc.data() });
+    const pathSegments = targetDoc.ref.path.split('/');
+    let sectionId = '';
+    let chapterId = '';
+    
+    // Path should be like: sections/{sectionId}/chapters/{chapterId}/topics/{topicId}
+    if (pathSegments.length >= 6) {
+      sectionId = pathSegments[1];
+      chapterId = pathSegments[3];
+    }
+
+    return NextResponse.json({ 
+      id: targetDoc.id, 
+      sectionId,
+      chapterId,
+      ...targetDoc.data() 
+    });
   } catch (error) {
     console.error('Error fetching lesson:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

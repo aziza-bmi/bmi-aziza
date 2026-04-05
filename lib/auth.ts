@@ -6,8 +6,11 @@ import {
   signOut,
   updateProfile,
   User,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from './firebase'
 
 const googleProvider = new GoogleAuthProvider()
@@ -59,6 +62,17 @@ export async function createUserDocument(user: User, displayName: string) {
   }
 }
 
+export async function updateUserAuthProfile(user: User, displayName: string, photoURL: string) {
+  await updateProfile(user, { displayName, photoURL })
+}
+
+export async function updateUserAuthPassword(user: User, oldPassword: string, newPassword: string) {
+  if (!user.email) throw new Error("Email yo'q");
+  const credential = EmailAuthProvider.credential(user.email, oldPassword);
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, newPassword);
+}
+
 export function getAuthErrorMessage(code: string): string {
   const messages: Record<string, string> = {
     'auth/user-not-found': "Bu email topilmadi",
@@ -69,6 +83,7 @@ export function getAuthErrorMessage(code: string): string {
     'auth/invalid-email': "Email noto'g'ri formatda",
     'auth/too-many-requests': "Ko'p urinish. Biroz kutib turing",
     'auth/popup-closed-by-user': "Google kirish bekor qilindi",
+    'auth/requires-recent-login': "Xavfsizlik uchun hisobingizga qaytadan kirishingiz kerak",
   }
   return messages[code] || "Xatolik yuz berdi. Qaytadan urining"
 }
