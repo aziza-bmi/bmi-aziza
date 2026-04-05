@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
 import { db } from '@/lib/firebase'
 import {
-  collection, query, where, orderBy,
+  collection, query, where, orderBy, documentId,
   limit, getDocs, addDoc, deleteDoc,
   doc, serverTimestamp, Timestamp
 } from 'firebase/firestore'
@@ -166,19 +166,8 @@ QOIDALAR:
 
 export default function ChatPage() {
   const { user } = useAuth()
-  const [messages, setMessages] = useState<Message[]>([{
-    id: '0',
-    role: 'assistant',
-    content: `Salom! Men **GeoMind AI** — sizning geometriya bo'yicha shaxsiy muallimingizman. 🎓
-
-Men quyidagilar haqida yordam bera olaman:
-- **Geometriya** — formulalar, teoremalar, misollar
-- **GeoMind AI sayt** — darslar, testlar, laboratoriya
-- **Masalalar** — bosqichma-bosqich yechim
-
-Bugun qaysi mavzuda yordam kerak?`,
-    timestamp: new Date(),
-  }])
+  const [currentSessionId, setCurrentSessionId] = useState<string>('')
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sessions, setSessions] = useState<ChatSession[]>([])
@@ -189,6 +178,17 @@ Bugun qaysi mavzuda yordam kerak?`,
   const [mobileSidebar, setMobileSidebar] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    // initialize chat session ID on mount
+    setCurrentSessionId(Date.now().toString())
+    setMessages([{
+      id: '0',
+      role: 'assistant',
+      content: `Salom! Men **GeoMind AI** — sizning geometriya bo'yicha shaxsiy muallimingizman. 🎓\n\nMen quyidagilar haqida yordam bera olaman:\n- **Geometriya** — formulalar, teoremalar, misollar\n- **GeoMind AI sayt** — darslar, testlar, laboratoriya\n- **Masalalar** — bosqichma-bosqich yechim\n\nBugun qaysi mavzuda yordam kerak?`,
+      timestamp: new Date(),
+    }])
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -206,7 +206,7 @@ Bugun qaysi mavzuda yordam kerak?`,
         collection(db, 'chats'),
         where('userId', '==', user.uid),
         orderBy('timestamp', 'desc'),
-        limit(30)
+        limit(50)
       )
       const snap = await getDocs(q)
       const grouped: Record<string, ChatSession> = {}
@@ -215,10 +215,10 @@ Bugun qaysi mavzuda yordam kerak?`,
         const date = data.timestamp?.toDate
           ? data.timestamp.toDate().toLocaleDateString('uz-UZ')
           : 'Bugun'
-        const key = date + '_' + data.userMessage?.slice(0, 20)
+        const key = data.sessionId || (date + '_' + data.userMessage?.slice(0, 20))
         if (!grouped[key]) {
           grouped[key] = {
-            id: doc.id,
+            id: key,
             title: data.userMessage?.slice(0, 35) + 
               (data.userMessage?.length > 35 ? '...' : '') || 
               'Suhbat',
@@ -230,18 +230,83 @@ Bugun qaysi mavzuda yordam kerak?`,
           grouped[key].messageIds.push(doc.id)
         }
       })
-      setSessions(Object.values(grouped).slice(0, 15))
+      
+      // Keep sort order descending properly
+      const finalSessions = Object.values(grouped)
+      setSessions(finalSessions.slice(0, 20))
     } catch (e) {
       console.error(e)
     }
   }
 
-  async function deleteSession(sessionId: string) {
+  async function loadSpecificSession(sessionKey: string, messageIds: string[]) {
+    if (!user || messageIds.length === 0) return
+    setCurrentSessionId(sessionKey)
+    setIsLoading(true)
+    try {
+      const loadedMessages: Message[] = []
+      
+      for (let i = 0; i < messageIds.length; i += 10) {
+        const chunk = messageIds.slice(i, i + 10)
+        const q = query(collection(db, 'chats'), where(documentId(), 'in', chunk))
+        const snap = await getDocs(q)
+        
+        const docsData = snap.docs.map(d => ({ id: d.id, data: d.data() }))
+        docsData.sort((a, b) => {
+          const tA = a.data.timestamp?.toMillis() || 0
+          const tB = b.data.timestamp?.toMillis() || 0
+          return tA - tB
+        })
+        
+        docsData.forEach(d => {
+          loadedMessages.push({
+            id: d.id + '_user',
+            role: 'user',
+            content: d.data.userMessage,
+            timestamp: d.data.timestamp?.toDate() || new Date()
+          })
+          if (d.data.aiMessage) {
+              loadedMessages.push({
+                id: d.id + '_ai',
+                role: 'assistant',
+                content: d.data.aiMessage,
+                timestamp: d.data.timestamp?.toDate() || new Date()
+              })
+          }
+        })
+      }
+      
+      const initial: Message = {
+        id: '0',
+        role: 'assistant',
+        content: `Salom! Men **GeoMind AI** — sizning geometriya bo'yicha shaxsiy muallimingizman. 🎓\n\nMen quyidagilar haqida yordam bera olaman:\n- **Geometriya** — formulalar, teoremalar, misollar\n- **GeoMind AI sayt** — darslar, testlar, laboratoriya\n- **Masalalar** — bosqichma-bosqich yechim\n\nBugun qaysi mavzuda yordam kerak?`,
+        timestamp: new Date(),
+      }
+      
+      setMessages([initial, ...loadedMessages])
+      setMobileSidebar(false)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function deleteSession(sessionId: string, messageIds: string[]) {
     if (!user) return
     try {
-      await deleteDoc(doc(db, 'chats', sessionId))
+      // Create chunks and delete
+      for (let i = 0; i < messageIds.length; i += 10) {
+        const chunk = messageIds.slice(i, i + 10)
+        await Promise.all(chunk.map(id => deleteDoc(doc(db, 'chats', id))))
+      }
       setSessions(prev => prev.filter(s => s.id !== sessionId))
       setDeleteConfirm(null)
+      
+      // If deleted current active session, reset chat
+      if (sessionId === currentSessionId) {
+          startNewChat()
+      }
     } catch (e) {
       console.error(e)
     }
@@ -258,6 +323,7 @@ Bugun qaysi mavzuda yordam kerak?`,
       await Promise.all(snap.docs.map(d => deleteDoc(d.ref)))
       setSessions([])
       setShowClearAll(false)
+      startNewChat()
     } catch (e) {
       console.error(e)
     }
@@ -309,6 +375,7 @@ Bugun qaysi mavzuda yordam kerak?`,
 
       if (user) {
         await addDoc(collection(db, 'chats'), {
+          sessionId: currentSessionId,
           userId: user.uid,
           userMessage: userText,
           aiMessage: data.message,
@@ -320,7 +387,7 @@ Bugun qaysi mavzuda yordam kerak?`,
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.',
+        content: 'Kechirasiz, xatolik yuz berdi. Iltimos qisqaroq yoki boshqa savol berib ko\'ring. (API kvotasi tugagan bo\'lishi ham mumkin)',
         timestamp: new Date(),
         isError: true,
       }])
@@ -330,6 +397,7 @@ Bugun qaysi mavzuda yordam kerak?`,
   }
 
   function startNewChat() {
+    setCurrentSessionId(Date.now().toString())
     setMessages([{
       id: '0',
       role: 'assistant',
@@ -438,10 +506,11 @@ Bugun qaysi mavzuda yordam kerak?`,
             <div className="space-y-1">
               {filteredSessions.map((session) => (
                 <div key={session.id}
-                  className="group relative flex items-start
+                  onClick={() => loadSpecificSession(session.id, session.messageIds)}
+                  className={`group relative flex items-start
                              gap-2 p-3 rounded-xl cursor-pointer
                              hover:bg-indigo-50 dark:hover:bg-indigo-900/20
-                             transition-all">
+                             transition-all ${currentSessionId === session.id ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}>
                   <div className="w-7 h-7 rounded-full
                                   bg-indigo-100 dark:bg-indigo-900/40
                                   flex items-center justify-center
@@ -490,7 +559,7 @@ Bugun qaysi mavzuda yordam kerak?`,
                       </p>
                       <div className="flex gap-2">
                         <button
-                          onClick={() => deleteSession(session.id)}
+                          onClick={(e) => { e.stopPropagation(); deleteSession(session.id, session.messageIds) }}
                           className="flex-1 py-1 rounded-lg text-xs
                                      bg-red-500 text-white
                                      hover:bg-red-600 transition-colors"
@@ -498,7 +567,7 @@ Bugun qaysi mavzuda yordam kerak?`,
                           Ha
                         </button>
                         <button
-                          onClick={() => setDeleteConfirm(null)}
+                          onClick={(e) => { e.stopPropagation(); setDeleteConfirm(null) }}
                           className="flex-1 py-1 rounded-lg text-xs
                                      border border-slate-200
                                      dark:border-slate-600
@@ -561,24 +630,9 @@ Bugun qaysi mavzuda yordam kerak?`,
               </div>
             </div>
           </div>
-
+          
           <div className="flex items-center gap-2">
-            <button
-              onClick={startNewChat}
-              className="flex items-center gap-1.5 px-3 py-1.5
-                         rounded-xl text-xs text-slate-600
-                         dark:text-slate-300
-                         border border-slate-200
-                         dark:border-slate-700
-                         hover:bg-indigo-50 dark:hover:bg-indigo-900/20
-                         hover:text-indigo-600 dark:hover:text-indigo-400
-                         hover:border-indigo-200
-                         dark:hover:border-indigo-700/40
-                         transition-all"
-            >
-              <PenLine size={13} />
-              <span className="hidden sm:block">Yangi</span>
-            </button>
+			{/* Yangi chat tugmasi olib tashlandi, sababi yon panelda + mavjud */}
           </div>
         </div>
 
@@ -773,7 +827,7 @@ Bugun qaysi mavzuda yordam kerak?`,
                                    dark:text-slate-500">
                     {formatTime(msg.timestamp)}
                   </span>
-                  {msg.role === 'assistant' && (
+                  {msg.role === 'assistant' && !msg.isError && (
                     <button
                       onClick={() => copyMessage(msg.content, msg.id)}
                       className="w-6 h-6 rounded-lg flex items-center
@@ -1012,9 +1066,11 @@ Bugun qaysi mavzuda yordam kerak?`,
                 ) : (
                   filteredSessions.map(session => (
                     <div key={session.id}
-                      className="flex items-center gap-3 p-3
-                                 rounded-xl hover:bg-slate-50
-                                 dark:hover:bg-slate-800 transition-all">
+                      onClick={() => loadSpecificSession(session.id, session.messageIds)}
+                      className={`flex items-center gap-3 p-3
+                                 rounded-xl hover:bg-slate-50 cursor-pointer
+                                 dark:hover:bg-slate-800 transition-all
+                                 ${currentSessionId === session.id ? 'bg-indigo-50 dark:bg-indigo-900/10' : ''}`}>
                       <MessageCircle size={14}
                         className="text-indigo-400 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
@@ -1027,7 +1083,7 @@ Bugun qaysi mavzuda yordam kerak?`,
                         </p>
                       </div>
                       <button
-                        onClick={() => deleteSession(session.id)}
+                        onClick={(e) => { e.stopPropagation(); deleteSession(session.id, session.messageIds) }}
                         className="text-slate-300 hover:text-red-400
                                    transition-colors"
                       >

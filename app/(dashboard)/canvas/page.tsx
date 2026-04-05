@@ -129,6 +129,20 @@ $$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
     formula: '**Hajm:** $V = a^3$\n\n**To\'liq sirt:** $S = 6a^2$\n\n**Diagonal:** $d = a\\sqrt{3}$',
     properties: ['12 ta qirrasi bor','8 ta uchi bor','6 ta yuzi bor','Barcha yuzlar kvadrat'],
     example: 'a=3 → V = 27 sm³, S = 54 sm²',
+    content: `## Kub
+
+Kub — barcha yuzlari kvadratlar bo'lgan, o'lchamlari o'zaro teng fazoviy shakl. U **to'g'ri burchakli parallelepiped**ning maxsus turidir.
+
+### Elementlari
+- **Uchlari:** 8 ta uchi bor
+- **Qirralari:** 12 ta teng daxlsiz qirrasi bor
+- **Yuzalari:** 6 ta teng yuzasi bor
+
+### Formulalar
+- **Hajmi:** $V = a^3$
+- **To'liq sirti:** $S_{to'liq} = 6a^2$ 
+- **Yon sirti:** $S_{yon} = 4a^2$
+- **Diagonali:** $d = a\\sqrt{3}$`,
   },
   cylinder: {
     title: 'Silindr',
@@ -136,6 +150,19 @@ $$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
     formula: '**Hajm:** $V = \\pi r^2 h$\n\n**Yon sirt:** $S_{yon} = 2\\pi r h$\n\n**To\'liq sirt:** $S = 2\\pi r(r+h)$',
     properties: ['Ikki parallel asos','Yon sirt to\'g\'ri to\'rtburchak','r — asos radiusi','h — balandlik'],
     example: 'r=3, h=5 → V ≈ 141.37 sm³',
+    content: `## Silindr
+
+Silindr — to'g'ri to'rtburchakni uning tomoni atrofida aylanishidan hosil bo'ladigan fazoviy shakldir.
+
+### Elementlari
+- **Asoslari:** radiusga ega bo'lgan parallel ikkita doira
+- **Yon sirti:** tekislikka yozilsa, to'g'ri to'rtburchak bo'ladi
+- **Yasavchis ($l$):** Ikki asos doiralari aylanasidagi mos nuqtalarni birlashtiruvchi kesma. $l=h$ (To'g'ri silindrda)
+
+### Formulalar
+- **Hajmi:** $V = \\pi r^2 h$
+- **Yon sirti:** $S_{yon} = 2\\pi rh$
+- **To'liq sirti:** $S_{to'liq} = 2\\pi r(r + h)$`,
   },
   sphere: {
     title: 'Shar',
@@ -143,6 +170,18 @@ $$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
     formula: '**Hajm:** $V = \\frac{4}{3}\\pi r^3$\n\n**Sirt yuzi:** $S = 4\\pi r^2$',
     properties: ['R — markazdan uch nuqtaga masofa','Diametr: d = 2R','Kesim — doira','Aylanaga o\'xshash'],
     example: 'r=4 → V ≈ 268.08 sm³, S ≈ 201.06 sm²',
+    content: `## Shar va Sfera
+
+Fazoda belgilangan nuqtadan (markaz) ma'lum masofada bir tekisda taqsimlangan barcha nuqtalar to'plamiga **sfera** deyiladi. Sfera va uning ichki qismidan iborat jismga **shar** deyiladi. Doirani o'z diametri atrofida aylantirishdan hosil bo'ladi.
+
+### Elementlari
+- **Markazi:** Sharning (va sferaning) markazi
+- **Radiusi ($r$):** Markazidan sferadagi istalgan nuqtagacha bo'lgan masofa
+- **Diametri ($d$):** Sfera markazidan o'tib, sferaning o'zini birlashtiruvchi vatar ($d=2r$)
+
+### Formulalar
+- **Hajm:** $V = \\frac{4}{3}\\pi r^3$
+- **Sirt yuzi (Sfera yuzi):** $S = 4\\pi r^2$`,
   },
   pyramid: {
     title: 'Piramida',
@@ -150,6 +189,20 @@ $$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
     formula: '**Hajm:** $V = \\frac{1}{3} S_{asos} \\cdot h$\n\n**Yon sirt:** $S_{yon} = \\frac{1}{2} P \\cdot l$',
     properties: ['Asos — ko\'pburchak','Yon yuzlar — uchburchak','h — balandlik','l — apotem'],
     example: 'a=4, h=3 → V = 16 sm³',
+    content: `## Piramida
+
+Asosi istalgan ko'pburchak va qolgan barcha yon yuzlari qandaydir umumiy uchga ega bo'lgan uchburchaklardan iborat fazoviy ko'pyoqqa **piramida** deyiladi. 
+
+### Elementlari
+- **Asosi:** Har qanday shaklli ko'pburchak
+- **Yon yuzlari:** Piramidaning asosidan tortilib umumiy cho'qqigacha boruvchi uchburchaklar
+- **Balandlik ($h$):** Piramidaning uchidan asos tekisligiga perpendikulyar 
+- **Apotema ($l$):** Muntazam piramidaning yon yuzining o'z balandligi
+
+### Formulalar
+- **Hajmi:** $V = \\frac{1}{3} S_{asos} \\cdot h$
+- **To'la sirti:** $S_{to'liq} = S_{asos} + S_{yon}$
+- **Muntazam piramida yon sirti:** $S_{yon} = \\frac{1}{2} P_{asos} \\cdot l$`,
   },
   prism: {
     title: 'Prizma',
@@ -157,6 +210,19 @@ $$\\alpha = \\frac{(n-2) \\cdot 180°}{n}$$
     formula: '**Hajm:** $V = S_{asos} \\cdot h$\n\n**Sirt:** $S = 2S_{asos} + P_{asos} \\cdot h$',
     properties: ['Ikki parallel asos','Yon yuzlar — to\'rtburchak','h — balandlik','P — perimetr'],
     example: 'Asos: 3x4, h=5 → V = 60 sm³',
+    content: `## Prizma
+
+Asoslari bir-biriga teng ko'pburchaklar, hamma yon yuzlari esa parallelogrammlardan tashkil topgan fazoviy fizik-muhiti **prizma** deb ataladi. Asoslari turiga qarab uchburchakli, to'rtburchakli va ko'pburchakli prizmalar farqlanadi.
+
+### Elementlari
+- **Asoslari:** Ikkita kongruent (bir xil) va parallel ko'pburchaklar
+- **Yon yuzalari:** Asos bo'lmagan qirralardan tuzilgan parallelogrammlar
+- **Balandlik ($h$):** 2ta asos tekisliklari oraliqidagi perpendikulyar kesma uzunligi
+
+### Formulalar
+- **Hajmi:** $V = S_{asos} \\cdot h$
+- **Yon sirti:** (faqat to'g'ri prizmada) $S_{yon} = P_{asos} \\cdot h$
+- **To'la sirti:** $S_{to'liq} = S_{yon} + 2S_{asos}$`,
   },
   // Firestore / LESSONS_SEED topic ids
   'nuqta-chiziq-kesma': {
@@ -930,9 +996,35 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
             {leftTab==='theory'&&(<div className="space-y-2">
               {/* If a topic is selected, show detail card */}
               {selectedTopicId ? (() => {
+                const THEORY_ALIASES: Record<string, string> = {
+                  'uchburchak-turlari': 'uchburchaklar',
+                  'parallelogramm': 'rect',
+                  'kvadrat-turtburchak': 'rect',
+                  'doira-elementlari': 'circle',
+                  'koppurchaklar': 'polygon',
+                  'silindr-konus': 'cylinder',
+                  'shar-sfera': 'sphere',
+                  'vektor-tushunchasi': 'vektorlar',
+                  'burchaklar-va-ularning-turlari': 'burchak-turlari',
+                  'trapetsiya-turlari': 'rect',
+                  'uchburchak-chiziqlari': 'uchburchaklar',
+                  'uchburchak-oxshashligi': 'uchburchaklar',
+                  'aylana-doira': 'circle',
+                  'aylana-burchaklar': 'circle',
+                  'simmetriya': 'circle',
+                  'sinus-kosinus': 'uchburchaklar',
+                  'sinuslar-kosinuslar': 'uchburchaklar',
+                  'parallellik-perpendikulyarlik': 'nuqta-chiziq-kesma',
+                  'prizma': 'prism',
+                  'piramida': 'pyramid',
+                  'kesimlari': 'prism',
+                  'kombinatsiyalar': 'cube'
+                };
+                
+                const mappedId = THEORY_ALIASES[selectedTopicId] || selectedTopicId;
+
                 // 1. Check static THEORY_DATA first
-                let theoryEntry: any = THEORY_DATA[selectedTopicId] || Object.values(THEORY_DATA).find((t:any) => t.title === selectedTopicId);
-                let customContent: string | null = null;
+                let theoryEntry: any = THEORY_DATA[mappedId] || Object.values(THEORY_DATA).find((t:any) => t.title === selectedTopicId);
 
                 // 2. If not found, deep-search in theorySections
                 if (!theoryEntry) {
@@ -955,10 +1047,14 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                     if (found) break;
                   }
                   if (found) {
-                    customContent = found.content || null;
+                    let defText = found.description || '';
+                    if (!defText && found.content) {
+                       const clean = found.content.replace(/#/g, '').replace(/\*/g, '').replace(/\[.*\]\(.*\)/g, '').split('\n').filter((l:string) => l.trim().length > 0)[0] || '';
+                       defText = clean.substring(0, 150) + (clean.length > 150 ? '...' : '');
+                    }
                     theoryEntry = {
                       title: found.title || selectedTopicId,
-                      definition: found.description || (!found.content ? found.content : '') || '',
+                      definition: defText || 'Ushbu mavzu bo\'yicha to\'liq ma\'lumotlar bazada hozircha mavjud emas. Pastdagi "AI tahlil" orqali sun\'iy intellektdan batafsil so\'rang!',
                       formula: found.formula || '',
                       properties: found.properties || [],
                       example: found.examples ? found.examples.join('\n') : '',
@@ -971,13 +1067,7 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                 return theoryEntry ? (
                   <div className="space-y-3">
                     <button onClick={()=>setSelectedTopicId(null)} className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 transition-colors mb-2"><ChevronLeft size={14}/>Orqaga</button>
-                    {customContent ? (
-                       <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/40 prose prose-sm dark:prose-invert max-w-none text-xs leading-relaxed">
-                         <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{customContent}</ReactMarkdown>
-                       </div>
-                    ) : (
-                      <>
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/30 dark:to-blue-900/20 border border-indigo-100 dark:border-indigo-800/40">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/30 dark:to-blue-900/20 border border-indigo-100 dark:border-indigo-800/40">
                           <h3 className="text-sm font-bold text-indigo-800 dark:text-indigo-200 mb-1.5">{theoryEntry.title}</h3>
                           <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{theoryEntry.definition}</p>
                         </div>
@@ -1005,8 +1095,6 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                             <p className="text-xs text-amber-700 dark:text-amber-300">{theoryEntry.example}</p>
                           </div>
                         )}
-                      </>
-                    )}
                     <div className="flex gap-2">
                       <button onClick={()=>{const ls=LIBRARY_SHAPES.find(s=>s.type===selectedTopicId);if(ls)addLibraryShape(ls)}} className="flex-1 btn-gradient py-2 rounded-xl text-xs font-medium">Canvas →</button>
                       <button onClick={()=>{setAiMode('ask');setRightPanelOpen(true);sendAIMessage(`"${topicTitle}" mavzusini tahlil qilib ber`, 'ask')}} className="flex-1 py-2 rounded-xl text-xs font-medium border border-indigo-300 dark:border-indigo-700 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors">AI tahlil</button>

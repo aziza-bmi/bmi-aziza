@@ -23,8 +23,12 @@ export default function AuthLayout({
 
       <div className="relative z-10 w-full max-w-md px-6 my-12">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500 mb-2">
-            GeoMind
+          <Link href="/" className="inline-flex items-center gap-2 mb-2">
+            <img src="/logo-light.png" alt="GeoMind Logo" className="w-10 h-10 dark:hidden object-contain" />
+            <img src="/logo-dark.png" alt="GeoMind Logo" className="w-10 h-10 hidden dark:block object-contain" />
+            <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
+              GeoMind
+            </span>
           </Link>
           <p className="text-slate-500 text-sm">Sun'iy intellekt yordamida geometriya</p>
         </div>

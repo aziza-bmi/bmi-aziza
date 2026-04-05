@@ -6,9 +6,10 @@ import ThemeToggle from '@/components/shared/ThemeToggle'
 
 const navLinks = [
   { href: '/', label: 'Bosh sahifa' },
-  { href: '/lessons', label: 'Darslar' },
-  { href: '/chat', label: 'AI Muallim' },
-  { href: '/quiz', label: 'Testlar' },
+  { href: '#how-it-works', label: 'Qanday ishlaydi' },
+  { href: '#features', label: 'Xususiyatlar' },
+  { href: '#faq', label: 'Savollar' },
+  { href: '#contact', label: 'Aloqa' },
 ]
 
 export default function Navbar() {
@@ -27,12 +28,14 @@ export default function Navbar() {
       transition={{ duration: 0.5 }}
       className={`sticky top-0 z-50 flex items-center justify-between px-8 h-16 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/80 backdrop-blur-xl border-b border-primary-50 shadow-sm'
+          ? 'bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl border-b border-primary-50 dark:border-slate-800 shadow-sm'
           : 'bg-transparent'
       }`}
     >
-      <Link href="/" className="gradient-text text-lg font-medium">
-        GeoMind
+      <Link href="/" className="flex items-center gap-2">
+        <img src="/logo-light.png" alt="GeoMind Logo" className="w-8 h-8 dark:hidden object-contain" />
+        <img src="/logo-dark.png" alt="GeoMind Logo" className="w-8 h-8 hidden dark:block object-contain" />
+        <span className="gradient-text text-lg font-medium">GeoMind</span>
       </Link>
 
       <div className="flex items-center gap-6">

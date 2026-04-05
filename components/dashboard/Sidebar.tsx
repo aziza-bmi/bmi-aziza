@@ -34,8 +34,12 @@ export default function Sidebar() {
     <aside className={`${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex-col h-full hidden lg:flex shrink-0`}>
       <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
         {!isCollapsed && (
-          <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500 overflow-hidden whitespace-nowrap">
-            GeoMind
+          <Link href="/" className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+            <img src="/logo-light.png" alt="GeoMind Logo" className="w-8 h-8 dark:hidden object-contain" />
+            <img src="/logo-dark.png" alt="GeoMind Logo" className="w-8 h-8 hidden dark:block object-contain" />
+            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
+              GeoMind
+            </span>
           </Link>
         )}
         <button onClick={() => setIsCollapsed(!isCollapsed)} className={`p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all ${isCollapsed ? 'mx-auto' : ''}`}>

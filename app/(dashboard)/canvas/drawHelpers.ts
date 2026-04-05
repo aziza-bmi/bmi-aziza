@@ -5,18 +5,17 @@ export function calcShapeInfo(shape: Shape): Record<string,string> {
   if (shape.type === 'rect' && shape.points.length >= 2) {
     const w = Math.abs(shape.points[1].x - shape.points[0].x)
     const h = Math.abs(shape.points[1].y - shape.points[0].y)
-    return { Kenglik:`${(w*s).toFixed(1)} sm`, Balandlik:`${(h*s).toFixed(1)} sm`, Perimetr:`${(2*(w+h)*s).toFixed(1)} sm`, Yuza:`${(w*h*s*s).toFixed(2)} sm²`, Diagonal:`${(Math.sqrt(w*w+h*h)*s).toFixed(2)} sm` }
+    return { Kenglik:`${(w*s).toFixed(1)} sm`, Balandlik:`${(h*s).toFixed(1)} sm` }
   }
   if (shape.type === 'circle' && shape.points.length >= 2) {
     const dx=shape.points[1].x-shape.points[0].x, dy=shape.points[1].y-shape.points[0].y
     const r = Math.sqrt(dx*dx+dy*dy)*s
-    return { Radius:`${r.toFixed(2)} sm`, Diametr:`${(r*2).toFixed(2)} sm`, Aylanasi:`${(2*Math.PI*r).toFixed(2)} sm`, Yuza:`${(Math.PI*r*r).toFixed(2)} sm²` }
+    return { Radius:`${r.toFixed(2)} sm`, Diametr:`${(r*2).toFixed(2)} sm` }
   }
   if (shape.type === 'triangle' && shape.points.length >= 2) {
     const p0=shape.points[0], p1=shape.points[1], midX=(p0.x+p1.x)/2
     const a=Math.sqrt((p1.x-p0.x)**2+(p1.y-p0.y)**2)*s, b=Math.sqrt((p1.x-midX)**2+(p1.y-p0.y)**2)*s, c=Math.sqrt((midX-p0.x)**2+(p0.y-p1.y)**2)*s
-    const sp=(a+b+c)/2, area=Math.sqrt(Math.max(0,sp*(sp-a)*(sp-b)*(sp-c)))
-    return { 'Tomon a':`${a.toFixed(2)} sm`, 'Tomon b':`${b.toFixed(2)} sm`, 'Tomon c':`${c.toFixed(2)} sm`, Perimetr:`${(a+b+c).toFixed(2)} sm`, Yuza:`${area.toFixed(2)} sm²` }
+    return { 'Tomon a':`${a.toFixed(2)} sm`, 'Tomon b':`${b.toFixed(2)} sm`, 'Tomon c':`${c.toFixed(2)} sm` }
   }
   if (shape.type === 'line' && shape.points.length >= 2) {
     const dx=shape.points[1].x-shape.points[0].x, dy=shape.points[1].y-shape.points[0].y
@@ -26,12 +25,7 @@ export function calcShapeInfo(shape: Shape): Record<string,string> {
     const w = Math.abs(shape.points[1].x - shape.points[0].x)
     const h = Math.abs(shape.points[1].y - shape.points[0].y)
     const a = Math.min(w, h) * s
-    return {
-      'Tomon (a)': `${a.toFixed(1)} sm`,
-      'Hajm': `${(a*a*a).toFixed(2)} sm³`,
-      'To\'liq sirt': `${(6*a*a).toFixed(2)} sm²`,
-      'Diagonal': `${(a*Math.sqrt(3)).toFixed(2)} sm`,
-    }
+    return { 'Tomon (a)': `${a.toFixed(1)} sm` }
   }
   if (shape.type === 'cylinder' && shape.points.length >= 2) {
     const w = Math.abs(shape.points[1].x - shape.points[0].x)
@@ -40,13 +34,7 @@ export function calcShapeInfo(shape: Shape): Record<string,string> {
     const rx = (w - depth) / 2
     const r = rx * s
     const height = h * s
-    return {
-      'Radius (r)': `${r.toFixed(2)} sm`,
-      'Balandlik (h)': `${height.toFixed(2)} sm`,
-      'Hajm': `${(Math.PI*r*r*height).toFixed(2)} sm³`,
-      'Yon sirt': `${(2*Math.PI*r*height).toFixed(2)} sm²`,
-      'To\'liq sirt': `${(2*Math.PI*r*(r+height)).toFixed(2)} sm²`,
-    }
+    return { 'Radius (r)': `${r.toFixed(2)} sm`, 'Balandlik (h)': `${height.toFixed(2)} sm` }
   }
   if (shape.type === 'cone' && shape.points.length >= 2) {
     const w = Math.abs(shape.points[1].x - shape.points[0].x)
@@ -56,46 +44,23 @@ export function calcShapeInfo(shape: Shape): Record<string,string> {
     const r = rx * s
     const height = h * s
     const l = Math.sqrt(r*r + height*height)
-    return {
-      'Radius (r)': `${r.toFixed(2)} sm`,
-      'Balandlik (h)': `${height.toFixed(2)} sm`,
-      'Apotem (l)': `${l.toFixed(2)} sm`,
-      'Hajm': `${((Math.PI*r*r*height)/3).toFixed(2)} sm³`,
-      'Yon sirt': `${(Math.PI*r*l).toFixed(2)} sm²`,
-    }
+    return { 'Radius (r)': `${r.toFixed(2)} sm`, 'Balandlik (h)': `${height.toFixed(2)} sm`, 'Apotema (l)': `${l.toFixed(2)} sm` }
   }
   if (shape.type === 'sphere' && shape.points.length >= 2) {
     const w = Math.abs(shape.points[1].x - shape.points[0].x)
     const h = Math.abs(shape.points[1].y - shape.points[0].y)
     const r = Math.min(w, h) / 2 * s
-    return {
-      'Radius (r)': `${r.toFixed(2)} sm`,
-      'Diametr': `${(r*2).toFixed(2)} sm`,
-      'Hajm': `${((4/3)*Math.PI*r*r*r).toFixed(2)} sm³`,
-      'Sirt yuzi': `${(4*Math.PI*r*r).toFixed(2)} sm²`,
-    }
+    return { 'Radius (r)': `${r.toFixed(2)} sm`, 'Diametr': `${(r*2).toFixed(2)} sm` }
   }
   if (shape.type === 'pyramid' && shape.points.length >= 2) {
     const w = Math.abs(shape.points[1].x - shape.points[0].x) * s
     const h = Math.abs(shape.points[1].y - shape.points[0].y) * s
-    return {
-      'Asos tomoni (a)': `${w.toFixed(2)} sm`,
-      'Balandlik (h)': `${h.toFixed(2)} sm`,
-      'Asos yuzi': `${(w*w).toFixed(2)} sm²`,
-      'Hajm': `${((w*w*h)/3).toFixed(2)} sm³`,
-      'Yon sirt': `${(2*w*Math.sqrt((w/2)*(w/2)+h*h)).toFixed(2)} sm²`,
-    }
+    return { 'Asos tomoni (a)': `${w.toFixed(2)} sm`, 'Balandlik (h)': `${h.toFixed(2)} sm` }
   }
   if (shape.type === 'prism' && shape.points.length >= 2) {
     const w = Math.abs(shape.points[1].x - shape.points[0].x) * s
     const h = Math.abs(shape.points[1].y - shape.points[0].y) * s
-    return {
-      'Asos (a)': `${w.toFixed(2)} sm`,
-      'Balandlik (h)': `${h.toFixed(2)} sm`,
-      'Hajm': `${(w*w*h).toFixed(2)} sm³`,
-      'Yon sirt': `${(4*w*h).toFixed(2)} sm²`,
-      'To\'liq sirt': `${(4*w*h + 2*w*w).toFixed(2)} sm²`,
-    }
+    return { 'Asos (a)': `${w.toFixed(2)} sm`, 'Balandlik (h)': `${h.toFixed(2)} sm` }
   }
   return {}
 }

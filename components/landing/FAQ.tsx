@@ -12,39 +12,40 @@ export default function FAQ() {
   const faqs = [
     {
       q: "GeoMind bepulmi?",
-      a: "Ha, platformaning asosiy qismlari barcha baribir bepul. Qo\'shimcha premium imkoniyatlar (masalan, cheksiz AI so\'rovlar) uchun obuna bo\'lishingiz mumkin."
+      a: "Ha, platformaning asosiy bo'limlari hisob yaratgan barcha uchun bepul. Sun'iy intellektdan cheksiz foydalanish va ilg'or funksiyalar uchun maxsus obuna tizimi ham mavjud."
     },
     {
       q: "Qanday bilim darajasi talab qilinadi?",
-      a: "Platforma barcha darajalar uchun moslashtirilgan. Siz o\'z darajangizni belgilaysiz, va AI sizga mos darslarni taqdim etadi."
+      a: "Platforma barcha yoshdagi o'quvchilar uchun moslashtirilgan. Siz o'z darajangizni belgilaganingizdan so'ng, tizim aynan malakangizga mos darslarni va masalalarni taqdim etadi."
     },
     {
-      q: "AI Muallim qanday ishlaydi?",
-      a: "AI Muallim OpenAI va maxsus tayyorlangan matematik modellar yordamida ishlaydi. U savollaringizni tahlil qilib, nafaqat to\'g\'ri javobni beradi, balki yechim yo\'lini bosqichma-bosqich tushuntiradi."
+      q: "Ai muallim qanday ishlaydi?",
+      a: "Murakkab generativ va riyoziy modellar yordamida ishlaydi. U savollaringizning mantig'ini tushunib, nafaqat to'g'ri javobni beradi, balki yechimni to'liq tasviriy tushuntiradi."
     },
     {
-      q: "Interaktiv Canvas nima?",
-      a: "Interaktiv Canvas yordamida siz geometrik shakllarni vizual tarzda chizishingiz va parametrlarini o\'zgartirishingiz mumkin. AI siz chizgan shakllar ustida masalalar tuzib beradi."
+      q: "Interaktiv canvas nima?",
+      a: "Canvas yordamida siz geometrik shakllarni xuddi laboratoriyadagidek vizual tarzda chizishingiz va qiymatlarini o'zgartirib tajriba qilishingiz mumkin."
     },
     {
-      q: "Testlar qanday tuzilgan?",
-      a: "Testlar sizning oldingi natijalaringiz va zaif tomonlaringizga asoslanib dinamik tarzda tuziladi. Har bir noto\'g\'ri javob uchun batafsil izoh beriladi."
+      q: "Testlar tizimi qanday ishlaydi?",
+      a: "Testlar sizning oldingi natijalaringiz o'sishiga qarab dinamik tarzda murakkablashadi. Xato qilingan masalalar uchun esa batafsil AI izohlari beriladi."
     },
     {
-      q: "Platforma mobil qurilmalarda ishlaydimi?",
-      a: "Ha, GeoMind barcha qurilmalar (Smartfon, Planshet va Noutbuklar) uchun to'liq responsiv qilib ishlangan."
+      q: "Barcha qurilmalarda ishlaydimi?",
+      a: "Tizim to'liq responsiv bo'lib, mobil telefonlar, planshetlar va kompyuterlar ekrani uchun maxsus moslashuvchan dizaynga ega."
     },
     {
-      q: "Ota-onalar farzandining natijasini kuzata oladimi?",
-      a: "Ota-onalar paneli orqali farzandingizning o\'zlashtirishi, qancha vaqt sarflayotgani va zaif tomonlari ko\'rsatib boriladi."
+      q: "Ota-onalar farzandining natijasini ko'radimi?",
+      a: "Albatta, maxsus panel orqali farzandingiz aynan qaysi mavzularda qiynalayotganini va platformada qancha vaqt sarflayotganini kuzatib borishingiz mumkin."
     }
   ]
 
   return (
-    <section className="py-24 w-full max-w-4xl mx-auto px-6 relative z-10">
+    <section className="py-24 w-full max-w-4xl mx-auto px-6 relative z-10" id="faq">
       <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-medium mt-2 mb-4 text-slate-900">Ko'p beriladigan savollar</h2>
-        <p className="text-slate-500 text-lg">Platforma haqida qisqacha ma'lumotlar</p>
+        <span className="text-indigo-600 font-medium px-4 py-1.5 rounded-full bg-indigo-50 text-sm">Savollar</span>
+        <h2 className="text-3xl md:text-4xl font-medium mt-6 mb-4 text-slate-900">Ko'p beriladigan savollar</h2>
+        <p className="text-slate-500 text-lg">Platforma imkoniyatlari haqida qisqacha ma'lumotlar</p>
       </div>
 
       <motion.div
@@ -55,12 +56,14 @@ export default function FAQ() {
       >
         <Accordion className="w-full space-y-4">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`item-${i}`} className="bg-white/70 backdrop-blur-md border border-slate-100 rounded-2xl px-6 data-[state=open]:shadow-md transition-all">
-              <AccordionTrigger className="text-left font-medium text-slate-800 hover:no-underline py-5">
+            <AccordionItem key={i} value={`item-${i}`} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-2xl px-2 sm:px-6 data-[state=open]:shadow-lg data-[state=open]:bg-white dark:data-[state=open]:bg-slate-900 transition-all duration-300 overflow-hidden">
+              <AccordionTrigger className="text-left font-semibold text-slate-800 dark:text-slate-200 hover:no-underline py-5 px-4 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-slate-500 leading-relaxed pb-6 text-base">
-                {faq.a}
+              <AccordionContent className="text-slate-600 dark:text-slate-400 leading-relaxed text-base px-0 pb-5">
+                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-xl p-5 mx-4 shadow-sm">
+                  {faq.a}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}

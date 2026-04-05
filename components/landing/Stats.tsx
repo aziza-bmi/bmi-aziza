@@ -5,10 +5,10 @@ import { Users, BookOpen, TrendingUp, Star } from 'lucide-react'
 
 export default function Stats() {
   const stats = [
-    { num: '12,500+', label: 'Faol foydalanuvchi', icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { num: '200+', label: 'Interaktiv dars', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { num: '98%', label: 'Muvaffaqiyat darajasi', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { num: '4.9', label: 'O\'rtacha reyting', icon: Star, color: 'text-amber-500', bg: 'bg-amber-50' },
+    { num: '71+', label: 'Geometriya mavzulari', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { num: '1,500+', label: 'Interaktiv masalalar', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { num: '24/7', label: 'Ai Muallim yordami', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { num: '4.9/5', label: 'O\'zlashtirish siri', icon: Star, color: 'text-amber-500', bg: 'bg-amber-50' },
   ]
 
   return (
