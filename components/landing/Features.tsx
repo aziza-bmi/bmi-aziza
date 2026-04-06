@@ -80,7 +80,7 @@ export default function Features() {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="text-center mb-10 md:mb-16">
-        <span className="text-indigo-600 font-medium px-4 py-1.5 rounded-full bg-indigo-50 text-sm">Xususiyatlar</span>
+        <span className="text-indigo-600 dark:text-indigo-400 font-medium px-4 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-sm">Xususiyatlar</span>
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mt-4 md:mt-6 mb-3 md:mb-4 text-slate-900 dark:text-white">Nima uchun GeoMind?</h2>
         <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-sm md:text-lg">
           An'anaviy ta'limdan farqli — sun'iy intellekt bilan o'rganish tezroq, qiziqarliroq va samaraliroq.
@@ -100,17 +100,17 @@ export default function Features() {
                 onMouseEnter={() => setActiveIdx(i)}
                 className={`p-5 rounded-2xl cursor-pointer transition-all duration-300 border ${
                   isActive 
-                    ? 'bg-white shadow-xl shadow-indigo-100/40 border-indigo-100 scale-[1.02] transform' 
-                    : 'bg-white/50 border-transparent hover:bg-white/80'
+                    ? 'bg-white dark:bg-slate-800/80 shadow-xl shadow-indigo-100/40 dark:shadow-none border-indigo-100 dark:border-indigo-800/40 scale-[1.02] transform' 
+                    : 'bg-white/50 dark:bg-slate-800/30 border-transparent hover:bg-white/80 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl text-white flex items-center justify-center shrink-0 transition-colors ${isActive ? item.color : 'bg-slate-200 text-slate-500'}`}>
+                  <div className={`w-12 h-12 rounded-xl text-white flex items-center justify-center shrink-0 transition-colors ${isActive ? item.color : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
                     <Icon className="w-6 h-6" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className={`font-semibold ${isActive ? 'text-slate-900' : 'text-slate-700'}`}>
+                      <h3 className={`font-semibold ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
                         {item.title}
                       </h3>
                       {item.badge && isActive && (
@@ -123,7 +123,7 @@ export default function Features() {
                       <motion.p 
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
-                        className="text-sm text-slate-500 mt-2 leading-relaxed"
+                        className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed"
                       >
                         {item.desc}
                       </motion.p>
@@ -144,21 +144,21 @@ export default function Features() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-slate-50 border border-slate-100 rounded-[2rem] overflow-hidden flex flex-col shadow-inner"
+              className="absolute inset-0 bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/40 rounded-[2rem] overflow-hidden flex flex-col shadow-inner"
             >
               {/* Yuqori matn */}
-              <div className="p-8 pb-6 relative z-10 bg-gradient-to-b from-slate-50 to-transparent">
+              <div className="p-8 pb-6 relative z-10 bg-gradient-to-b from-slate-50 dark:from-slate-800 to-transparent">
                 <div className={`w-14 h-14 rounded-2xl ${features[activeIdx].color} text-white flex items-center justify-center shadow-lg mb-6`}>
                   {(() => {
                     const ActiveIcon = features[activeIdx].icon
                     return <ActiveIcon className="w-7 h-7" />
                   })()}
                 </div>
-                <h3 className="text-3xl font-semibold mb-3 text-slate-900">{features[activeIdx].title}</h3>
-                <p className="text-slate-600 leading-relaxed text-lg mb-6">
+                <h3 className="text-3xl font-semibold mb-3 text-slate-900 dark:text-white">{features[activeIdx].title}</h3>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg mb-6">
                   {features[activeIdx].moreDetails}
                 </p>
-                <Link href="/register" className="inline-flex items-center text-indigo-600 font-medium group hover:text-indigo-700 transition-colors">
+                <Link href="/register" className="inline-flex items-center text-indigo-600 dark:text-indigo-400 font-medium group hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
                   Batafsil ma'lumot olish
                   <ChevronRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
                 </Link>
