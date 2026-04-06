@@ -104,7 +104,7 @@ export default function SettingsPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="p-6 lg:p-8 max-w-2xl"
+      className="max-w-lg md:max-w-2xl"
     >
       <h1 className="text-2xl font-medium text-slate-800 
                      dark:text-slate-100 mb-6">
@@ -122,7 +122,7 @@ export default function SettingsPage() {
                             dark:border-slate-700/40 overflow-hidden p-0">
               {section.items.map((item, ii) => (
                 <div key={ii}
-                  className={`flex items-center gap-4 px-5 py-4
+                  className={`flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 min-h-[56px]
                              ${ii < section.items.length - 1 
                                ? 'border-b border-slate-100 dark:border-slate-700/40' 
                                : ''}`}>

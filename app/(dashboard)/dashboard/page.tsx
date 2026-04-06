@@ -128,21 +128,21 @@ export default function DashboardPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="p-6 lg:p-8 max-w-7xl mx-auto"
+      className="max-w-7xl mx-auto"
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between mb-6 md:mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
             Salom, {displayName.split(' ')[0]}! 👋
           </h1>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
             Bugun ham geometriya o'rganamizmi?
           </p>
         </div>
-        <span className="text-sm font-medium text-slate-400 dark:text-slate-500 bg-white/50 px-3 py-1.5 rounded-lg border border-slate-100">
+        <span className="hidden sm:block text-xs md:text-sm font-medium text-slate-400 dark:text-slate-500 bg-white/50 px-2 md:px-3 py-1 md:py-1.5 rounded-lg border border-slate-100">
           {new Date().toLocaleDateString('uz-UZ', {
-            weekday: 'long', day: 'numeric', month: 'long'
+            weekday: 'short', day: 'numeric', month: 'short'
           })}
         </span>
       </div>
@@ -309,18 +309,18 @@ export default function DashboardPage() {
                            dark:text-slate-100 mb-5">
               Tezkor harakatlar
             </h2>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-2 md:gap-3">
               {[
-                { label: 'AI Muallim bilan gaplashish', href: '/chat', primary: true, icon: '🤖' },
-                { label: 'Yangi dars boshlash', href: '/lessons', primary: false, icon: '📚' },
-                { label: 'Bilimni tekshirish', href: '/lessons', primary: false, icon: '🎯' }, // Default quiz happens inside lesson categories
+                { label: 'AI Muallim', href: '/chat', primary: true, icon: '🤖' },
+                { label: 'Yangi dars', href: '/lessons', primary: false, icon: '📚' },
+                { label: 'Bilimni tekshirish', href: '/quiz', primary: false, icon: '🎯' },
               ].map((btn, i) => (
                 <Link key={i} href={btn.href}
                   className={`flex items-center justify-between w-full
-                             px-4 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-sm group
+                             px-3 md:px-4 py-3 md:py-3.5 rounded-2xl text-sm font-bold transition-all shadow-sm group
                              ${btn.primary
                                ? 'btn-gradient text-white hover:-translate-y-0.5 shadow-indigo-500/20'
-                               : 'bg-white border-2 border-slate-100 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/50'}`}>
+                               : 'bg-white dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-200 hover:bg-indigo-50/50'}`}>
                   <span className="flex items-center gap-2"><span>{btn.icon}</span> {btn.label}</span>
                   <ChevronRight size={16} className={btn.primary ? 'opacity-80 group-hover:opacity-100' : 'text-slate-400 group-hover:text-indigo-500'} />
                 </Link>

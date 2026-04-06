@@ -103,7 +103,7 @@ export default function SectionPage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6 lg:p-8 max-w-4xl"
+      className="max-w-4xl"
     >
       {/* Back */}
       <Link href="/lessons"
@@ -289,7 +289,7 @@ export default function SectionPage() {
                       key={topic.id}
                       href={locked ? '#' :
                         `/lessons/${sectionId}/${chapter.id}/${topic.id}`}
-                      className={`flex items-center gap-4 px-5 py-4
+                      className={`flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 min-h-[60px]
                                  transition-all
                                  ${locked
                                    ? 'opacity-50 cursor-not-allowed'

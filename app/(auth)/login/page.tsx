@@ -42,9 +42,9 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-semibold text-slate-800 mb-2">Platformaga kirish</h2>
-        <p className="text-slate-500 text-sm">Davom etish uchun hisobingizga kiring</p>
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">Platformaga kirish</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">Davom etish uchun hisobingizga kiring</p>
       </div>
 
       {error && (
@@ -84,7 +84,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="email@example.com"
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-slate-800"
+              className="w-full pl-11 pr-4 py-2.5 h-11 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
         </div>
@@ -104,12 +104,12 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-slate-800"
+              className="w-full pl-11 pr-4 py-2.5 h-11 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
         </div>
 
-        <button disabled={loading} type="submit" className="w-full btn-gradient py-3.5 rounded-xl font-medium text-white shadow-lg flex justify-center items-center gap-2 mt-6 disabled:opacity-50">
+        <button disabled={loading} type="submit" className="w-full h-11 btn-gradient py-2.5 rounded-xl font-medium text-white shadow-lg flex justify-center items-center gap-2 mt-4 md:mt-6 disabled:opacity-50">
           <LogIn className="w-5 h-5" />
           {loading ? 'Kutilmoqda...' : 'Kirish'}
         </button>

@@ -12,8 +12,8 @@ export default function Stats() {
   ]
 
   return (
-    <section className="py-12 w-full max-w-6xl mx-auto px-6 z-10 relative">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <section className="py-8 md:py-12 w-full max-w-6xl mx-auto px-4 sm:px-6 z-10 relative">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (

@@ -210,8 +210,8 @@ export default function QuizPage() {
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto space-y-6">
 
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Bilimingizni sinang</h1>
+        <div className="p-4 md:p-6">
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">Bilimingizni sinang</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Istalgan mavzu bo&apos;yicha AI test yarating va ishlang
           </p>
@@ -326,7 +326,7 @@ export default function QuizPage() {
                                                 <div className={`w-2 h-2 rounded-full shrink-0 ${qCount > 0 ? 'bg-emerald-400' : 'bg-slate-300 dark:bg-slate-600'}`} />
                                                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{topic.title}</p>
                                               </div>
-                                              <div className="flex items-center gap-2 shrink-0">
+                                              <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                                                 {qCount > 0 && (
                                                   <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-1 rounded-lg">
                                                     {qCount} savol

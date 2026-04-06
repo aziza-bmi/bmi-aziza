@@ -74,22 +74,22 @@ export default function Features() {
 
   return (
     <section 
-      className="py-24 w-full max-w-7xl mx-auto px-6 relative z-10" 
+      className="py-14 md:py-24 w-full max-w-7xl mx-auto px-4 sm:px-6 relative z-10" 
       id="features"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="text-center mb-16">
+      <div className="text-center mb-10 md:mb-16">
         <span className="text-indigo-600 font-medium px-4 py-1.5 rounded-full bg-indigo-50 text-sm">Xususiyatlar</span>
-        <h2 className="text-4xl md:text-5xl font-medium mt-6 mb-4 text-slate-900">Nima uchun GeoMind?</h2>
-        <p className="text-slate-500 max-w-2xl mx-auto text-lg">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mt-4 md:mt-6 mb-3 md:mb-4 text-slate-900 dark:text-white">Nima uchun GeoMind?</h2>
+        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-sm md:text-lg">
           An'anaviy ta'limdan farqli — sun'iy intellekt bilan o'rganish tezroq, qiziqarliroq va samaraliroq.
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-10 min-h-[600px]">
+      <div className="flex flex-col lg:flex-row gap-6 md:gap-10 min-h-auto lg:min-h-[600px]">
         {/* Chap qism (Kartalar ro'yxati) */}
-        <div className="w-full lg:w-5/12 flex flex-col gap-3">
+        <div className="w-full lg:w-5/12 flex flex-col gap-2 md:gap-3">
           {features.map((item, i) => {
             const Icon = item.icon
             const isActive = activeIdx === i

@@ -942,7 +942,7 @@ export default function ChatPage() {
                   sendMessage()
                 }
               }}
-              placeholder="Savolingizni yozing... (Enter — yuborish, Shift+Enter — yangi qator)"
+              placeholder="Savol yozing... (Enter — yuborish)"
               rows={1}
               className="flex-1 resize-none text-sm bg-transparent
                          text-slate-800 dark:text-slate-100

@@ -1,9 +1,11 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import Sidebar from '@/components/dashboard/Sidebar'
 import BottomNav from '@/components/dashboard/BottomNav'
+import { Menu } from 'lucide-react'
+import Link from 'next/link'
 
 export default function DashboardLayout({
   children,
@@ -13,6 +15,7 @@ export default function DashboardLayout({
   const { user, loading } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (!loading && !user) router.push('/login')
@@ -40,13 +43,31 @@ export default function DashboardLayout({
   const isCanvas = pathname === '/canvas'
 
   return (
-    <div className="fixed inset-0 flex overflow-hidden bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <Sidebar />
-      <main className={`flex-1 flex flex-col ${!isCanvas ? 'overflow-y-auto pb-20 lg:pb-0 p-8' : 'overflow-hidden'}`}>
-        <div className={`${!isCanvas ? 'max-w-6xl mx-auto w-full' : 'w-full h-full'}`}>
+    <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      
+      <main className={`flex-1 flex flex-col w-full min-w-0 ${!isCanvas ? 'overflow-y-auto pb-16 lg:pb-0' : 'overflow-hidden'}`}>
+        
+        {/* Mobile Header */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-20 shrink-0 sticky top-0">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
+              GeoMind
+            </span>
+          </Link>
+          <button 
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 -mr-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <Menu size={24} />
+          </button>
+        </div>
+
+        <div className={`${!isCanvas ? 'w-full' : 'w-full h-full'}`}>
           {children}
         </div>
       </main>
+
       {!isCanvas && <BottomNav />}
     </div>
   )

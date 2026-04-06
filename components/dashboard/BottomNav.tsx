@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, MessageCircle,
-  BookOpen, FlaskConical, PenTool, Trophy
+  BookOpen, FlaskConical, Trophy
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { href: '/lessons',   icon: BookOpen,        label: 'Darslar' },
   { href: '/quiz',      icon: FlaskConical,    label: 'Test' },
   { href: '/leaderboard',icon: Trophy,         label: 'Reyting' },
-  { href: '/canvas',    icon: FlaskConical,    label: 'Lab' },
 ]
 
 export default function BottomNav() {
@@ -20,12 +19,13 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50
-                    lg:hidden
-                    bg-white/90 dark:bg-slate-900/90
+                    flex lg:hidden
+                    bg-white/95 dark:bg-slate-900/95
                     backdrop-blur-xl
-                    border-t border-slate-200 dark:border-slate-700/40
-                    flex items-center justify-around
-                    h-16 px-2">
+                    border-t border-slate-200 dark:border-slate-800
+                    shadow-[0_-1px_12px_rgba(0,0,0,0.08)]
+                    pb-safe md:pb-2
+                    min-h-[4rem] h-auto px-2 pt-1 items-start justify-around">
       {NAV_ITEMS.map((item) => {
         const active = pathname === item.href ||
                        pathname.startsWith(item.href + '/')
@@ -33,21 +33,21 @@ export default function BottomNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center gap-1
-                       flex-1 py-2 rounded-xl transition-all
+            className={`relative flex flex-col items-center justify-center gap-1
+                       flex-1 h-14 rounded-xl transition-all
                        ${active
                          ? 'text-indigo-600 dark:text-indigo-400'
                          : 'text-slate-400 dark:text-slate-500'}`}
           >
-            <div className={`p-1.5 rounded-xl transition-all
-                            ${active
-                              ? 'bg-indigo-100 dark:bg-indigo-900/40'
-                              : ''}`}>
+            <div className={`transition-all ${active ? '-translate-y-1' : ''}`}>
               <item.icon size={20} />
             </div>
-            <span className="text-[10px] font-medium leading-none">
+            <span className={`text-[10px] font-medium leading-none transition-all ${active ? 'opacity-100' : 'opacity-80'}`}>
               {item.label}
             </span>
+            {active && (
+              <span className="absolute bottom-1 w-1 h-1 bg-indigo-600 dark:bg-indigo-400 rounded-full" />
+            )}
           </Link>
         )
       })}
