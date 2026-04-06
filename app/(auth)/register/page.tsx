@@ -6,6 +6,16 @@ import { registerWithEmail, loginWithGoogle, getAuthErrorMessage } from '@/lib/a
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+const INPUT_CLS = `w-full pl-11 pr-4 py-2.5 h-11
+  bg-white/80 dark:bg-slate-700/80
+  border border-slate-200 dark:border-slate-600
+  rounded-xl text-sm
+  text-slate-800 dark:text-slate-100
+  placeholder:text-slate-400 dark:placeholder:text-slate-500
+  focus:outline-none focus:ring-2 focus:ring-indigo-600/20
+  focus:border-indigo-400 dark:focus:border-indigo-500
+  transition-all`
+
 export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -17,11 +27,9 @@ export default function RegisterPage() {
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-
     if (password.length < 6) {
       return setError('Parol kamida 6 ta belgi bo\'lishi kerak')
     }
-
     setLoading(true)
     try {
       await registerWithEmail(email, password, name)
@@ -48,21 +56,23 @@ export default function RegisterPage() {
 
   return (
     <>
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-semibold text-slate-800 mb-2">Yangi hisob ochish</h2>
-        <p className="text-slate-500 text-sm">O'rganishni hoziroq boshlang</p>
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">Yangi hisob ochish</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">O'rganishni hoziroq boshlang</p>
       </div>
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 
-                        dark:border-red-800 rounded-xl p-3 mb-4 text-sm 
-                        text-red-600 dark:text-red-400">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3 mb-4 text-sm text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
 
-      <button onClick={handleGoogleLogin} disabled={loading} className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl mb-6 flex items-center justify-center gap-3 transition-colors bg-white disabled:opacity-50">
-        <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+      <button
+        onClick={handleGoogleLogin}
+        disabled={loading}
+        className="w-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium py-2.5 h-11 px-4 rounded-xl mb-5 flex items-center justify-center gap-3 transition-colors disabled:opacity-50"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
           <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
             <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z" />
             <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z" />
@@ -73,68 +83,43 @@ export default function RegisterPage() {
         {loading ? 'Kutilmoqda...' : 'Google bilan kirish'}
       </button>
 
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex-1 h-px bg-slate-200"></div>
-        <span className="text-xs text-slate-400 font-medium">YOKI</span>
-        <div className="flex-1 h-px bg-slate-200"></div>
+      <div className="flex items-center gap-4 mb-5">
+        <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">YOKI</span>
+        <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
       </div>
 
       <form className="space-y-4" onSubmit={handleRegister}>
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">Ism va familiya</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Ism va familiya</label>
           <div className="relative">
-            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              required
-              placeholder="Ali Valiyev"
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-slate-800"
-            />
+            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="Ali Valiyev" className={INPUT_CLS} />
           </div>
         </div>
-
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">Email pochta</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Email pochta</label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              placeholder="email@example.com"
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-slate-800"
-            />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="email@example.com" className={INPUT_CLS} />
           </div>
         </div>
-
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">Parol</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Parol</label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              placeholder="Kamida 6 ta belgi"
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-slate-800"
-            />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Kamida 6 ta belgi" className={INPUT_CLS} />
           </div>
         </div>
-
-        <button disabled={loading} type="submit" className="w-full btn-gradient py-3.5 rounded-xl font-medium text-white shadow-lg flex justify-center items-center gap-2 mt-6 relative overflow-hidden group disabled:opacity-50">
-          <div className="absolute inset-0 bg-white/20 w-[20%] skew-x-12 -translate-x-full group-hover:animate-[shimmer_1s_ease-in-out]"></div>
-          <UserPlus className="w-5 h-5" />
+        <button disabled={loading} type="submit" className="w-full h-11 btn-gradient rounded-xl font-medium text-white shadow-lg flex justify-center items-center gap-2 mt-4 disabled:opacity-50">
+          <UserPlus className="w-4 h-4" />
           {loading ? 'Kutilmoqda...' : 'Ro\'yxatdan o\'tish'}
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-500 mt-8">
+      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
         Hisobingiz bormi?{' '}
-        <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+        <Link href="/login" className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline transition-colors">
           Kirish
         </Link>
       </p>

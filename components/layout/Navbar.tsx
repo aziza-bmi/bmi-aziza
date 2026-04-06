@@ -31,7 +31,7 @@ export default function Navbar() {
         transition={{ duration: 0.5 }}
         className={`sticky top-0 z-[60] flex items-center justify-between px-4 md:px-8 h-16 transition-all duration-300 ${
           scrolled || menuOpen
-            ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-b border-primary-50 dark:border-slate-800 shadow-sm'
+            ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-b border-slate-200/60 dark:border-slate-700/40 shadow-sm'
             : 'bg-transparent'
         }`}
       >
@@ -47,8 +47,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-slate-500 hover:text-primary-DEFAULT 
-                         transition-colors duration-200"
+              className="text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
             >
               {link.label}
             </Link>
@@ -61,8 +60,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             <Link
               href="/login"
-              className="text-sm px-4 py-2 rounded-lg border border-primary-DEFAULT/30 
-                         text-primary-DEFAULT hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all"
+              className="text-sm px-4 py-2 rounded-lg border border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"
             >
               Kirish
             </Link>

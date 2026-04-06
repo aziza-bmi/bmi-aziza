@@ -41,11 +41,11 @@ export default function FAQ() {
   ]
 
   return (
-    <section className="py-24 w-full max-w-4xl mx-auto px-6 relative z-10" id="faq">
-      <div className="text-center mb-16">
-        <span className="text-indigo-600 font-medium px-4 py-1.5 rounded-full bg-indigo-50 text-sm">Savollar</span>
-        <h2 className="text-3xl md:text-4xl font-medium mt-6 mb-4 text-slate-900">Ko'p beriladigan savollar</h2>
-        <p className="text-slate-500 text-lg">Platforma imkoniyatlari haqida qisqacha ma'lumotlar</p>
+    <section className="py-14 md:py-24 w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-10" id="faq">
+      <div className="text-center mb-10 md:mb-16">
+        <span className="text-indigo-600 dark:text-indigo-400 font-medium px-4 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-sm">Savollar</span>
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mt-4 md:mt-6 mb-3 md:mb-4 text-slate-900 dark:text-white">Ko'p beriladigan savollar</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm md:text-lg">Platforma imkoniyatlari haqida qisqacha ma'lumotlar</p>
       </div>
 
       <motion.div

@@ -55,12 +55,15 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Sidebar Container */}
       <aside className={`
         ${isCollapsed ? 'w-20' : 'w-64'} 
-        transition-all duration-300 bg-white dark:bg-slate-900 
-        border-r border-slate-100 dark:border-slate-800 flex-col h-full shrink-0
+        transition-all duration-300
+        bg-white/95 dark:bg-slate-900/95
+        border-r border-slate-200 dark:border-slate-700/50
+        backdrop-blur-xl
+        flex-col h-full shrink-0
         fixed lg:static z-50 top-0 left-0
         ${isOpen ? 'translate-x-0 flex' : '-translate-x-full lg:translate-x-0 hidden lg:flex'}
       `}>
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-700/50 flex items-center justify-between">
           {!isCollapsed && (
             <Link href="/" className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
               <img src="/logo-light.png" alt="GeoMind Logo" className="w-8 h-8 dark:hidden object-contain" />
@@ -82,7 +85,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         </div>
 
         <div className="p-4 flex flex-col gap-2 flex-grow overflow-y-auto hidden-scrollbar">
-          {!isCollapsed && <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3 mt-2">Menyu</div>}
+          {!isCollapsed && <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-3 mt-2">Menyu</div>}
           
           {navItems.map((item) => {
             const isActive = pathname === item.href
@@ -95,29 +98,29 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 title={isCollapsed ? item.name : undefined}
                 className={`flex items-center min-h-[44px] ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-xl transition-all font-medium text-sm ${
                   isActive 
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-indigo-600 dark:hover:bg-slate-800'
+                    ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 shadow-sm' 
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
               >
-                <Icon className={`${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'} ${isActive ? 'text-indigo-100' : 'text-slate-400'} shrink-0`} />
+                <Icon className={`${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'} ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'} shrink-0`} />
                 {!isCollapsed && <span className="whitespace-nowrap">{item.name}</span>}
               </Link>
             )
           })}
         </div>
 
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700/50 space-y-2">
           {user && (
-            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-3'} py-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl mb-2`}>
-              <div className="w-8 h-8 flex-shrink-0 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
+            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-3'} py-2 bg-slate-50 dark:bg-slate-800/40 rounded-xl mb-2`}>
+              <div className="w-8 h-8 flex-shrink-0 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
                 {(userData?.displayName || user?.displayName || 'U').charAt(0).toUpperCase()}
               </div>
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs md:text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
+                  <h4 className="text-xs md:text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
                     {userData?.displayName || user?.displayName || 'Foydalanuvchi'}
                   </h4>
-                  <p className="text-[10px] md:text-xs text-slate-500 font-medium truncate">
+                  <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 font-medium truncate">
                     Daraja {userData?.level || 1}
                   </p>
                 </div>
@@ -126,8 +129,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           )}
 
           <div className="flex items-center justify-between">
-            <button onClick={handleLogout} className={`flex items-center min-h-[44px] ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 w-full transition-colors font-medium text-sm`}>
-              <LogOut className="w-5 h-5 text-slate-400" />
+            <button onClick={handleLogout} className={`flex items-center min-h-[44px] ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-3'} py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 dark:hover:text-red-400 w-full transition-colors font-medium text-sm`}>
+              <LogOut className="w-5 h-5 text-slate-400 dark:text-slate-500" />
               {!isCollapsed && <span>Chiqish</span>}
             </button>
             {!isCollapsed && <ThemeToggle />}

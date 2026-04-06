@@ -55,8 +55,9 @@ export default function LoginPage() {
         </div>
       )}
 
-      <button onClick={handleGoogleLogin} disabled={loading} className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl mb-6 flex items-center justify-center gap-3 transition-colors bg-white disabled:opacity-50">
-        <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+      <button onClick={handleGoogleLogin} disabled={loading}
+        className="w-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium py-2.5 h-11 px-4 rounded-xl mb-5 flex items-center justify-center gap-3 transition-colors disabled:opacity-50"
+      >  <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
           <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
             <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z" />
             <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z" />
@@ -67,15 +68,15 @@ export default function LoginPage() {
         {loading ? 'Kutilmoqda...' : 'Google bilan kirish'}
       </button>
 
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex-1 h-px bg-slate-200"></div>
-        <span className="text-xs text-slate-400 font-medium">YOKI</span>
-        <div className="flex-1 h-px bg-slate-200"></div>
+      <div className="flex items-center gap-4 mb-5">
+        <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">YOKI</span>
+        <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
       </div>
 
       <form className="space-y-4" onSubmit={handleEmailLogin}>
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">Email pochta</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Email pochta</label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
@@ -91,8 +92,8 @@ export default function LoginPage() {
 
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-slate-700">Parol</label>
-            <Link href="#" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Parol</label>
+            <Link href="#" className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
               Parolni unutdingizmi?
             </Link>
           </div>
@@ -115,9 +116,9 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-500 mt-8">
-        Hali hisobingiz yo'qmi?{' '}
-        <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
+          Hisobingiz yo'qmi?{' '}
+          <Link href="/register" className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline transition-colors">
           Ro'yxatdan o'tish
         </Link>
       </p>

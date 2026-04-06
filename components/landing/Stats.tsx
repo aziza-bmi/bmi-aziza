@@ -23,15 +23,15 @@ export default function Stats() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               key={i}
-              className="bg-white/60 backdrop-blur-md border border-white/40 p-6 rounded-3xl shadow-lg shadow-indigo-100/20 text-center flex flex-col items-center justify-center hover:-translate-y-1 transition-transform duration-300"
+              className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/40 dark:border-slate-700/40 p-4 md:p-6 rounded-3xl shadow-lg shadow-indigo-100/20 dark:shadow-none text-center flex flex-col items-center justify-center hover:-translate-y-1 transition-transform duration-300"
             >
-              <div className={`w-12 h-12 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-4`}>
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl ${stat.bg} dark:bg-opacity-20 ${stat.color} flex items-center justify-center mb-3 md:mb-4`}>
                 <Icon className="w-6 h-6" />
               </div>
-              <div className={`text-3xl font-bold mb-1 ${stat.color}`}>
+              <div className={`text-2xl md:text-3xl font-bold mb-1 ${stat.color}`}>
                 {stat.num}
               </div>
-              <div className="text-sm font-medium text-slate-500">
+              <div className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">
                 {stat.label}
               </div>
             </motion.div>
