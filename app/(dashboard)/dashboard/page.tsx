@@ -140,7 +140,7 @@ export default function DashboardPage() {
             Bugun ham geometriya o'rganamizmi?
           </p>
         </div>
-        <span className="hidden sm:block text-xs md:text-sm font-medium text-slate-400 dark:text-slate-500 bg-white/50 px-2 md:px-3 py-1 md:py-1.5 rounded-lg border border-slate-100">
+        <span className="hidden sm:block text-xs md:text-sm font-medium text-slate-400 dark:text-slate-500 bg-white/50 dark:bg-slate-800/50 px-2 md:px-3 py-1 md:py-1.5 rounded-lg border border-slate-100 dark:border-slate-700/40">
           {new Date().toLocaleDateString('uz-UZ', {
             weekday: 'short', day: 'numeric', month: 'short'
           })}
@@ -230,9 +230,9 @@ export default function DashboardPage() {
               ))}
               {topicProgress.every(t => t.progress === 0) && (
                 <p className="text-sm font-medium text-slate-400 dark:text-slate-500 
-                              text-center py-6 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
+                              text-center py-6 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-700/40 border-dashed">
                   Hali test topshirilmagan. 
-                  <Link href="/lessons" className="text-indigo-500 hover:text-indigo-600 ml-1 underline decoration-indigo-200 underline-offset-2">
+                  <Link href="/quiz" className="text-indigo-500 hover:text-indigo-600 ml-1 underline decoration-indigo-200 underline-offset-2">
                     Test boshlash →
                   </Link>
                 </p>
@@ -369,7 +369,7 @@ export default function DashboardPage() {
                 )
               })}
               {leaderboard.length === 0 && (
-                <p className="text-sm font-medium text-slate-400 text-center py-6 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
+                <p className="text-sm font-medium text-slate-400 dark:text-slate-500 text-center py-6 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-700/40 border-dashed">
                   Hali ro'yxat bo'sh
                 </p>
               )}
