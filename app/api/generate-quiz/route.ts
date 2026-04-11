@@ -5,16 +5,17 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 const API_KEYS = [
+  process.env.GEMINI_API_KEY,
   process.env.GEMINI_API_KEY_1,
   process.env.GEMINI_API_KEY_2,
   process.env.GEMINI_API_KEY_3,
-].filter(Boolean) as string[]
+].filter((k): k is string => Boolean(k))
 
 let currentKeyIndex = 0
 function getNextApiKey(): string {
-  if (API_KEYS.length === 0) return process.env.GEMINI_API_KEY || ''
-  const key = API_KEYS[currentKeyIndex]
-  currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length
+  if (API_KEYS.length === 0) throw new Error('Hech qanday GEMINI_API_KEY topilmadi')
+  const key = API_KEYS[currentKeyIndex % API_KEYS.length]
+  currentKeyIndex++
   return key
 }
 
@@ -84,7 +85,7 @@ FAQAT sof JSON array (markdown yo'q, backtick yo'q, izoh yo'q):
       try {
         const genAI = new GoogleGenerativeAI(getNextApiKey())
         const model = genAI.getGenerativeModel({
-          model: 'gemini-3.1-flash-lite-preview',
+          model: 'gemini-2.0-flash',
           generationConfig: { temperature: 0.9, maxOutputTokens: 8192 },
         })
         const result    = await model.generateContent(prompt)
