@@ -3,17 +3,91 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function incomingData() {
+      return request.resource.data;
+    }
+
+    function existingData() {
+      return resource.data;
+    }
+
+    // 0. Eng kam imtiyoz tamoyili (Principle of Least Privilege): 
+    // Barcha yo'llar odatiy holatda yopiq (Hammasini rad etish)
     match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 5, 2);
+      allow read, write: if false;
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      // Barcha ro'yxatdan o'tganlar reytingni (leaderboard) ko'rishlari kerak
+      // Shuning uchun o'qish (read: get, list) ga ruxsat beramiz.
+      allow read: if isAuthenticated();
+      
+      // Data Validation: Majburiy maydonlar borligini tekshiramiz
+      allow create: if isOwner(userId) 
+                    && incomingData().keys().hasAny(['email', 'displayName', 'uid']);
+                    
+      // O'zgartirish: Foydalanuvchi faqat o'zining xp va qolgan xususiyatlarini yozadi. 
+      allow update: if isOwner(userId);
+      
+      allow delete: if false; // O'chirish yopiq
+    }
+
+    // 2. UserProgress
+    // Progress ID (progressId) qaysidir tarzda userId qismini o'z ichiga olsa yaxshi,
+    // Lekin umumiy holatda resource.data (mavjud data) ni tekshiramiz.
+    match /userProgress/{progressId} {
+      allow read: if isAuthenticated() && existingData().userId == request.auth.uid;
+      
+      allow create: if isAuthenticated() 
+                    && incomingData().userId == request.auth.uid
+                    && incomingData().keys().hasAll(['userId', 'lessonId', 'completed']);
+                    
+      allow update: if isAuthenticated() 
+                    && existingData().userId == request.auth.uid
+                    && incomingData().userId == request.auth.uid;
+                    
+      allow delete: if false;
+    }
+
+    // 3. QuizResults
+    match /quizResults/{resultId} {
+      // Yozish va o'qishni ajratish
+      // Periodic Leaderboard barcha userlar natijasini so'raydi, shu sabab list kerak:
+      allow read: if isAuthenticated();
+      
+      // Data validation: faqatgina 0 va 100 oralig'idagi score yaratiladi.
+      allow create: if isAuthenticated() 
+                    && incomingData().userId == request.auth.uid
+                    && incomingData().score >= 0 
+                    && incomingData().score <= 100;
+                    
+      allow update, delete: if false; // Natija qayta o'zgartirilishi mumkin emas.
+    }
+
+    // 4. Chats (agar foydalanilsa)
+    match /chats/{chatId} {
+       allow read, delete: if isAuthenticated() && existingData().userId == request.auth.uid;
+       allow create, update: if isAuthenticated() && incomingData().userId == request.auth.uid;
+    }
+    
+    // 5. userQuestionStates (agar foydalanilsa)
+    match /userQuestionStates/{stateId} {
+       allow read: if isAuthenticated() && existingData().userId == request.auth.uid;
+       allow create: if isAuthenticated() && incomingData().userId == request.auth.uid;
+       allow update: if isAuthenticated() 
+                     && existingData().userId == request.auth.uid 
+                     && incomingData().userId == request.auth.uid;
+       allow delete: if false;
     }
   }
 }
