@@ -85,7 +85,7 @@ FAQAT sof JSON array (markdown yo'q, backtick yo'q, izoh yo'q):
       try {
         const genAI = new GoogleGenerativeAI(getNextApiKey())
         const model = genAI.getGenerativeModel({
-          model: 'gemini-2.0-flash',
+          model: 'gemini-3.1-flash-lite-preview',
           generationConfig: { temperature: 0.9, maxOutputTokens: 8192 },
         })
         const result    = await model.generateContent(prompt)
