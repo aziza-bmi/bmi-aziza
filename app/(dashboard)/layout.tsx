@@ -46,7 +46,7 @@ export default function DashboardLayout({
     <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <main className={`flex-1 flex flex-col w-full min-w-0 ${!isCanvas ? 'overflow-y-auto pb-16 lg:pb-0' : 'overflow-hidden'}`}>
+      <main className={`flex-1 flex flex-col w-full min-w-0 ${!isCanvas ? 'overflow-y-auto pb-16 lg:pb-0' : 'overflow-hidden'} lg:border-l lg:border-slate-200 lg:dark:border-slate-800`}>
         
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-20 shrink-0 sticky top-0">
@@ -63,7 +63,7 @@ export default function DashboardLayout({
           </button>
         </div>
 
-        <div className={`${!isCanvas ? 'w-full' : 'w-full h-full'}`}>
+        <div className={`${!isCanvas ? 'w-full lg:px-6 lg:py-5' : 'w-full h-full'}`}>
           {children}
         </div>
       </main>
