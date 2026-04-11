@@ -20,67 +20,49 @@ service cloud.firestore {
       return resource.data;
     }
 
-    // 0. Eng kam imtiyoz tamoyili (Principle of Least Privilege): 
-    // Barcha yo'llar odatiy holatda yopiq (Hammasini rad etish)
+    // 0. Eng kam imtiyoz tamoyili
     match /{document=**} {
       allow read, write: if false;
     }
 
     // 1. Users collection
     match /users/{userId} {
-      // Barcha ro'yxatdan o'tganlar reytingni (leaderboard) ko'rishlari kerak
-      // Shuning uchun o'qish (read: get, list) ga ruxsat beramiz.
       allow read: if isAuthenticated();
-      
-      // Data Validation: Majburiy maydonlar borligini tekshiramiz
       allow create: if isOwner(userId) 
                     && incomingData().keys().hasAny(['email', 'displayName', 'uid']);
-                    
-      // O'zgartirish: Foydalanuvchi faqat o'zining xp va qolgan xususiyatlarini yozadi. 
       allow update: if isOwner(userId);
-      
-      allow delete: if false; // O'chirish yopiq
+      allow delete: if false;
     }
 
     // 2. UserProgress
-    // Progress ID (progressId) qaysidir tarzda userId qismini o'z ichiga olsa yaxshi,
-    // Lekin umumiy holatda resource.data (mavjud data) ni tekshiramiz.
     match /userProgress/{progressId} {
       allow read: if isAuthenticated() && existingData().userId == request.auth.uid;
-      
       allow create: if isAuthenticated() 
                     && incomingData().userId == request.auth.uid
                     && incomingData().keys().hasAll(['userId', 'lessonId', 'completed']);
-                    
       allow update: if isAuthenticated() 
                     && existingData().userId == request.auth.uid
                     && incomingData().userId == request.auth.uid;
-                    
       allow delete: if false;
     }
 
     // 3. QuizResults
     match /quizResults/{resultId} {
-      // Yozish va o'qishni ajratish
-      // Periodic Leaderboard barcha userlar natijasini so'raydi, shu sabab list kerak:
       allow read: if isAuthenticated();
-      
-      // Data validation: faqatgina 0 va 100 oralig'idagi score yaratiladi.
       allow create: if isAuthenticated() 
                     && incomingData().userId == request.auth.uid
                     && incomingData().score >= 0 
                     && incomingData().score <= 100;
-                    
-      allow update, delete: if false; // Natija qayta o'zgartirilishi mumkin emas.
+      allow update, delete: if false;
     }
 
-    // 4. Chats (agar foydalanilsa)
+    // 4. Chats
     match /chats/{chatId} {
        allow read, delete: if isAuthenticated() && existingData().userId == request.auth.uid;
        allow create, update: if isAuthenticated() && incomingData().userId == request.auth.uid;
     }
     
-    // 5. userQuestionStates (agar foydalanilsa)
+    // 5. userQuestionStates
     match /userQuestionStates/{stateId} {
        allow read: if isAuthenticated() && existingData().userId == request.auth.uid;
        allow create: if isAuthenticated() && incomingData().userId == request.auth.uid;
@@ -88,6 +70,29 @@ service cloud.firestore {
                      && existingData().userId == request.auth.uid 
                      && incomingData().userId == request.auth.uid;
        allow delete: if false;
+    }
+
+    // 6. Sections (darslar) va uning ichki qismlari (chapters, topics)
+    // Bu asosiy struktura, shuning uchun barcha avtorizatsiyadan o'tganlarga o'qish erkin
+    match /sections/{document=**} {
+       allow read: if isAuthenticated();
+       allow write: if false; // Faqat backend (admin) tomonidan yangilanadi
+    }
+
+    // 7. Lessons
+    match /lessons/{lessonId} {
+       allow read: if isAuthenticated();
+       allow write: if false;
+    }
+
+    // 8. Drawings (canvas)
+    match /drawings/{drawingId} {
+       allow read: if isAuthenticated() && existingData().userId == request.auth.uid;
+       allow create: if isAuthenticated() && incomingData().userId == request.auth.uid;
+       allow update: if isAuthenticated() 
+                     && existingData().userId == request.auth.uid 
+                     && incomingData().userId == request.auth.uid;
+       allow delete: if isAuthenticated() && existingData().userId == request.auth.uid;
     }
   }
 }
