@@ -10,7 +10,7 @@ import {
 import { collection, getDocs, doc, updateDoc, query, orderBy } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
-import { getDueQuestions } from '@/lib/db/repetition'
+import { getDueQuestions, getAllQuestionStates, QuestionState } from '@/lib/db/repetition'
 import { useAuth } from '@/context/AuthContext'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -22,6 +22,7 @@ interface Topic {
 }
 type Difficulty = 'easy' | 'medium' | 'hard' | 'all'
 interface QuizConfig { difficulty: Difficulty; count: number }
+type ActiveTab = 'new' | 'review' | 'history'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const COUNT_OPTIONS = [10, 15, 20, 25, 30]
@@ -44,7 +45,7 @@ export default function QuizPage() {
   const [openChapter, setOpenChapter] = useState<string | null>(null)
 
   // UI state
-  const [mode,       setMode]       = useState<'new' | 'review'>('new')
+  const [mode,       setMode]       = useState<ActiveTab>('new')
   const [pageLoading, setPageLoading] = useState(true)
   const [generating,  setGenerating]  = useState<string | null>(null)
   const [genError,    setGenError]    = useState<string | null>(null)
@@ -55,6 +56,11 @@ export default function QuizPage() {
 
   // SM-2 due counts
   const [dueByTopic, setDueByTopic] = useState<Record<string, number>>({})
+
+  // History tab
+  const [historyData,      setHistoryData]      = useState<Record<string, QuestionState[]> | null>(null)
+  const [historyLoading,   setHistoryLoading]   = useState(false)
+  const [openHistoryTopic, setOpenHistoryTopic] = useState<string | null>(null)
 
   // ── Load sections on mount ──────────────────────────────────────────────────
   useEffect(() => {
@@ -125,6 +131,23 @@ export default function QuizPage() {
   async function toggleChapter(sectionId: string, chapterId: string) {
     setOpenChapter(p => p === chapterId ? null : chapterId)
     if (openChapter !== chapterId) await loadTopics(sectionId, chapterId)
+  }
+
+  // ── Load history tab ────────────────────────────────────────────────────────
+  async function handleHistoryTab() {
+    if (!user) return
+    setMode('history')
+    if (historyData !== null) return // already loaded
+    setHistoryLoading(true)
+    try {
+      const grouped = await getAllQuestionStates(user.uid)
+      setHistoryData(grouped)
+    } catch (err) {
+      console.error('History load error:', err)
+      setHistoryData({})
+    } finally {
+      setHistoryLoading(false)
+    }
   }
 
   // ── Generate quiz ──────────────────────────────────────────────────────────
@@ -218,29 +241,33 @@ export default function QuizPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-2">
-          {[
-            { v: 'new',    label: 'Mavzular',   icon: BookOpen,   active: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' },
-            { v: 'review', label: 'Takrorlash', icon: RotateCcw,  active: 'bg-rose-600 text-white shadow-md shadow-rose-500/30'   },
-          ].map(tab => {
-            const Icon = tab.icon
-            const isActive = mode === tab.v
-            return (
-              <button key={tab.v} onClick={() => setMode(tab.v as any)}
-                className={`px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${
-                  isActive ? tab.active : 'bg-white dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-700'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {tab.label}
-                {tab.v === 'review' && totalDue > 0 && (
-                  <span className="w-5 h-5 bg-rose-500 text-white rounded-full text-[10px] font-black flex items-center justify-center">
-                    {totalDue > 9 ? '9+' : totalDue}
-                  </span>
-                )}
-              </button>
-            )
-          })}
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={() => setMode('new')}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${
+              mode === 'new' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' : 'bg-white dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-700'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" /> Mavzular
+          </button>
+          <button onClick={() => setMode('review')}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${
+              mode === 'review' ? 'bg-rose-600 text-white shadow-md shadow-rose-500/30' : 'bg-white dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-700'
+            }`}
+          >
+            <RotateCcw className="w-4 h-4" /> Takrorlash
+            {totalDue > 0 && (
+              <span className="w-5 h-5 bg-rose-500 text-white rounded-full text-[10px] font-black flex items-center justify-center">
+                {totalDue > 9 ? '9+' : totalDue}
+              </span>
+            )}
+          </button>
+          <button onClick={handleHistoryTab}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${
+              mode === 'history' ? 'bg-violet-600 text-white shadow-md shadow-violet-500/30' : 'bg-white dark:bg-slate-900 text-slate-500 border border-slate-200 dark:border-slate-700'
+            }`}
+          >
+            <Target className="w-4 h-4" /> Natijalar
+          </button>
         </div>
 
         {/* Error banner */}
@@ -410,6 +437,110 @@ export default function QuizPage() {
             )}
           </div>
         )}
+
+        {/* ═══ NATIJALAR / TARIX TAB ═══ */}
+        {mode === 'history' && (
+          <div className="space-y-3">
+            {historyLoading ? (
+              <div className="flex justify-center p-16">
+                <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : !historyData || Object.keys(historyData).length === 0 ? (
+              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-16 rounded-2xl text-center shadow-sm">
+                <div className="w-14 h-14 bg-violet-50 dark:bg-violet-950 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-7 h-7 text-violet-500" />
+                </div>
+                <h3 className="font-bold text-slate-700 dark:text-slate-200 mb-2">Hali test ishlashni boshlamadingiz</h3>
+                <p className="text-sm text-slate-400 font-medium">
+                  Testlar ishlagan sari bu yerda natijalaringiz paydo bo&apos;ladi.
+                </p>
+              </div>
+            ) : (
+              Object.entries(historyData).map(([topicId, states]) => {
+                const correct   = states.filter(s => (s.correctCount ?? 0) > 0).length
+                const incorrect = states.filter(s => (s.incorrectCount ?? 0) > 0 && (s.correctCount ?? 0) === 0).length
+                const total     = states.length
+                const pct       = total > 0 ? Math.round((correct / total) * 100) : 0
+                const isOpen    = openHistoryTopic === topicId
+                const topicName = topicMap[topicId]?.title || topicId
+
+                return (
+                  <div key={topicId} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <button
+                      onClick={() => setOpenHistoryTopic(isOpen ? null : topicId)}
+                      className="w-full flex items-center justify-between p-5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left gap-4"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black text-sm ${
+                          pct >= 80 ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400'
+                          : pct >= 50 ? 'bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400'
+                          : 'bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400'
+                        }`}>
+                          {pct}%
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{topicName}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            {total} ta savol &middot; <span className="text-emerald-500">{correct} to&apos;g&apos;ri</span> &middot; <span className="text-rose-500">{incorrect} xato</span>
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }}
+                          className="overflow-hidden border-t border-slate-100 dark:border-slate-800"
+                        >
+                          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                            {states.map((s, idx) => {
+                              const q   = s.questionData
+                              const ok  = (s.correctCount ?? 0) > 0
+                              const bad = (s.incorrectCount ?? 0) > 0
+                              return (
+                                <div key={s.questionId} className="p-4 pl-6 flex items-start gap-3">
+                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                                    ok && !bad ? 'bg-emerald-100 dark:bg-emerald-950'
+                                    : ok       ? 'bg-amber-100 dark:bg-amber-950'
+                                               : 'bg-rose-100 dark:bg-rose-950'
+                                  }`}>
+                                    {ok && !bad
+                                      ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                      : ok
+                                        ? <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                                        : <X className="w-3.5 h-3.5 text-rose-500" />}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 line-clamp-2">
+                                      {q?.question ?? `Savol #${idx + 1}`}
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-1">
+                                      ✅ {s.correctCount ?? 0} to&apos;g&apos;ri &middot; ❌ {s.incorrectCount ?? 0} xato
+                                    </p>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+                            <button
+                              onClick={() => router.push(`/quiz/take?topicId=${topicId}&mode=new&difficulty=all&count=10`)}
+                              className="w-full py-2.5 bg-violet-50 dark:bg-violet-950 text-violet-700 dark:text-violet-300 rounded-xl text-sm font-bold hover:bg-violet-100 dark:hover:bg-violet-900 transition-colors flex items-center justify-center gap-2"
+                            >
+                              <Play className="w-4 h-4" /> Qayta ishlash
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        )}
       </motion.div>
 
       {/* ═══════════ CONFIG MODAL ═══════════ */}
@@ -420,15 +551,15 @@ export default function QuizPage() {
               onClick={() => setSelectedTopic(null)}
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             />
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 pointer-events-none">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                className="w-full max-w-md max-h-[90vh] md:max-h-[85vh] flex flex-col pointer-events-auto"
-              >
-                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden flex flex-col max-h-full">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              className="fixed inset-0 z-50 flex items-center justify-center px-4 pointer-events-none"
+            >
+              <div className="w-full max-w-md pointer-events-auto">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh]">
 
                 {/* Modal header */}
                 <div className="shrink-0 bg-gradient-to-br from-indigo-600 to-violet-700 p-7 relative">
@@ -514,8 +645,8 @@ export default function QuizPage() {
                   </button>
                 </div>
               </div>
-              </motion.div>
             </div>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
