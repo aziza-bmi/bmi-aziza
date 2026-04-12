@@ -128,9 +128,28 @@ export default function QuizTaker({
     async function loadQuiz() {
       if (!user) return
       try {
-        const response = await fetch(`/api/lessons/${topicId}`)
-        if (!response.ok) throw new Error(`API error ${response.status}`)
-        const data = await response.json()
+        const { collectionGroup, getDocs, doc, getDoc } = await import('firebase/firestore')
+        const { db } = await import('@/lib/firebase')
+        
+        const snap = await getDocs(collectionGroup(db, 'topics'))
+        const targetDoc = snap.docs.find(d => d.id === topicId)
+        
+        let data: any = {}
+        if (targetDoc) {
+          data = { id: targetDoc.id, ...targetDoc.data() }
+          const pathSegments = targetDoc.ref.path.split('/')
+          if (pathSegments.length >= 6) {
+            data.sectionId = pathSegments[1]
+            data.chapterId = pathSegments[3]
+          }
+        } else {
+          const lessonDoc = await getDoc(doc(db, 'lessons', topicId))
+          if (lessonDoc.exists()) {
+             data = { id: lessonDoc.id, ...lessonDoc.data() }
+          } else {
+             throw new Error('Lesson/Topic not found')
+          }
+        }
 
         const rawQuiz: any[] = data.quiz || data.quizData || []
         setTopicTitle(data.title || topicId)
@@ -269,22 +288,16 @@ export default function QuizTaker({
     await Promise.all(answerPromises)
 
     try {
-      const res = await fetch('/api/submit-quiz', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId:    user.uid,
-          topicId,
-          score:     calculatedScore,
-          total:     questions.length,
-          timeSpent: totalTime - timeLeft,
-          mode:      resolvedMode,
-        }),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setXpEarned(data.xpEarned ?? 0)
-      }
+      const { saveQuizResult } = await import('@/lib/firestore')
+      const result = await saveQuizResult(
+        user.uid,
+        topicId,
+        calculatedScore,
+        questions.length,
+        totalTime - timeLeft,
+        { mode: resolvedMode }
+      )
+      setXpEarned(result.xpEarned ?? 0)
     } catch (err) {
       console.error('Error submitting quiz:', err)
     }

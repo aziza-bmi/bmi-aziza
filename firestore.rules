@@ -50,9 +50,7 @@ service cloud.firestore {
     match /quizResults/{resultId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() 
-                    && incomingData().userId == request.auth.uid
-                    && incomingData().score >= 0 
-                    && incomingData().score <= 100;
+                    && incomingData().userId == request.auth.uid;
       allow update, delete: if false;
     }
 
@@ -77,6 +75,14 @@ service cloud.firestore {
     match /sections/{document=**} {
        allow read: if isAuthenticated();
        allow write: if false; // Faqat backend (admin) tomonidan yangilanadi
+    }
+
+    match /{path=**}/chapters/{chapterId} {
+       allow read: if isAuthenticated();
+    }
+    
+    match /{path=**}/topics/{topicId} {
+       allow read: if isAuthenticated();
     }
 
     // 7. Lessons
