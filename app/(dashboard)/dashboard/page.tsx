@@ -9,22 +9,14 @@ import {
   getTopicProgress,
   subscribeToUserData,
   updateStreak,
+  getTotalTopicsCount,
+  getTopicsMap
 } from '@/lib/firestore'
 import {
   BookOpen, Star, Flame, BarChart3,
   ChevronRight, ArrowUp, Clock
 } from 'lucide-react'
 import Link from 'next/link'
-
-const TOPIC_LABELS: Record<string, string> = {
-  planimetriya: 'Planimetriya',
-  uchburchaklar: 'Uchburchaklar',
-  tortburchaklar: "To'rtburchaklar",
-  doiralar: 'Doiralar',
-  koppurchaklar: "Ko'pburchaklar",
-  koordinatalar: 'Koordinatalar',
-  stereometriya: 'Stereometriya',
-}
 
 export default function DashboardPage() {
   const { user, userData: ctxUserData } = useAuth()
@@ -33,6 +25,8 @@ export default function DashboardPage() {
   const [recentQuizzes, setRecentQuizzes] = useState<any[]>([])
   const [leaderboard, setLeaderboard] = useState<any[]>([])
   const [completedLessons, setCompletedLessons] = useState(0)
+  const [totalTopics, setTotalTopics] = useState(9) // Fallback initially
+  const [topicsMap, setTopicsMap] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -49,16 +43,20 @@ export default function DashboardPage() {
     // Load other data
     async function loadData() {
       try {
-        const [progress, quizzes, lb, topics] = await Promise.all([
+        const [progress, quizzes, lb, topics, topicsCount, tMap] = await Promise.all([
           getUserProgress(user!.uid),
           getUserQuizResults(user!.uid),
           getLeaderboard(),
           getTopicProgress(user!.uid),
+          getTotalTopicsCount(),
+          getTopicsMap()
         ])
         setCompletedLessons(progress.length)
         setRecentQuizzes(quizzes.slice(0, 5))
         setLeaderboard(lb)
         setTopicProgress(topics)
+        setTotalTopics(topicsCount > 0 ? topicsCount : 9)
+        setTopicsMap(tMap)
       } catch (e) {
         console.error(e)
       } finally {
@@ -69,14 +67,13 @@ export default function DashboardPage() {
     loadData()
     return () => unsubscribe()
   }, [user])
-
   const stats = [
     {
       icon: BookOpen,
-      value: `${completedLessons} / 9`,
+      value: `${completedLessons} / ${totalTopics}`,
       label: 'Jami darslar',
       color: 'indigo',
-      progress: Math.round((completedLessons / 9) * 100),
+      progress: Math.round((completedLessons / totalTopics) * 100),
     },
     {
       icon: Flame,
@@ -128,7 +125,7 @@ export default function DashboardPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="max-w-7xl mx-auto"
+      className="max-w-7xl mx-auto p-4 md:p-8 pt-6 md:pt-8"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-6 md:mb-8">
@@ -199,7 +196,7 @@ export default function DashboardPage() {
                           dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl">
             <h2 className="text-base font-bold text-slate-800 
                            dark:text-slate-100 mb-6 flex items-center gap-2">
-              <span className="w-2 h-6 bg-indigo-500 rounded-full" /> Mavzular bo'yicha daraja
+              <span className="w-2 h-6 bg-indigo-500 rounded-full" /> Bo'limlar bo'yicha daraja
             </h2>
             <div className="space-y-5">
               {topicProgress.map((item, i) => (
@@ -207,7 +204,7 @@ export default function DashboardPage() {
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-semibold text-slate-600 
                                      dark:text-slate-300">
-                      {TOPIC_LABELS[item.topic] || item.topic}
+                      {item.title || item.topic}
                     </span>
                     <span className="text-sm font-bold text-indigo-600 
                                      dark:text-indigo-400">
@@ -258,7 +255,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                        {TOPIC_LABELS[quiz.topic] || quiz.topic} Testi
+                        {topicsMap[quiz.topicId]?.title || topicsMap[quiz.topic]?.title || quiz.topic} Testi
                       </div>
                       <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-0.5 flex items-center gap-1.5">
                         <Clock size={12} />
@@ -334,8 +331,8 @@ export default function DashboardPage() {
                            dark:text-slate-100 mb-5 relative z-10">
               Top o'quvchilar
             </h2>
-            <div className="space-y-3 relative z-10">
-              {leaderboard.slice(0, 5).map((u, i) => {
+            <div className="space-y-3 relative z-10 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+              {leaderboard.slice(0, 15).map((u, i) => {
                 const isMe = u.uid === user?.uid
                 const initials = (u.displayName || 'U')
                   .split(' ')

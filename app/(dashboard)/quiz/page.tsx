@@ -420,17 +420,18 @@ export default function QuizPage() {
               onClick={() => setSelectedTopic(null)}
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
-            >
-              <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                className="w-full max-w-md max-h-[90vh] md:max-h-[85vh] flex flex-col pointer-events-auto"
+              >
+                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden flex flex-col max-h-full">
 
                 {/* Modal header */}
-                <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-7 relative">
+                <div className="shrink-0 bg-gradient-to-br from-indigo-600 to-violet-700 p-7 relative">
                   <button onClick={() => setSelectedTopic(null)}
                     className="absolute top-4 right-4 p-1.5 bg-white/20 hover:bg-white/30 rounded-full text-white"
                   ><X className="w-4 h-4" /></button>
@@ -442,7 +443,7 @@ export default function QuizPage() {
                 </div>
 
                 {/* Modal config body */}
-                <div className="p-6 space-y-5">
+                <div className="p-6 space-y-5 overflow-y-auto">
 
                   {/* Difficulty */}
                   <div>
@@ -513,7 +514,8 @@ export default function QuizPage() {
                   </button>
                 </div>
               </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>

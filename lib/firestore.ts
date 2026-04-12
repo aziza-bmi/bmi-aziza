@@ -2,7 +2,7 @@ import {
   doc, getDoc, setDoc, updateDoc, addDoc,
   collection, query, where, orderBy, limit,
   getDocs, onSnapshot, increment, serverTimestamp,
-  Timestamp, getCountFromServer
+  Timestamp, getCountFromServer, collectionGroup
 } from 'firebase/firestore'
 import { db } from './firebase'
 
@@ -318,31 +318,81 @@ export async function getUserRank(xp: number): Promise<number> {
   return snapshot.data().count + 1 
 }
 
-// Get topic progress percentages
+// Get total topics count
+export async function getTotalTopicsCount() {
+  try {
+    const snap = await getCountFromServer(collectionGroup(db, 'topics'))
+    return snap.data().count
+  } catch (e) {
+    console.error("Error fetching total topics count:", e)
+    return 0
+  }
+}
+
+// Get topics map
+export async function getTopicsMap() {
+  try {
+    const snap = await getDocs(collectionGroup(db, 'topics'))
+    const map: Record<string, { title: string; sectionId: string }> = {}
+    snap.docs.forEach(d => {
+      const pathParts = d.ref.path.split('/')
+      map[d.id] = {
+        title: d.data().title || d.id,
+        sectionId: pathParts.length > 1 ? pathParts[1] : '',
+      }
+    })
+    return map
+  } catch (e) {
+    console.error("Error fetching topics map:", e)
+    return {}
+  }
+}
+
+// Get dynamic section progress percentages
 export async function getTopicProgress(uid: string) {
-  const results = await getUserQuizResults(uid)
-  
-  const topics = [
-    'planimetriya', 'uchburchaklar', 'tortburchaklar',
-    'doiralar', 'koppurchaklar', 'koordinatalar', 'stereometriya'
-  ]
+  try {
+    const [results, topicsMap, sectionsSnap] = await Promise.all([
+      getUserQuizResults(uid),
+      getTopicsMap(),
+      getDocs(query(collection(db, 'sections'), orderBy('order')))
+    ])
 
-  const topicScores: Record<string, number[]> = {}
-  
-  results.forEach((r: any) => {
-    if (!topicScores[r.topic]) topicScores[r.topic] = []
-    topicScores[r.topic].push(r.score)
-  })
+    const sectionsList = sectionsSnap.docs.map(d => ({ id: d.id, title: d.data().title }))
+    const sectionScores: Record<string, number[]> = {}
 
-  return topics.map(topic => ({
-    topic,
-    progress: topicScores[topic]
-      ? Math.round(
-          topicScores[topic].reduce((a, b) => a + b, 0) /
-          topicScores[topic].length
-        )
-      : 0
-  }))
+    results.forEach((r: any) => {
+      const actualTopicId = r.topicId || r.topic
+      const meta = topicsMap[actualTopicId]
+      const sectionId = meta?.sectionId || 'boshqa'
+      
+      if (!sectionScores[sectionId]) sectionScores[sectionId] = []
+      sectionScores[sectionId].push(r.score)
+    })
+
+    const computed = sectionsList.map(sec => ({
+      topic: sec.id, // maintaining 'topic' key for dashboard compatibility
+      title: sec.title,
+      progress: sectionScores[sec.id]
+        ? Math.round(
+            sectionScores[sec.id].reduce((a, b) => a + b, 0) /
+            sectionScores[sec.id].length
+          )
+        : 0
+    }))
+
+    if (sectionScores['boshqa']) {
+      computed.push({
+        topic: 'boshqa',
+        title: 'Boshqalar',
+        progress: Math.round(sectionScores['boshqa'].reduce((a, b) => a + b, 0) / sectionScores['boshqa'].length)
+      })
+    }
+
+    return computed
+  } catch (e) {
+    console.error("Error getting dynamic topic progress:", e)
+    return []
+  }
 }
 
 // Real-time user data listener

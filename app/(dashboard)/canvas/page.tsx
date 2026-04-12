@@ -934,7 +934,7 @@ export default function GeoLabPage() {
       let sp=''
       if(currentMode==='ask')sp=`Siz GeoLab AI. Canvasdagi figuralar:\n${summary}\nQisqa javob. O'zbek tilida. LaTeX: $formula$. Markdown.`
       else if(currentMode==='draw')sp=`Siz GeoLab AI chizuvchi.\nJSON ob'ekt bering:\n\`\`\`json\n{"type":"rect|circle|triangle|polygon|cube|cylinder|cone|sphere","width":10,"height":8,"radius":5,"a":3,"b":4,"sides":6,"color":"#4F46E5","labels":{"width":"10 sm","height":"8 sm","radius":"r=5 sm","a":"x"}}\n\`\`\`\nKeyin insoniy tushuntirish. O'zbek tilida.`
-      else sp=`Siz GeoLab AI o'qituvchi. O'zbek tilida geometriya masalasini yozing (matni bilan!). Masala ifodasi va shartlari tugagach, shu masaladagi shaklni chizish yuzasidan MATNNING ENG OXIRIGA faqat bitta JSON obyekt qo'shing. DIQQAT: JSON kodi boshlanishidan oldin "Chizma uchun JSON" deb aslo YOZMANG. Topilishi kerak bo'lgan tomonni esa label ichida '?' qilib chizib bering. 3D figuralar (cube, prism, pyramid, cylinder, cone, sphere) tushunishingiz mumkin.
+      else sp=`Siz GeoLab AI o'qituvchi. O'zbek tilida geometriya masalasini yozing (matni bilan!). DIQQAT: O'quvchiga faqat masalani shartini bering, javobni YOKI yechimni HECH QACHON to'g'ridan to'g'ri bermang (Masalan javob 5 sm demang). O'quvchidan yechishni talab qiling. Masala ifodasi va shartlari tugagach, shu masaladagi shaklni chizish yuzasidan MATNNING ENG OXIRIGA faqat bitta JSON obyekt qo'shing. JSON kodi boshlanishidan oldin "Chizma uchun JSON" deb aslo YOZMANG. Topilishi kerak bo'lgan tomonni esa label ichida '?' qilib chizib bering. 3D figuralar (cube, prism, pyramid, cylinder, cone, sphere) tushunishingiz mumkin.
 Misol 2D: \`\`\`json\n{"type":"triangle","color":"#4F46E5","labels":{"a":"5","b":"?","c":"4"}}\n\`\`\`
 Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"labels":{"width":"6 sm","height":"10 sm","depth":"?"}}\n\`\`\`
  Canvas: ${summary}`
@@ -1055,6 +1055,7 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                     theoryEntry = {
                       title: found.title || selectedTopicId,
                       definition: defText || 'Ushbu mavzu bo\'yicha to\'liq ma\'lumotlar bazada hozircha mavjud emas. Pastdagi "AI tahlil" orqali sun\'iy intellektdan batafsil so\'rang!',
+                      content: found.content || '',
                       formula: found.formula || '',
                       properties: found.properties || [],
                       example: found.examples ? found.examples.join('\n') : '',
@@ -1069,7 +1070,13 @@ Misol 3D: \`\`\`json\n{"type":"prism","color":"#4F46E5","width":6,"height":10,"l
                     <button onClick={()=>setSelectedTopicId(null)} className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 transition-colors mb-2"><ChevronLeft size={14}/>Orqaga</button>
                     <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/30 dark:to-blue-900/20 border border-indigo-100 dark:border-indigo-800/40">
                           <h3 className="text-sm font-bold text-indigo-800 dark:text-indigo-200 mb-1.5">{theoryEntry.title}</h3>
-                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{theoryEntry.definition}</p>
+                          {theoryEntry.content ? (
+                            <div className="text-xs prose prose-sm dark:prose-invert max-w-none text-slate-800 dark:text-slate-200 theory-prose">
+                               <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{theoryEntry.content}</ReactMarkdown>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{theoryEntry.definition}</p>
+                          )}
                         </div>
                         {theoryEntry.formula && (
                           <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/40">
