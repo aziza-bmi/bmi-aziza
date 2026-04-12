@@ -4,10 +4,19 @@ import Link from 'next/link'
 import { Mail, Lock, LogIn } from 'lucide-react'
 import { loginWithEmail, loginWithGoogle, getAuthErrorMessage } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
+  
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, authLoading, router])
+  
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [email, setEmail] = useState('')

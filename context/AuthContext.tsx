@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(firebaseUser)
       if (firebaseUser) {
         const token = await firebaseUser.getIdToken()
-        document.cookie = `firebase-auth-token=${token}; path=/; max-age=86400` // 1 kunga saqlash
+        document.cookie = `firebase-auth-token=${token}; path=/; max-age=7200` // 2 soatgacha saqlash
 
         const userRef = doc(db, 'users', firebaseUser.uid)
         const userSnap = await getDoc(userRef)

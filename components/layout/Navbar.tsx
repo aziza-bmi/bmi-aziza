@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import ThemeToggle from '@/components/shared/ThemeToggle'
 import { Menu, X } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation'
 
 const navLinks = [
   { href: '/', label: 'Bosh sahifa' },
@@ -17,6 +19,14 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeHash, setActiveHash] = useState('/')
+  const { user, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, loading, router])
 
   useEffect(() => {
     const handleScroll = () => {

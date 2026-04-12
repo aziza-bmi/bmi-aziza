@@ -65,7 +65,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       `}>
         <div className="p-5 border-b border-slate-200 dark:border-slate-700/50 flex items-center justify-between">
           {!isCollapsed && (
-            <Link href="/" className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+            <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
               <img src="/logo-light.png" alt="GeoMind Logo" className="w-8 h-8 dark:hidden object-contain" />
               <img src="/logo-dark.png" alt="GeoMind Logo" className="w-8 h-8 hidden dark:block object-contain" />
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
