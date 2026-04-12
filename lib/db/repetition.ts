@@ -113,3 +113,22 @@ export async function getDueQuestionsByTopic(userId: string, topicId: string) {
   const snap = await getDocs(q)
   return snap.docs.map(doc => doc.data() as QuestionState)
 }
+
+/**
+ * Returns ALL question states for a user (full history).
+ * Grouped by topicId for the History/Stats tab.
+ */
+export async function getAllQuestionStates(userId: string): Promise<Record<string, QuestionState[]>> {
+  const q = query(
+    collection(db, 'userQuestionStates'),
+    where('userId', '==', userId)
+  )
+  const snap = await getDocs(q)
+  const grouped: Record<string, QuestionState[]> = {}
+  snap.docs.forEach(d => {
+    const state = d.data() as QuestionState
+    if (!grouped[state.topicId]) grouped[state.topicId] = []
+    grouped[state.topicId].push(state)
+  })
+  return grouped
+}
