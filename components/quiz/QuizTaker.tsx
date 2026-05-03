@@ -83,6 +83,154 @@ function MathText({ content, className = '' }: { content: string, className?: st
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+// GeometryFigure — geometrik shakllarni SVG orqali ko'rsatish
+// ──────────────────────────────────────────────────────────────────────────────
+
+type GeoShape =
+  | { type: 'segment'; label: string; points: [string, string] }
+  | { type: 'angle';   label: string; vertex: string; rays: [string, string] }
+  | { type: 'triangle'; label: string; vertices: [string, string, string] }
+
+/** Savoldan geometrik shakllarni ajratib oladi */
+function parseGeometryShapes(text: string): GeoShape[] {
+  const shapes: GeoShape[] = []
+  const seen = new Set<string>()
+
+  // Triangle: "ABC uchburchak" or "△ABC"
+  const triRe = /(?:△|▲)?([A-Z]{3})\s*(?:uchburchak|triangle|uch\s*burchak)?/g
+  let m: RegExpExecArray | null
+  while ((m = triRe.exec(text)) !== null) {
+    const label = m[1]
+    if (!seen.has('tri_' + label)) {
+      seen.add('tri_' + label)
+      shapes.push({ type: 'triangle', label, vertices: [label[0], label[1], label[2]] })
+    }
+  }
+
+  // Segment: "AB kesma" or "AB=5" or just "AB" as 2-letter uppercase
+  const segRe = /\b([A-Z]{2})\b(?:\s*(?:kesma|segment|=|ning|da|ga|ni|bo'yi|uzunligi))?/g
+  while ((m = segRe.exec(text)) !== null) {
+    const label = m[1]
+    // Skip if already part of a triangle
+    const inTriangle = shapes.some(s => s.type === 'triangle' && s.label.includes(label[0]) && s.label.includes(label[1]))
+    if (!seen.has('seg_' + label) && !inTriangle) {
+      seen.add('seg_' + label)
+      shapes.push({ type: 'segment', label, points: [label[0], label[1]] })
+    }
+  }
+
+  // Angle: "∠ABC" or "ABC burchak"
+  const angRe = /(?:∠|<|burchak\s+)([A-Z]{3})/g
+  while ((m = angRe.exec(text)) !== null) {
+    const label = m[1]
+    if (!seen.has('ang_' + label)) {
+      seen.add('ang_' + label)
+      shapes.push({ type: 'angle', label, vertex: label[1], rays: [label[0], label[2]] })
+    }
+  }
+
+  return shapes
+}
+
+/** SVG chizish */
+function GeometryFigure({ question }: { question: string }) {
+  const shapes = parseGeometryShapes(question)
+  if (shapes.length === 0) return null
+
+  const W = 320
+  const H = 140
+  const PAD = 32
+
+  // Render all shapes side by side
+  const svgElements: React.ReactNode[] = []
+  let offsetX = PAD
+
+  shapes.forEach((shape, si) => {
+    if (shape.type === 'segment') {
+      const x1 = offsetX
+      const x2 = offsetX + 90
+      const y  = H / 2
+      svgElements.push(
+        <g key={si}>
+          {/* Line */}
+          <line x1={x1} y1={y} x2={x2} y2={y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" />
+          {/* Endpoints */}
+          <circle cx={x1} cy={y} r={4} fill="#6366f1" />
+          <circle cx={x2} cy={y} r={4} fill="#6366f1" />
+          {/* Labels */}
+          <text x={x1} y={y - 10} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.points[0]}</text>
+          <text x={x2} y={y - 10} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.points[1]}</text>
+        </g>
+      )
+      offsetX += 120
+    } else if (shape.type === 'triangle') {
+      // Equilateral-ish triangle
+      const cx = offsetX + 55
+      const ax = cx, ay = H * 0.18
+      const bx = cx - 50, by = H * 0.82
+      const cx2 = cx + 50, cy2 = H * 0.82
+      svgElements.push(
+        <g key={si}>
+          <polygon
+            points={`${ax},${ay} ${bx},${by} ${cx2},${cy2}`}
+            fill="#eef2ff"
+            stroke="#6366f1"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+          <text x={ax}    y={ay - 8}   textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertices[0]}</text>
+          <text x={bx - 8} y={by + 4}  textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertices[1]}</text>
+          <text x={cx2 + 8} y={cy2 + 4} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertices[2]}</text>
+        </g>
+      )
+      offsetX += 130
+    } else if (shape.type === 'angle') {
+      const vx = offsetX + 30, vy = H * 0.72
+      const r  = 60
+      const a1 = -0.35 // radians for first ray
+      const a2 = -Math.PI + 0.35 // radians for second ray
+      // Reverse: ray1 goes up-right, ray2 goes up-left
+      const r1x = vx + r * Math.cos(-0.4), r1y = vy + r * Math.sin(-0.4)
+      const r2x = vx + r * Math.cos(-Math.PI * 0.75), r2y = vy + r * Math.sin(-Math.PI * 0.75)
+      // Arc
+      const arcR = 20
+      const arc1x = vx + arcR * Math.cos(-0.4), arc1y = vy + arcR * Math.sin(-0.4)
+      const arc2x = vx + arcR * Math.cos(-Math.PI * 0.75), arc2y = vy + arcR * Math.sin(-Math.PI * 0.75)
+      svgElements.push(
+        <g key={si}>
+          <line x1={vx} y1={vy} x2={r1x} y2={r1y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1={vx} y1={vy} x2={r2x} y2={r2y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" />
+          <path d={`M ${arc1x} ${arc1y} A ${arcR} ${arcR} 0 0 0 ${arc2x} ${arc2y}`} fill="none" stroke="#6366f1" strokeWidth="1.5" />
+          <circle cx={vx} cy={vy} r={3.5} fill="#6366f1" />
+          <text x={r1x + 6} y={r1y}   textAnchor="start"  fontSize="13" fontWeight="700" fill="#4f46e5">{shape.rays[0]}</text>
+          <text x={r2x - 6} y={r2y}   textAnchor="end"    fontSize="13" fontWeight="700" fill="#4f46e5">{shape.rays[1]}</text>
+          <text x={vx}      y={vy + 16} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertex}</text>
+        </g>
+      )
+      offsetX += 120
+    }
+  })
+
+  const totalW = Math.max(offsetX + PAD / 2, 200)
+
+  return (
+    <div className="flex justify-center my-4">
+      <div className="bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-2xl px-4 py-3 inline-block">
+        <svg
+          viewBox={`0 0 ${totalW} ${H}`}
+          width={Math.min(totalW, 400)}
+          height={Math.round(H * Math.min(totalW, 400) / totalW)}
+          aria-label="Geometrik shakl"
+        >
+          {svgElements}
+        </svg>
+        <p className="text-center text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1">Geometrik shakl</p>
+      </div>
+    </div>
+  )
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
 // Component
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -617,6 +765,8 @@ export default function QuizTaker({
                content={currentQuestion.question} 
                className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-relaxed" 
              />
+             {/* Geometrik shakl avtomatik ko'rsatiladi */}
+             <GeometryFigure question={currentQuestion.question} />
           </div>
 
           <div className="space-y-4 relative z-10">
