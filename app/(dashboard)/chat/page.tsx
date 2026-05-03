@@ -48,11 +48,11 @@ const QUICK_SUGGESTIONS = [
 ]
 
 const SITE_KNOWLEDGE = `
-Sen GeoMind AI — geometriya bo'yicha professional 
+Sen Fazo AI — geometriya bo'yicha professional 
 o'zbek tilida o'qituvchisan.
 
-SAYT HAQIDA (GeoMind AI):
-GeoMind AI — geometriyani AI yordamida o'rgatuvchi 
+SAYT HAQIDA (Fazo AI):
+Fazo AI — geometriyani AI yordamida o'rgatuvchi 
 ta'lim platformasi. Saytda quyidagi bo'limlar bor:
 
 1. DASHBOARD — foydalanuvchi statistikasi:
@@ -154,7 +154,7 @@ QOIDALAR:
 5. Ro'yxat: - bilan
 6. Aniq, qisqa, tushunarli yoz
 7. Savol geometriya/sayt haqida bo'lmasa:
-   "Kechirasiz, men faqat geometriya va GeoMind AI 
+   "Kechirasiz, men faqat geometriya va Fazo AI 
     saytiga oid savollarga javob bera olaman."
 8. Agar batafsil ma'lumot kerak bo'lsa yoki 
    yangi/qo'shimcha ma'lumot zarur bo'lsa — 
@@ -185,7 +185,7 @@ export default function ChatPage() {
     setMessages([{
       id: '0',
       role: 'assistant',
-      content: `Salom! Men **GeoMind AI** — sizning geometriya bo'yicha shaxsiy muallimingizman. 🎓\n\nMen quyidagilar haqida yordam bera olaman:\n- **Geometriya** — formulalar, teoremalar, misollar\n- **GeoMind AI sayt** — darslar, testlar, laboratoriya\n- **Masalalar** — bosqichma-bosqich yechim\n\nBugun qaysi mavzuda yordam kerak?`,
+      content: `Salom! Men **Fazo AI** — sizning geometriya bo'yicha shaxsiy muallimingizman. 🎓\n\nMen quyidagilar haqida yordam bera olaman:\n- **Geometriya** — formulalar, teoremalar, misollar\n- **Fazo AI sayt** — darslar, testlar, laboratoriya\n- **Masalalar** — bosqichma-bosqich yechim\n\nBugun qaysi mavzuda yordam kerak?`,
       timestamp: new Date(),
     }])
   }, [])
@@ -279,7 +279,7 @@ export default function ChatPage() {
       const initial: Message = {
         id: '0',
         role: 'assistant',
-        content: `Salom! Men **GeoMind AI** — sizning geometriya bo'yicha shaxsiy muallimingizman. 🎓\n\nMen quyidagilar haqida yordam bera olaman:\n- **Geometriya** — formulalar, teoremalar, misollar\n- **GeoMind AI sayt** — darslar, testlar, laboratoriya\n- **Masalalar** — bosqichma-bosqich yechim\n\nBugun qaysi mavzuda yordam kerak?`,
+        content: `Salom! Men **Fazo AI** — sizning geometriya bo'yicha shaxsiy muallimingizman. 🎓\n\nMen quyidagilar haqida yordam bera olaman:\n- **Geometriya** — formulalar, teoremalar, misollar\n- **Fazo AI sayt** — darslar, testlar, laboratoriya\n- **Masalalar** — bosqichma-bosqich yechim\n\nBugun qaysi mavzuda yordam kerak?`,
         timestamp: new Date(),
       }
       
@@ -401,7 +401,7 @@ export default function ChatPage() {
     setMessages([{
       id: '0',
       role: 'assistant',
-      content: `Salom! Yangi suhbat boshlandi. 😊\n\nGeometriya yoki GeoMind AI saytiga oid savolingizni bering!`,
+      content: `Salom! Yangi suhbat boshlandi. 😊\n\nGeometriya yoki Fazo AI saytiga oid savolingizni bering!`,
       timestamp: new Date(),
     }])
   }
@@ -618,7 +618,7 @@ export default function ChatPage() {
             <div>
               <p className="text-sm font-medium text-slate-800
                             dark:text-slate-100">
-                GeoMind Muallim
+                Fazo Muallim
               </p>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full
@@ -967,7 +967,7 @@ export default function ChatPage() {
           </div>
           <p className="text-[10px] text-slate-400
                         dark:text-slate-500 mt-2 text-center">
-            GeoMind AI geometriya va sayt bo'yicha 
+            Fazo AI geometriya va sayt bo'yicha 
             savollarga javob beradi
           </p>
         </div>

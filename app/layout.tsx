@@ -10,19 +10,19 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "GeoMind AI — Geometriyani AI bilan o'rgan",
-    template: "%s | GeoMind AI",
+    default: "Fazo AI — Geometriyani AI bilan o'rgan",
+    template: "%s | Fazo AI",
   },
   description: "Sun'iy intellekt yordamida geometriyani interaktiv va qiziqarli tarzda o'rganish platformasi. AI muallim, interaktiv chizuvchi, adaptiv testlar.",
-  keywords: ["geometriya", "AI", "matematika", "o'rganish", "ta'lim", "GeoMind"],
-  authors: [{ name: 'GeoMind AI' }],
-  creator: 'GeoMind AI',
+  keywords: ["geometriya", "AI", "matematika", "o'rganish", "ta'lim", "Fazo"],
+  authors: [{ name: 'Fazo AI' }],
+  creator: 'Fazo AI',
   openGraph: {
     type: 'website',
     locale: 'uz_UZ',
-    title: "GeoMind AI — Geometriyani AI bilan o'rgan",
+    title: "Fazo AI — Geometriyani AI bilan o'rgan",
     description: "Sun'iy intellekt yordamida geometriyani o'rganish platformasi",
-    siteName: 'GeoMind AI',
+    siteName: 'Fazo AI',
   },
   robots: {
     index: true,

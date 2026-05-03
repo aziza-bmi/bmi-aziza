@@ -52,7 +52,7 @@ export default function DashboardLayout({
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-20 shrink-0 sticky top-0">
           <Link href="/dashboard" className="flex items-center gap-2">
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-              GeoMind
+              Fazo
             </span>
           </Link>
           <button 

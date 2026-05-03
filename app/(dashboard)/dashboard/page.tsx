@@ -306,7 +306,7 @@ export default function DashboardPage() {
             </h2>
             <div className="grid grid-cols-1 gap-2 md:gap-3">
               {[
-                { label: 'AI Muallim', href: '/chat', primary: true, icon: '🤖' },
+                { label: 'AI muallim', href: '/chat', primary: true, icon: '🤖' },
                 { label: 'Yangi dars', href: '/lessons', primary: false, icon: '📚' },
                 { label: 'Bilimni tekshirish', href: '/quiz', primary: false, icon: '🎯' },
               ].map((btn, i) => (

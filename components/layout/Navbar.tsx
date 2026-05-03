@@ -62,16 +62,16 @@ export default function Navbar() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className={`fixed top-0 inset-x-0 w-full z-[60] flex items-center justify-between px-4 md:px-8 h-16 transition-all duration-300 ${
+        className={`fixed top-0 inset-x-0 w-full z-[60] flex items-center justify-between px-4 md:px-8 h-20 transition-all duration-300 ${
           scrolled || menuOpen
-            ? 'bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm'
+            ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-md'
             : 'bg-transparent'
         }`}
       >
         <Link href="/" className="flex items-center gap-2 z-[60]">
-          <img src="/logo-light.png" alt="GeoMind Logo" className="w-8 h-8 dark:hidden object-contain" />
-          <img src="/logo-dark.png" alt="GeoMind Logo" className="w-8 h-8 hidden dark:block object-contain" />
-          <span className="gradient-text text-lg font-medium">GeoMind</span>
+          <img src="/logo-light.png" alt="Fazo Logo" className="w-8 h-8 dark:hidden object-contain" />
+          <img src="/logo-dark.png" alt="Fazo Logo" className="w-8 h-8 hidden dark:block object-contain" />
+          <span className="gradient-text text-lg font-medium">Fazo</span>
         </Link>
 
         {/* Desktop Links */}

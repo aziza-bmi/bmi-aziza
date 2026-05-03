@@ -11,7 +11,7 @@ import { motion } from "framer-motion"
 export default function FAQ() {
   const faqs = [
     {
-      q: "GeoMind bepulmi?",
+      q: "Fazo bepulmi?",
       a: "Ha, platformaning asosiy bo'limlari hisob yaratgan barcha uchun bepul. Sun'iy intellektdan cheksiz foydalanish va ilg'or funksiyalar uchun maxsus obuna tizimi ham mavjud."
     },
     {
@@ -19,7 +19,7 @@ export default function FAQ() {
       a: "Platforma barcha yoshdagi o'quvchilar uchun moslashtirilgan. Siz o'z darajangizni belgilaganingizdan so'ng, tizim aynan malakangizga mos darslarni va masalalarni taqdim etadi."
     },
     {
-      q: "Ai muallim qanday ishlaydi?",
+      q: "AI muallim qanday ishlaydi?",
       a: "Murakkab generativ va riyoziy modellar yordamida ishlaydi. U savollaringizning mantig'ini tushunib, nafaqat to'g'ri javobni beradi, balki yechimni to'liq tasviriy tushuntiradi."
     },
     {
@@ -56,12 +56,12 @@ export default function FAQ() {
       >
         <Accordion className="w-full space-y-4">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`item-${i}`} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-2xl px-2 sm:px-6 data-[state=open]:shadow-lg data-[state=open]:bg-white dark:data-[state=open]:bg-slate-900 transition-all duration-300 overflow-hidden">
-              <AccordionTrigger className="text-left font-semibold text-slate-800 dark:text-slate-200 hover:no-underline py-5 px-4 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <AccordionItem key={i} value={`item-${i}`} className="group bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md border-2 border-slate-200 dark:border-slate-700 rounded-2xl px-2 sm:px-6 hover:bg-slate-900 dark:hover:bg-slate-950 hover:border-indigo-500 hover:shadow-2xl transition-all duration-500 overflow-hidden data-[state=open]:border-indigo-500 data-[state=open]:shadow-2xl data-[state=open]:bg-slate-900 dark:data-[state=open]:bg-slate-950">
+              <AccordionTrigger className="text-left font-semibold text-slate-800 dark:text-slate-200 group-hover:text-white data-[state=open]:text-white hover:no-underline py-5 px-4 transition-colors duration-500">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-slate-600 dark:text-slate-400 leading-relaxed text-base px-0 pb-5">
-                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-xl p-5 mx-4 shadow-sm">
+              <AccordionContent className="text-slate-300 leading-relaxed text-base px-0 pb-5">
+                <div className="bg-slate-800/50 border-2 border-indigo-500/30 rounded-xl p-5 mx-4 shadow-sm text-slate-300">
                   {faq.a}
                 </div>
               </AccordionContent>

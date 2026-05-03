@@ -1,5 +1,5 @@
 import Link from 'next/link'
-
+import GeoBg from '@/components/landing/GeoBg'
 export default function AuthLayout({
   children,
 }: {
@@ -9,27 +9,15 @@ export default function AuthLayout({
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden
            bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50
            dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      {/* Background Graphic */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[100px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[100px]" />
-        
-        {/* Abstract shapes */}
-        <svg className="absolute left-[15%] top-[20%] opacity-[0.03] animate-pulse-slow" width="150" height="150" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" fill="#4F46E5"/>
-        </svg>
-        <svg className="absolute right-[15%] bottom-[20%] opacity-[0.03] animate-float-1" width="150" height="150" viewBox="0 0 100 100">
-          <rect x="10" y="10" width="80" height="80" rx="10" fill="#3B82F6" transform="rotate(15 50 50)"/>
-        </svg>
-      </div>
+      <GeoBg count={8} />
 
       <div className="relative z-10 w-full max-w-sm sm:max-w-md px-4 sm:px-6 my-8 sm:my-12">
         <div className="text-center mb-6 md:mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-2">
-            <img src="/logo-light.png" alt="GeoMind Logo" className="w-8 h-8 md:w-10 md:h-10 dark:hidden object-contain" />
-            <img src="/logo-dark.png" alt="GeoMind Logo" className="w-8 h-8 md:w-10 md:h-10 hidden dark:block object-contain" />
+            <img src="/logo-light.png" alt="Fazo Logo" className="w-8 h-8 md:w-10 md:h-10 dark:hidden object-contain" />
+            <img src="/logo-dark.png" alt="Fazo Logo" className="w-8 h-8 md:w-10 md:h-10 hidden dark:block object-contain" />
             <span className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-              GeoMind
+              Fazo
             </span>
           </Link>
           <p className="text-slate-500 dark:text-slate-400 text-sm">Sun'iy intellekt yordamida geometriya</p>

@@ -130,7 +130,7 @@ Faqat sof JSON array. Markdown yo'q. Backtick yo'q. Izoh yo'q:
 // ── 6. Main ───────────────────────────────────────────────────────────────────
 async function upgradeAll() {
   console.log('\n╔══════════════════════════════════════════════════╗');
-  console.log('║  GEOMIND — 25 ta SIFATLI SAVOL (har mavzu uchun) ║');
+  console.log('║  FAZO — 25 ta SIFATLI SAVOL (har mavzu uchun) ║');
   console.log('║  Model : gemini-3.1-flash-lite-preview            ║');
   console.log('╚══════════════════════════════════════════════════╝\n');
 

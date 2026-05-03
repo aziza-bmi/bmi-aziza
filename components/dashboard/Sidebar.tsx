@@ -29,7 +29,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Darslar', href: '/lessons', icon: BookOpen },
-    { name: 'AI Muallim', href: '/chat', icon: MessageSquare },
+    { name: 'AI muallim', href: '/chat', icon: MessageSquare },
     { name: 'Testlar', href: '/quiz', icon: Award },
     { name: 'Reyting', href: '/leaderboard', icon: Trophy },
     { name: 'Laboratoriya', href: '/canvas', icon: FlaskConical },
@@ -66,10 +66,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         <div className="p-5 border-b border-slate-200 dark:border-slate-700/50 flex items-center justify-between">
           {!isCollapsed && (
             <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-              <img src="/logo-light.png" alt="GeoMind Logo" className="w-8 h-8 dark:hidden object-contain" />
-              <img src="/logo-dark.png" alt="GeoMind Logo" className="w-8 h-8 hidden dark:block object-contain" />
+              <img src="/logo-light.png" alt="Fazo Logo" className="w-8 h-8 dark:hidden object-contain" />
+              <img src="/logo-dark.png" alt="Fazo Logo" className="w-8 h-8 hidden dark:block object-contain" />
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-                GeoMind
+                Fazo
               </span>
             </Link>
           )}

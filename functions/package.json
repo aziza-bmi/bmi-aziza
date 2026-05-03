@@ -1,6 +1,6 @@
 {
-  "name": "geomind-functions",
-  "description": "GeoMind AI — Firebase Cloud Functions",
+  "name": "fazo-functions",
+  "description": "Fazo AI — Firebase Cloud Functions",
   "engines": { "node": "20" },
   "main": "index.js",
   "dependencies": {

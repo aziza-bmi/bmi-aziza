@@ -11,27 +11,30 @@ export default function Features() {
 
   const features = [
     {
-      title: 'Ai dasturlangan muallim',
+      title: 'AI dasturlangan muallim',
       desc: 'Generativ AI orqali ishlaydigan shaxsiy o\'qituvchi. Har qanday murakkab geometrik masalani bosqichma-bosqich, eng tushunarli tarzda tushuntirib beradi.',
       icon: BrainCircuit,
       color: 'bg-indigo-600',
+      cardBg: 'bg-indigo-50/60 dark:bg-indigo-900/10',
       badge: 'Yangi avlod',
       image: '/demo-chat-real.webp',
-      moreDetails: 'AI Muallim OpenAI va maxsus riyoziy modellar majmuasi orqali har bir chizmangiz va xatongizdan xulosa qilib, darslarni to\'g\'rilaydi.'
+      moreDetails: 'AI muallim OpenAI va maxsus riyoziy modellar majmuasi orqali har bir chizmangiz va xatongizdan xulosa qilib, darslarni to\'g\'rilaydi.'
     },
     {
       title: 'Real vaqt interaktiv canvas',
       desc: 'Shakllarni haqiqiy parametrlar yordamida laboratoriyada jonlantiring. Burchaklar, yuzalar, balandliklarni avtomatik vizuallashtiradigan muhit.',
       icon: PenTool,
       color: 'bg-blue-500',
+      cardBg: 'bg-blue-50/60 dark:bg-blue-900/10',
       image: '/demo-canvas.png',
       moreDetails: 'Barcha shakllarni dinamik chizish, qirqish va interaktiv tahlil qilish imkoniyati. Sizning har bir nuqtangiz tizimda jonlanadi.'
     },
     {
-      title: 'Ai adaptiv testlar',
+      title: 'AI adaptiv testlar',
       desc: 'Sizning kuchli va zaif tomonlaringizni tahlil qilib, o\'zlashtirish qiyin bo\'lgan mavzulardan chuqurlashtirilgan takrorlash testlarini tuzadi.',
       icon: FlaskConical,
       color: 'bg-purple-500',
+      cardBg: 'bg-purple-50/60 dark:bg-purple-900/10',
       image: '/demo-progress.png',
       moreDetails: 'Testlar sizning bilim xaritangizni (Knowledge Graph) quradi va qaysi qismda kamchilik bo\'lsa, shu tipdagi misollarni ko\'paytiradi.'
     },
@@ -40,6 +43,7 @@ export default function Features() {
       desc: 'Planimetriya va stereometriya qoidalarini tasviriy tarzda mukammallashtirgan eng batafsil o\'zbek tilidagi qadam-baqadam darslar arxivi.',
       icon: PlaySquare,
       color: 'bg-rose-500',
+      cardBg: 'bg-rose-50/60 dark:bg-rose-900/10',
       badge: 'Barcha sinflar',
       image: '/demo-lessons.png',
       moreDetails: '71 ta mavzu, yuzlab teoremalar va 1500 dan ortiq misollar yordamida geometriyani professional darajada o\'rganing.'
@@ -49,6 +53,7 @@ export default function Features() {
       desc: 'Haftalik reytinglar, maxsus topshiriqlar va kvestlar. Darslarda qatnashib XP ballarini yig\'ing va O\'zbekiston bo\'ylab kuchlilar reytingidan joy oling!',
       icon: Trophy,
       color: 'bg-amber-500',
+      cardBg: 'bg-amber-50/60 dark:bg-amber-900/10',
       image: '/demo-library.png',
       moreDetails: 'O\'quvchi har bir to\'g\'ri javobi va masalasi uchun koinot mavzusiga boy gamifikatsiya platformasida XP va nishonlarga ega bo\'ladi.'
     },
@@ -57,6 +62,7 @@ export default function Features() {
       desc: 'Batafsil statistika yordamida vaqt sarfi, mavzularni o\'zlashtirish tezligi va bilim dinamikangizni shaxsiy ko\'rsatkichlar panelida kuzatib boring.',
       icon: BarChart3,
       color: 'bg-teal-500',
+      cardBg: 'bg-teal-50/60 dark:bg-teal-900/10',
       image: '/demo-progress.png',
       moreDetails: 'Ota-onalar va o\'qituvchilar o\'quvchining har bir darsda qanday fikrlayotganligini va zaif nuqtalarini chuqur tahlil qila oladilar.'
     }
@@ -81,7 +87,7 @@ export default function Features() {
     >
       <div className="text-center mb-10 md:mb-16">
         <span className="text-indigo-600 dark:text-indigo-400 font-medium px-4 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-sm">Xususiyatlar</span>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mt-4 md:mt-6 mb-3 md:mb-4 text-slate-900 dark:text-white">Nima uchun GeoMind?</h2>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mt-4 md:mt-6 mb-3 md:mb-4 text-slate-900 dark:text-white">Nima uchun Fazo?</h2>
         <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-sm md:text-lg">
           An'anaviy ta'limdan farqli — sun'iy intellekt bilan o'rganish tezroq, qiziqarliroq va samaraliroq.
         </p>
@@ -98,23 +104,23 @@ export default function Features() {
               <div
                 key={i}
                 onMouseEnter={() => setActiveIdx(i)}
-                className={`p-5 rounded-2xl cursor-pointer transition-all duration-300 border ${
+                className={`group p-5 rounded-2xl cursor-pointer transition-all duration-500 border-2 ${
                   isActive 
-                    ? 'bg-white dark:bg-slate-800/80 shadow-xl shadow-indigo-100/40 dark:shadow-none border-indigo-100 dark:border-indigo-800/40 scale-[1.02] transform' 
-                    : 'bg-white/50 dark:bg-slate-800/30 border-transparent hover:bg-white/80 dark:hover:bg-slate-800/60'
+                    ? 'bg-slate-900 shadow-2xl shadow-indigo-500/30 border-indigo-500 scale-[1.03] transform z-10' 
+                    : `${item.cardBg} border-slate-200 dark:border-slate-700/50 hover:bg-slate-900 hover:border-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/30 hover:-translate-y-1 transform`
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl text-white flex items-center justify-center shrink-0 transition-colors ${isActive ? item.color : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
+                  <div className={`w-12 h-12 rounded-xl text-white flex items-center justify-center shrink-0 transition-colors duration-500 ${isActive ? item.color : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 group-hover:bg-indigo-600 group-hover:text-white'}`}>
                     <Icon className="w-6 h-6" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className={`font-semibold ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
+                      <h3 className={`font-semibold transition-colors duration-500 ${isActive ? 'text-white' : 'text-slate-700 dark:text-slate-300 group-hover:text-white'}`}>
                         {item.title}
                       </h3>
                       {item.badge && isActive && (
-                        <span className="bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-medium">
+                        <span className="bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-[10px] px-2 py-0.5 rounded-full font-medium">
                           {item.badge}
                         </span>
                       )}
@@ -123,7 +129,7 @@ export default function Features() {
                       <motion.p 
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
-                        className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed"
+                        className="text-sm text-slate-300 mt-2 leading-relaxed"
                       >
                         {item.desc}
                       </motion.p>
@@ -144,7 +150,7 @@ export default function Features() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/40 rounded-[2rem] overflow-hidden flex flex-col shadow-inner"
+              className="absolute inset-0 bg-white dark:bg-slate-800/80 border-2 border-slate-200 dark:border-slate-700/80 rounded-[2rem] overflow-hidden flex flex-col shadow-xl"
             >
               {/* Yuqori matn */}
               <div className="p-8 pb-6 relative z-10 bg-gradient-to-b from-slate-50 dark:from-slate-800 to-transparent">

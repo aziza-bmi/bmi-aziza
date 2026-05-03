@@ -1,8 +1,8 @@
-# 🗺 GeoMind AI — Loyiha Passporti
+# 🗺 Fazo AI — Loyiha Passporti
 
 ## 1. Asosiy Ma'lumotlar
-- **Loyiha nomi:** GeoMind AI (yoki avvalgi GeoLab)
-- **Loyihaning mohiyati:** GeoMind AI — o'quvchilar va talabalar uchun mo'ljallangan, sun'iy intellekt (Gemini AI) bilan integratsiya qilingan innovatsion geometriya o'rganish platformasi. Unda virtual asboblar vositasida geometrik shakllarni interaktiv chizish, darslarni tizimli o'zlashtirish va shaxsiy mini-testlar yechish orqali reyting (XP) yig'ib borish imkoniyati mavjud.
+- **Loyiha nomi:** Fazo AI (yoki avvalgi GeoLab)
+- **Loyihaning mohiyati:** Fazo AI — o'quvchilar va talabalar uchun mo'ljallangan, sun'iy intellekt (Gemini AI) bilan integratsiya qilingan innovatsion geometriya o'rganish platformasi. Unda virtual asboblar vositasida geometrik shakllarni interaktiv chizish, darslarni tizimli o'zlashtirish va shaxsiy mini-testlar yechish orqali reyting (XP) yig'ib borish imkoniyati mavjud.
 - **Holati:** Ishlab chiqarishga chiqarilgan (Production ready) / Vercel da xosting qilingan.
 
 ---
@@ -62,4 +62,4 @@ Bular kelgusida dastur imkoniyatini mutlaqo "raqobatchisi yo'q" ekotizimga aylan
 3. **Collaboration (Birgali ishchi platformasi):** Ikki nafar foydalanuvchining ustoz-shogird tizimida bir xil Canvas ish sahifasida birga ishlashiga (hamma narsa real taymda Web Sockets orqali yozilishiga) ruxsat etuvchi modul yaratish.
 4. **Milliy va DTM Test rejimi:** Kirish imtihonlaridagi barcha qiyin masala bazasini kiritib oylik reyting bo'yicha yopiq imtihon qismini yaratish.
 
-*P.s. Ushbu hujjat GeoMind AI loyihasining navbatdagi qadamlari va yangi dasturchilarning guruhga tez moslashishiga hizmat qiladi.*
+*P.s. Ushbu hujjat Fazo AI loyihasining navbatdagi qadamlari va yangi dasturchilarning guruhga tez moslashishiga hizmat qiladi.*

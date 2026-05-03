@@ -15,7 +15,7 @@ export default function HeroMockup() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-indigo-500/20 blur-[100px] rounded-full z-0" />
       
       {/* Mockup Container */}
-      <div className="relative bg-white/80 backdrop-blur-xl border border-white/50 shadow-2xl shadow-indigo-500/10 rounded-2xl overflow-hidden flex flex-col z-10">
+      <div className="relative bg-white/90 backdrop-blur-xl border-2 border-indigo-100/80 dark:border-slate-700 shadow-2xl shadow-indigo-500/20 rounded-2xl overflow-hidden flex flex-col z-10">
         
         {/* Mockup Header (Browser-like) */}
         <div className="h-12 border-b border-slate-100 flex items-center px-4 bg-slate-50/50">
@@ -25,7 +25,7 @@ export default function HeroMockup() {
             <div className="w-3 h-3 rounded-full bg-emerald-400" />
           </div>
           <div className="mx-auto bg-white border border-slate-200 rounded-md px-24 py-1.5 text-xs text-slate-400 font-medium">
-            geomind.ai/dashboard
+            fazo.ai/dashboard
           </div>
         </div>
 
@@ -35,7 +35,7 @@ export default function HeroMockup() {
           <div className="w-64 border-r border-slate-100 bg-white/50 p-4 hidden md:flex flex-col gap-2">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-50 text-indigo-700 font-medium text-sm">
               <Brain className="w-5 h-5" />
-              AI Muallim
+              AI muallim
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl text-slate-500 hover:bg-slate-50 font-medium text-sm">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>

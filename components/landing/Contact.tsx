@@ -23,7 +23,7 @@ export default function Contact() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-100 dark:border-slate-700/40 rounded-3xl p-5 md:p-10 shadow-xl shadow-indigo-100/20 dark:shadow-none">
+      <div className="grid grid-cols-1 lg:grid-cols-5 bg-white/90 dark:bg-slate-800/70 backdrop-blur-xl border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-2 md:p-3 shadow-2xl shadow-indigo-100/40 dark:shadow-none">
         
         {/* Chap qism - Kontakt ma'lumotlar */}
         <motion.div 
@@ -31,16 +31,16 @@ export default function Contact() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="lg:col-span-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 md:p-8 flex flex-col h-full border border-slate-100 dark:border-slate-700/40"
+          className="lg:col-span-2 bg-slate-50 dark:bg-slate-900 rounded-[20px] p-6 md:p-10 flex flex-col h-full border border-slate-100 dark:border-slate-800 shadow-inner text-slate-800 dark:text-white"
         >
-          <h3 className="text-xl font-semibold mb-6 md:mb-8 text-slate-800 dark:text-slate-100">Aloqa ma'lumotlari</h3>
+          <h3 className="text-xl font-semibold mb-6 md:mb-8 text-slate-800 dark:text-white">Aloqa ma'lumotlari</h3>
           
           <div className="space-y-5 md:space-y-6 flex-grow">
             {[
-              { icon: Mail, bg: 'bg-indigo-100 dark:bg-indigo-900/40', color: 'text-indigo-600 dark:text-indigo-400', label: 'Email', value: 'hello@geomind.uz', href: 'mailto:hello@geomind.uz' },
-              { icon: Phone, bg: 'bg-blue-100 dark:bg-blue-900/40', color: 'text-blue-600 dark:text-blue-400', label: 'Telefon', value: '+998 55 500 12 34', href: 'tel:+998555001234' },
-              { icon: MapPin, bg: 'bg-emerald-100 dark:bg-emerald-900/40', color: 'text-emerald-600 dark:text-emerald-400', label: 'Manzil', value: 'Toshkent sh., IT Park (2-bino)', href: null },
-              { icon: Clock, bg: 'bg-amber-100 dark:bg-amber-900/40', color: 'text-amber-600 dark:text-amber-400', label: 'Ish vaqti', value: 'Du–Jum: 9:00–18:00', href: null },
+              { icon: Mail, bg: 'bg-indigo-100 dark:bg-indigo-500/20', color: 'text-indigo-600 dark:text-indigo-300', label: 'Email', value: 'hello@fazo.uz', href: 'mailto:hello@fazo.uz' },
+              { icon: Phone, bg: 'bg-blue-100 dark:bg-blue-500/20', color: 'text-blue-600 dark:text-blue-300', label: 'Telefon', value: '+998 55 500 12 34', href: 'tel:+998555001234' },
+              { icon: MapPin, bg: 'bg-emerald-100 dark:bg-emerald-500/20', color: 'text-emerald-600 dark:text-emerald-300', label: 'Manzil', value: 'Toshkent sh., IT Park (2-bino)', href: null },
+              { icon: Clock, bg: 'bg-amber-100 dark:bg-amber-500/20', color: 'text-amber-600 dark:text-amber-300', label: 'Ish vaqti', value: 'Du–Jum: 9:00–18:00', href: null },
             ].map((item, i) => {
               const Icon = item.icon
               return (
@@ -70,7 +70,7 @@ export default function Contact() {
                 { label: 'Youtube', type: 'youtube' },
                 { label: 'LinkedIn', type: 'linkedin' },
               ].map((s, i) => (
-                <a key={i} href="#" aria-label={s.label} className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white transition-all">
+                <a key={i} href="#" aria-label={s.label} className="w-10 h-10 rounded-full bg-white shadow-sm dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white transition-all">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     {i === 0 && <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>}
                     {i === 1 && <><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></>}
@@ -89,7 +89,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:col-span-3 p-2 md:p-6"
+          className="lg:col-span-3 p-6 md:p-10 flex flex-col justify-center"
         >
           <h3 className="text-xl font-semibold mb-6 md:mb-8 text-slate-800 dark:text-slate-100">Xabar yuborish</h3>
           

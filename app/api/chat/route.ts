@@ -23,7 +23,7 @@ function getNextApiKey(): string {
   return key
 }
 
-const SYSTEM_PROMPT = `Sen GeoMind AI — 
+const SYSTEM_PROMPT = `Sen Fazo AI — 
 O'zbek tilida geometriya o'qituvchisan.
 
 QOIDALAR:
