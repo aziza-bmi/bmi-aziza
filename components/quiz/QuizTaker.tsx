@@ -83,203 +83,164 @@ function MathText({ content, className = '' }: { content: string, className?: st
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// GeometryFigure — geometrik shakllarni SVG orqali ko'rsatish
+// GeometryFigure — Firebase savollar asosida geometrik SVG diagramma
+// ──────────────────────────────────────────────────────────────────────────────
+// Savol turlari (Firebase nuqta-chiziq-kesma, burchak-turlari topicsidan):
+//   1. "A, B, C nuqtalar bir to'g'ri chiziqda yotadi. AB=5, BC=3"
+//      → to'g'ri chiziq ustida ketma-ket nuqtalar
+//   2. "ABC uchburchak" → uchburchak
+//   3. "burchak alfa o'tkir" → ikkita nurdan hosil bo'lgan burchak
+//   4. "doira sektori 90°" → doira
 // ──────────────────────────────────────────────────────────────────────────────
 
-type GeoShape =
-  | { type: 'segment';  label: string; points:   [string, string] }
-  | { type: 'angle';    label: string; vertex: string; rays: [string, string] }
-  | { type: 'triangle'; label: string; vertices: [string, string, string] }
-
-/**
- * Savoldan geometrik shakllarni ajratib oladi.
- *
- * O'zbek tilining barcha suffixlari hisobga olingan:
- *   kesma → kesmani, kesmaning, kesmalar, kesmada, kesmadan, kesmaga, ...
- *   burchak → burchakni, burchakning, burchaklar, ...
- *   uchburchak → uchburchakni, uchburchakning, ...
- *
- * Aniqlash shartlari:
- *   - Geometrik kalit so'z mavjud bo'lsa (kesma*, burchak*, uchburchak*, ...)
- *   - YOKI savol ichida 2+ ta 2-harfli katta harf (AB, CD, EF kabi) bo'lsa
- *   - YOKI maxsus belgi bo'lsa (△, ▲, ∠, ∡)
- */
-function parseGeometryShapes(text: string): GeoShape[] {
-  const shapes: GeoShape[] = []
-  const seen   = new Set<string>()
-  let   m:     RegExpExecArray | null
-
-  // ── O'zbek geometrik kalit so'zlarini aniqlash (suffix-tolerant) ──────────
-  const GEO_KEYWORDS = /kesma|burchak|uchburchak|to['']g['']ri\s*chiziq|parallel|perpendikulyar|mediana|bisektris|segment|triangle|angle|chord|\u2220|\u2221|\u25b3|\u25b2/i
-
-  // Barcha 2-harfli katta harf juftlarini top (AB, CD, EF, ...)
-  const pairRe  = /\b([A-Z]{2})\b/g
-  const pairs: string[] = []
-  while ((m = pairRe.exec(text)) !== null) {
-    if (!pairs.includes(m[1])) pairs.push(m[1])
-  }
-
-  // Barcha 3-harfli katta harf juftlarini top (ABC, DEF, ...)
-  const tripleRe = /\b([A-Z]{3})\b/g
-  const triples: string[] = []
-  while ((m = tripleRe.exec(text)) !== null) {
-    if (!triples.includes(m[1])) triples.push(m[1])
-  }
-
-  // Geometrik savol emasligini tekshirish:
-  const hasKeyword  = GEO_KEYWORDS.test(text)
-  const hasManyPairs = pairs.length >= 2
-
-  if (!hasKeyword && !hasManyPairs) return []
-
-  // ── 1. Uchburchaklar ────────────────────────────────────────────────────────
-  const triRe = /(?:(?:\u25b3|\u25b2)([A-Z]{3}))|(?:\b([A-Z]{3})\s+uchburchak)|(?:uchburchak\S*\s+([A-Z]{3})\b)/g
-  while ((m = triRe.exec(text)) !== null) {
-    const label = (m[1] || m[2] || m[3] || '').trim()
-    if (label.length === 3 && !seen.has('tri_' + label)) {
-      seen.add('tri_' + label)
-      shapes.push({ type: 'triangle', label, vertices: [label[0], label[1], label[2]] })
-    }
-  }
-  if (/uchburchak/i.test(text)) {
-    triples.forEach(t => {
-      if (!seen.has('tri_' + t)) {
-        seen.add('tri_' + t)
-        shapes.push({ type: 'triangle', label: t, vertices: [t[0], t[1], t[2]] })
-      }
-    })
-  }
-
-  // ── 2. Burchaklar ──────────────────────────────────────────────────────────
-  const angRe = /(?:[\u2220\u2221])([A-Z]{3})|(?:\b([A-Z]{3})\s+burchag)|(?:burchak\S*\s+([A-Z]{3})\b)/g
-  while ((m = angRe.exec(text)) !== null) {
-    const label = (m[1] || m[2] || m[3] || '').trim()
-    if (label.length === 3 && !seen.has('ang_' + label)) {
-      seen.add('ang_' + label)
-      shapes.push({ type: 'angle', label, vertex: label[1], rays: [label[0], label[2]] })
-    }
-  }
-
-  // ── 3. Kesmalar ────────────────────────────────────────────────────────────
-  // "AB kesma*", "kesma* AB", "|AB|", "AB = 5"
-  const segRe = /(?:\b([A-Z]{2})\s+kesma)|(?:kesma\S*\s+([A-Z]{2})\b)|(?:\|([A-Z]{2})\|)|(?:\b([A-Z]{2})\b\s*=\s*\d)/g
-  while ((m = segRe.exec(text)) !== null) {
-    const label = (m[1] || m[2] || m[3] || m[4] || '').trim()
-    if (label.length === 2) {
-      const inTri = shapes.some(s => s.type === 'triangle' && s.label.includes(label[0]) && s.label.includes(label[1]))
-      if (!inTri && !seen.has('seg_' + label)) {
-        seen.add('seg_' + label)
-        shapes.push({ type: 'segment', label, points: [label[0], label[1]] })
-      }
-    }
-  }
-
-  // ── 3. Angle: "∠ABC", "<ABC", "ABC burchagi", "burchak ABC" ──
-  const angStrict = /(?:∠|∡)([A-Z]{3})|\b([A-Z]{3})\s+burchag?i?|burchak\s+([A-Z]{3})\b/g
-  while ((m = angStrict.exec(text)) !== null) {
-    const label = (m[1] || m[2] || m[3]).trim()
-    if (label.length === 3 && !seen.has('ang_' + label)) {
-      seen.add('ang_' + label)
-      shapes.push({ type: 'angle', label, vertex: label[1], rays: [label[0], label[2]] })
-    }
-  }
-
-  return shapes
+/** Savol turini aniqlaydi */
+function detectQuestionType(text: string): 'line' | 'triangle' | 'angle' | 'circle' | null {
+  if (/uchburchak|△|▲|triangle/i.test(text)) return 'triangle'
+  if (/doira|sektor|radius|diametr|aylana|circle|sector/i.test(text)) return 'circle'
+  // burchak but NOT uchburchak
+  if (/burchak/i.test(text) && !/uchburchak/i.test(text)) return 'angle'
+  // kesma, to'g'ri chiziq, collinear descriptions
+  if (/kesma|to['']g['']ri\s*chiziq|chiziqda|nuqta.*yota|yota.*nuqta|ketma-?ket/i.test(text)) return 'line'
+  // Fallback: 3+ single uppercase point labels → collinear line problem
+  const pts = [...new Set(text.match(/\b[A-Z]\b/g) ?? [])]
+  if (pts.length >= 3) return 'line'
+  return null
 }
 
-/** SVG chizish */
+/** Extracts ordered point labels from text (A, B, C, D, M, N ...) */
+function extractLinePoints(text: string): string[] {
+  // Prefer points found before the word "nuqta" or "chiziq"
+  const cutIdx = text.search(/nuqta|chiziq/i)
+  const segment = cutIdx > 0 ? text.slice(0, cutIdx + 20) : text
+  const singles = [...new Set(segment.match(/\b[A-Z]\b/g) ?? [])]
+  if (singles.length >= 2) return singles.slice(0, 7)
+  const all = [...new Set(text.match(/\b[A-Z]\b/g) ?? [])]
+  return all.slice(0, 7)
+}
+
+// ── SVG components ─────────────────────────────────────────────────────────────
+
+function SvgLine({ points }: { points: string[] }) {
+  const step = 68
+  const W = Math.max(260, (points.length - 1) * step + 80)
+  const H = 80, y = H / 2
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width={Math.min(W, 480)} height={H}>
+      {/* main horizontal line */}
+      <line x1={18} y1={y} x2={W - 18} y2={y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* arrowheads */}
+      <polygon points={`${W-18},${y} ${W-30},${y-5} ${W-30},${y+5}`} fill="#6366f1"/>
+      <polygon points={`18,${y} 30,${y-5} 30,${y+5}`} fill="#6366f1"/>
+      {/* points */}
+      {points.map((pt, i) => {
+        const x = 38 + i * step
+        return (
+          <g key={pt}>
+            <circle cx={x} cy={y} r={5} fill="#4338ca"/>
+            <text x={x} y={y - 13} textAnchor="middle" fontSize="14" fontWeight="800"
+                  fill="#4338ca" fontFamily="'Segoe UI',sans-serif">{pt}</text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+function SvgTriangle({ label }: { label: string }) {
+  const W = 200, H = 160
+  const verts = [
+    { x: 100, y: 16,  lx: 100, ly: 7,    anchor: 'middle' as const },
+    { x: 18,  y: 144, lx: 4,   ly: 144,  anchor: 'end'    as const },
+    { x: 182, y: 144, lx: 196, ly: 144,  anchor: 'start'  as const },
+  ]
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H}>
+      <polygon points={verts.map(v=>`${v.x},${v.y}`).join(' ')}
+               fill="#eef2ff" stroke="#6366f1" strokeWidth="2.5" strokeLinejoin="round"/>
+      {verts.map((v, i) => (
+        <text key={i} x={v.lx} y={v.ly} textAnchor={v.anchor}
+              fontSize="14" fontWeight="800" fill="#4338ca" fontFamily="'Segoe UI',sans-serif">
+          {label[i] ?? String.fromCharCode(65+i)}
+        </text>
+      ))}
+    </svg>
+  )
+}
+
+function SvgAngle() {
+  const W = 190, H = 130
+  const vx = 48, vy = 108, r = 92
+  const a1 = -0.3, a2 = -1.1
+  const r1x = vx + r*Math.cos(a1), r1y = vy + r*Math.sin(a1)
+  const r2x = vx + r*Math.cos(a2), r2y = vy + r*Math.sin(a2)
+  const ar = 28
+  const ac1x = vx + ar*Math.cos(a1), ac1y = vy + ar*Math.sin(a1)
+  const ac2x = vx + ar*Math.cos(a2), ac2y = vy + ar*Math.sin(a2)
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H}>
+      <line x1={vx} y1={vy} x2={r1x} y2={r1y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round"/>
+      <line x1={vx} y1={vy} x2={r2x} y2={r2y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d={`M ${ac1x} ${ac1y} A ${ar} ${ar} 0 0 0 ${ac2x} ${ac2y}`}
+            fill="none" stroke="#818cf8" strokeWidth="2"/>
+      <circle cx={vx} cy={vy} r={4} fill="#4338ca"/>
+      <text x={vx-12} y={vy+16} fontSize="13" fontWeight="700" fill="#4338ca" fontFamily="'Segoe UI',sans-serif">O</text>
+      <text x={r1x+8}  y={r1y+4}  fontSize="13" fontWeight="700" fill="#4338ca" fontFamily="'Segoe UI',sans-serif">B</text>
+      <text x={r2x-4}  y={r2y-6}  fontSize="13" fontWeight="700" fill="#4338ca" fontFamily="'Segoe UI',sans-serif">A</text>
+      <text x={(ac1x+ac2x)/2+14} y={(ac1y+ac2y)/2}
+            fontSize="12" fontStyle="italic" fill="#818cf8" fontFamily="'Segoe UI',sans-serif">α</text>
+    </svg>
+  )
+}
+
+function SvgCircle() {
+  const W = 160, H = 140, cx = 80, cy = 70, r = 56
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H}>
+      <circle cx={cx} cy={cy} r={r} fill="#eef2ff" stroke="#6366f1" strokeWidth="2.5"/>
+      <circle cx={cx} cy={cy} r={4} fill="#4338ca"/>
+      <line x1={cx} y1={cy} x2={cx+r} y2={cy} stroke="#4338ca" strokeWidth="2" strokeDasharray="5 3"/>
+      <text x={cx+r/2+2} y={cy-7} textAnchor="middle"
+            fontSize="12" fontStyle="italic" fill="#4338ca" fontFamily="'Segoe UI',sans-serif">r</text>
+      <text x={cx-8} y={cy+16} fontSize="13" fontWeight="800" fill="#4338ca" fontFamily="'Segoe UI',sans-serif">O</text>
+    </svg>
+  )
+}
+
+/**
+ * GeometryFigure — savol matnini tahlil qilib, mos SVG diagramma chiqaradi.
+ * Hech narsa topilmasa → null.
+ */
 function GeometryFigure({ question }: { question: string }) {
-  const shapes = parseGeometryShapes(question)
-  if (shapes.length === 0) return null
+  const qType = detectQuestionType(question)
+  if (!qType) return null
 
-  const W = 320
-  const H = 140
-  const PAD = 32
+  let figure: React.ReactNode = null
+  let caption = 'Geometrik shakl'
 
-  // Render all shapes side by side
-  const svgElements: React.ReactNode[] = []
-  let offsetX = PAD
+  if (qType === 'line') {
+    const pts = extractLinePoints(question)
+    if (pts.length < 2) return null
+    figure  = <SvgLine points={pts} />
+    caption = `To'g'ri chiziq: ${pts.join(' — ')}`
+  } else if (qType === 'triangle') {
+    const m = question.match(/\b([A-Z]{3})\b/)
+    figure  = <SvgTriangle label={m ? m[1] : 'ABC'} />
+    caption = 'Uchburchak'
+  } else if (qType === 'angle') {
+    figure  = <SvgAngle />
+    caption = 'Burchak'
+  } else if (qType === 'circle') {
+    figure  = <SvgCircle />
+    caption = 'Doira'
+  }
 
-  shapes.forEach((shape, si) => {
-    if (shape.type === 'segment') {
-      const x1 = offsetX
-      const x2 = offsetX + 90
-      const y  = H / 2
-      svgElements.push(
-        <g key={si}>
-          {/* Line */}
-          <line x1={x1} y1={y} x2={x2} y2={y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" />
-          {/* Endpoints */}
-          <circle cx={x1} cy={y} r={4} fill="#6366f1" />
-          <circle cx={x2} cy={y} r={4} fill="#6366f1" />
-          {/* Labels */}
-          <text x={x1} y={y - 10} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.points[0]}</text>
-          <text x={x2} y={y - 10} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.points[1]}</text>
-        </g>
-      )
-      offsetX += 120
-    } else if (shape.type === 'triangle') {
-      // Equilateral-ish triangle
-      const cx = offsetX + 55
-      const ax = cx, ay = H * 0.18
-      const bx = cx - 50, by = H * 0.82
-      const cx2 = cx + 50, cy2 = H * 0.82
-      svgElements.push(
-        <g key={si}>
-          <polygon
-            points={`${ax},${ay} ${bx},${by} ${cx2},${cy2}`}
-            fill="#eef2ff"
-            stroke="#6366f1"
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
-          <text x={ax}    y={ay - 8}   textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertices[0]}</text>
-          <text x={bx - 8} y={by + 4}  textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertices[1]}</text>
-          <text x={cx2 + 8} y={cy2 + 4} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertices[2]}</text>
-        </g>
-      )
-      offsetX += 130
-    } else if (shape.type === 'angle') {
-      const vx = offsetX + 30, vy = H * 0.72
-      const r  = 60
-      const a1 = -0.35 // radians for first ray
-      const a2 = -Math.PI + 0.35 // radians for second ray
-      // Reverse: ray1 goes up-right, ray2 goes up-left
-      const r1x = vx + r * Math.cos(-0.4), r1y = vy + r * Math.sin(-0.4)
-      const r2x = vx + r * Math.cos(-Math.PI * 0.75), r2y = vy + r * Math.sin(-Math.PI * 0.75)
-      // Arc
-      const arcR = 20
-      const arc1x = vx + arcR * Math.cos(-0.4), arc1y = vy + arcR * Math.sin(-0.4)
-      const arc2x = vx + arcR * Math.cos(-Math.PI * 0.75), arc2y = vy + arcR * Math.sin(-Math.PI * 0.75)
-      svgElements.push(
-        <g key={si}>
-          <line x1={vx} y1={vy} x2={r1x} y2={r1y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1={vx} y1={vy} x2={r2x} y2={r2y} stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" />
-          <path d={`M ${arc1x} ${arc1y} A ${arcR} ${arcR} 0 0 0 ${arc2x} ${arc2y}`} fill="none" stroke="#6366f1" strokeWidth="1.5" />
-          <circle cx={vx} cy={vy} r={3.5} fill="#6366f1" />
-          <text x={r1x + 6} y={r1y}   textAnchor="start"  fontSize="13" fontWeight="700" fill="#4f46e5">{shape.rays[0]}</text>
-          <text x={r2x - 6} y={r2y}   textAnchor="end"    fontSize="13" fontWeight="700" fill="#4f46e5">{shape.rays[1]}</text>
-          <text x={vx}      y={vy + 16} textAnchor="middle" fontSize="13" fontWeight="700" fill="#4f46e5">{shape.vertex}</text>
-        </g>
-      )
-      offsetX += 120
-    }
-  })
-
-  const totalW = Math.max(offsetX + PAD / 2, 200)
+  if (!figure) return null
 
   return (
     <div className="flex justify-center my-4">
-      <div className="bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-2xl px-4 py-3 inline-block">
-        <svg
-          viewBox={`0 0 ${totalW} ${H}`}
-          width={Math.min(totalW, 400)}
-          height={Math.round(H * Math.min(totalW, 400) / totalW)}
-          aria-label="Geometrik shakl"
-        >
-          {svgElements}
-        </svg>
-        <p className="text-center text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1">Geometrik shakl</p>
+      <div className="bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-2xl px-5 py-4 inline-flex flex-col items-center gap-1">
+        {figure}
+        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">{caption}</p>
       </div>
     </div>
   )
