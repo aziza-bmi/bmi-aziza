@@ -92,32 +92,80 @@ type GeoShape =
   | { type: 'triangle'; label: string; vertices: [string, string, string] }
 
 /**
- * Savoldan faqat HAQIQIY geometrik atamalarni ajratib oladi.
- * Regex faqat geometrik kalit so'zlar (kesma, uchburchak, burchak) bo'lsagina ishlaydi.
+ * Savoldan geometrik shakllarni ajratib oladi.
+ *
+ * O'zbek tilining barcha suffixlari hisobga olingan:
+ *   kesma → kesmani, kesmaning, kesmalar, kesmada, kesmadan, kesmaga, ...
+ *   burchak → burchakni, burchakning, burchaklar, ...
+ *   uchburchak → uchburchakni, uchburchakning, ...
+ *
+ * Aniqlash shartlari:
+ *   - Geometrik kalit so'z mavjud bo'lsa (kesma*, burchak*, uchburchak*, ...)
+ *   - YOKI savol ichida 2+ ta 2-harfli katta harf (AB, CD, EF kabi) bo'lsa
+ *   - YOKI maxsus belgi bo'lsa (△, ▲, ∠, ∡)
  */
 function parseGeometryShapes(text: string): GeoShape[] {
   const shapes: GeoShape[] = []
   const seen   = new Set<string>()
   let   m:     RegExpExecArray | null
 
-  // ── 1. Triangle: must have explicit keyword or △/▲ symbol ──
-  // e.g. "ABC uchburchak", "△ABC", "▲ABC"
-  const triStrict = /(?:(?:△|▲)([A-Z]{3})|\b([A-Z]{3})\s+(?:uchburchak|triangle|uch burchak))/g
-  while ((m = triStrict.exec(text)) !== null) {
-    const label = (m[1] || m[2]).trim()
+  // ── O'zbek geometrik kalit so'zlarini aniqlash (suffix-tolerant) ──────────
+  const GEO_KEYWORDS = /kesma|burchak|uchburchak|to['']g['']ri\s*chiziq|parallel|perpendikulyar|mediana|bisektris|segment|triangle|angle|chord|\u2220|\u2221|\u25b3|\u25b2/i
+
+  // Barcha 2-harfli katta harf juftlarini top (AB, CD, EF, ...)
+  const pairRe  = /\b([A-Z]{2})\b/g
+  const pairs: string[] = []
+  while ((m = pairRe.exec(text)) !== null) {
+    if (!pairs.includes(m[1])) pairs.push(m[1])
+  }
+
+  // Barcha 3-harfli katta harf juftlarini top (ABC, DEF, ...)
+  const tripleRe = /\b([A-Z]{3})\b/g
+  const triples: string[] = []
+  while ((m = tripleRe.exec(text)) !== null) {
+    if (!triples.includes(m[1])) triples.push(m[1])
+  }
+
+  // Geometrik savol emasligini tekshirish:
+  const hasKeyword  = GEO_KEYWORDS.test(text)
+  const hasManyPairs = pairs.length >= 2
+
+  if (!hasKeyword && !hasManyPairs) return []
+
+  // ── 1. Uchburchaklar ────────────────────────────────────────────────────────
+  const triRe = /(?:(?:\u25b3|\u25b2)([A-Z]{3}))|(?:\b([A-Z]{3})\s+uchburchak)|(?:uchburchak\S*\s+([A-Z]{3})\b)/g
+  while ((m = triRe.exec(text)) !== null) {
+    const label = (m[1] || m[2] || m[3] || '').trim()
     if (label.length === 3 && !seen.has('tri_' + label)) {
       seen.add('tri_' + label)
       shapes.push({ type: 'triangle', label, vertices: [label[0], label[1], label[2]] })
     }
   }
+  if (/uchburchak/i.test(text)) {
+    triples.forEach(t => {
+      if (!seen.has('tri_' + t)) {
+        seen.add('tri_' + t)
+        shapes.push({ type: 'triangle', label: t, vertices: [t[0], t[1], t[2]] })
+      }
+    })
+  }
 
-  // ── 2. Segment: must be near keyword "kesma", "segment" or "=" ──
-  // e.g. "AB kesma", "AB kesmasining", "AB=5", "kesma AB"
-  const segStrict = /(?:\b([A-Z]{2})\s*(?:kesma|segment)|(?:kesma|segment)\s*([A-Z]{2})\b|\|([A-Z]{2})\||\b([A-Z]{2})\b\s*=\s*\d)/g
-  while ((m = segStrict.exec(text)) !== null) {
-    const label = (m[1] || m[2] || m[3] || m[4]).trim()
+  // ── 2. Burchaklar ──────────────────────────────────────────────────────────
+  const angRe = /(?:[\u2220\u2221])([A-Z]{3})|(?:\b([A-Z]{3})\s+burchag)|(?:burchak\S*\s+([A-Z]{3})\b)/g
+  while ((m = angRe.exec(text)) !== null) {
+    const label = (m[1] || m[2] || m[3] || '').trim()
+    if (label.length === 3 && !seen.has('ang_' + label)) {
+      seen.add('ang_' + label)
+      shapes.push({ type: 'angle', label, vertex: label[1], rays: [label[0], label[2]] })
+    }
+  }
+
+  // ── 3. Kesmalar ────────────────────────────────────────────────────────────
+  // "AB kesma*", "kesma* AB", "|AB|", "AB = 5"
+  const segRe = /(?:\b([A-Z]{2})\s+kesma)|(?:kesma\S*\s+([A-Z]{2})\b)|(?:\|([A-Z]{2})\|)|(?:\b([A-Z]{2})\b\s*=\s*\d)/g
+  while ((m = segRe.exec(text)) !== null) {
+    const label = (m[1] || m[2] || m[3] || m[4] || '').trim()
     if (label.length === 2) {
-      // Don't add if this is already part of a found triangle
       const inTri = shapes.some(s => s.type === 'triangle' && s.label.includes(label[0]) && s.label.includes(label[1]))
       if (!inTri && !seen.has('seg_' + label)) {
         seen.add('seg_' + label)
