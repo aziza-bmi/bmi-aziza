@@ -87,43 +87,50 @@ function MathText({ content, className = '' }: { content: string, className?: st
 // ──────────────────────────────────────────────────────────────────────────────
 
 type GeoShape =
-  | { type: 'segment'; label: string; points: [string, string] }
-  | { type: 'angle';   label: string; vertex: string; rays: [string, string] }
+  | { type: 'segment';  label: string; points:   [string, string] }
+  | { type: 'angle';    label: string; vertex: string; rays: [string, string] }
   | { type: 'triangle'; label: string; vertices: [string, string, string] }
 
-/** Savoldan geometrik shakllarni ajratib oladi */
+/**
+ * Savoldan faqat HAQIQIY geometrik atamalarni ajratib oladi.
+ * Regex faqat geometrik kalit so'zlar (kesma, uchburchak, burchak) bo'lsagina ishlaydi.
+ */
 function parseGeometryShapes(text: string): GeoShape[] {
   const shapes: GeoShape[] = []
-  const seen = new Set<string>()
+  const seen   = new Set<string>()
+  let   m:     RegExpExecArray | null
 
-  // Triangle: "ABC uchburchak" or "△ABC"
-  const triRe = /(?:△|▲)?([A-Z]{3})\s*(?:uchburchak|triangle|uch\s*burchak)?/g
-  let m: RegExpExecArray | null
-  while ((m = triRe.exec(text)) !== null) {
-    const label = m[1]
-    if (!seen.has('tri_' + label)) {
+  // ── 1. Triangle: must have explicit keyword or △/▲ symbol ──
+  // e.g. "ABC uchburchak", "△ABC", "▲ABC"
+  const triStrict = /(?:(?:△|▲)([A-Z]{3})|\b([A-Z]{3})\s+(?:uchburchak|triangle|uch burchak))/g
+  while ((m = triStrict.exec(text)) !== null) {
+    const label = (m[1] || m[2]).trim()
+    if (label.length === 3 && !seen.has('tri_' + label)) {
       seen.add('tri_' + label)
       shapes.push({ type: 'triangle', label, vertices: [label[0], label[1], label[2]] })
     }
   }
 
-  // Segment: "AB kesma" or "AB=5" or just "AB" as 2-letter uppercase
-  const segRe = /\b([A-Z]{2})\b(?:\s*(?:kesma|segment|=|ning|da|ga|ni|bo'yi|uzunligi))?/g
-  while ((m = segRe.exec(text)) !== null) {
-    const label = m[1]
-    // Skip if already part of a triangle
-    const inTriangle = shapes.some(s => s.type === 'triangle' && s.label.includes(label[0]) && s.label.includes(label[1]))
-    if (!seen.has('seg_' + label) && !inTriangle) {
-      seen.add('seg_' + label)
-      shapes.push({ type: 'segment', label, points: [label[0], label[1]] })
+  // ── 2. Segment: must be near keyword "kesma", "segment" or "=" ──
+  // e.g. "AB kesma", "AB kesmasining", "AB=5", "kesma AB"
+  const segStrict = /(?:\b([A-Z]{2})\s*(?:kesma|segment)|(?:kesma|segment)\s*([A-Z]{2})\b|\|([A-Z]{2})\||\b([A-Z]{2})\b\s*=\s*\d)/g
+  while ((m = segStrict.exec(text)) !== null) {
+    const label = (m[1] || m[2] || m[3] || m[4]).trim()
+    if (label.length === 2) {
+      // Don't add if this is already part of a found triangle
+      const inTri = shapes.some(s => s.type === 'triangle' && s.label.includes(label[0]) && s.label.includes(label[1]))
+      if (!inTri && !seen.has('seg_' + label)) {
+        seen.add('seg_' + label)
+        shapes.push({ type: 'segment', label, points: [label[0], label[1]] })
+      }
     }
   }
 
-  // Angle: "∠ABC" or "ABC burchak"
-  const angRe = /(?:∠|<|burchak\s+)([A-Z]{3})/g
-  while ((m = angRe.exec(text)) !== null) {
-    const label = m[1]
-    if (!seen.has('ang_' + label)) {
+  // ── 3. Angle: "∠ABC", "<ABC", "ABC burchagi", "burchak ABC" ──
+  const angStrict = /(?:∠|∡)([A-Z]{3})|\b([A-Z]{3})\s+burchag?i?|burchak\s+([A-Z]{3})\b/g
+  while ((m = angStrict.exec(text)) !== null) {
+    const label = (m[1] || m[2] || m[3]).trim()
+    if (label.length === 3 && !seen.has('ang_' + label)) {
       seen.add('ang_' + label)
       shapes.push({ type: 'angle', label, vertex: label[1], rays: [label[0], label[2]] })
     }
@@ -596,6 +603,8 @@ export default function QuizTaker({
                     <div className="flex-1 pr-4">
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Savol {index + 1}</span>
                       <MathText content={q.question} className="text-slate-700 dark:text-slate-200 font-medium" />
+                      {/* Geometrik shakl — natijalar ekranida ham ko'rsatiladi */}
+                      <GeometryFigure question={q.question} />
                     </div>
                     <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${openHintIndex === index ? 'rotate-180' : ''}`} />
                   </button>
