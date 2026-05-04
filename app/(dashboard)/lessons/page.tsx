@@ -1,7 +1,8 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import GeoBg from '@/components/landing/GeoBg'
 import { useAuth } from '@/context/AuthContext'
 import { db } from '@/lib/firebase'
 import {
@@ -31,6 +32,15 @@ export default function LessonsPage() {
   const [sections, setSections] = useState<Section[]>([])
   const [completedTopics, setCompletedTopics] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
+  const [scrollTop, setScrollTop] = useState(0)
+
+  useEffect(() => {
+    const mainEl = document.querySelector('main')
+    if (!mainEl) return
+    const handleScroll = () => setScrollTop(mainEl.scrollTop)
+    mainEl.addEventListener('scroll', handleScroll)
+    return () => mainEl.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     async function load() {
@@ -66,12 +76,20 @@ export default function LessonsPage() {
   if (loading) return <PageLoader />
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="p-6 lg:p-8 max-w-5xl mx-auto"
-    >
+    <div className="relative min-h-full">
+      <div 
+        style={{ transform: `translateY(${-scrollTop * 0.5}px)` }} 
+        className="absolute top-0 left-0 w-full h-[150%] pointer-events-none z-0"
+      >
+        <GeoBg count={10} />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="p-6 lg:p-8 max-w-5xl mx-auto relative z-10"
+      >
       <div className="mb-8">
         <h1 className="text-2xl font-medium
                        text-slate-800 dark:text-slate-100 mb-2">
@@ -97,11 +115,7 @@ export default function LessonsPage() {
               transition={{ duration: 0.4, delay: i * 0.15 }}
             >
               <Link href={`/lessons/${section.id}`}>
-                <div className="glass-card dark:bg-slate-800/60
-                                dark:border-slate-700/40
-                                p-6 cursor-pointer group
-                                hover:shadow-lg transition-all
-                                hover:-translate-y-1">
+                <div className="glass-card dark:bg-slate-900/50 p-6 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl cursor-pointer group hover:-translate-y-1 hover:shadow-2xl hover:border-indigo-200 dark:hover:border-indigo-500/50 transition-all">
                   <div className="flex items-start justify-between mb-4">
                     <div className="text-5xl">{section.emoji}</div>
                     <ChevronRight size={20}
@@ -166,5 +180,6 @@ export default function LessonsPage() {
         })}
       </div>
     </motion.div>
+    </div>
   )
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, BookOpen, MessageSquare, Award, Settings, LogOut, PenTool, User, PanelLeftClose, PanelLeftOpen, Trophy, FlaskConical, X } from 'lucide-react'
+import { LayoutDashboard, BookOpen, MessageSquare, Award, Settings, LogOut, PenTool, User, PanelLeftClose, PanelLeftOpen, Trophy, FlaskConical, X, Library } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { logout } from '@/lib/auth'
 import ThemeToggle from '@/components/shared/ThemeToggle'
@@ -32,7 +32,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     { name: 'AI muallim', href: '/chat', icon: MessageSquare },
     { name: 'Testlar', href: '/quiz', icon: Award },
     { name: 'Reyting', href: '/leaderboard', icon: Trophy },
-    { name: 'Laboratoriya', href: '/canvas', icon: FlaskConical },
+    { name: 'Shakllar', href: '/canvas', icon: FlaskConical },
+    { name: 'Kutubxona', href: '/library', icon: Library },
     { name: 'Profil', href: '/profile', icon: User },
     { name: 'Sozlamalar', href: '/settings', icon: Settings },
   ]
@@ -65,12 +66,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       `}>
         <div className="p-5 border-b border-slate-200 dark:border-slate-700/50 flex items-center justify-between">
           {!isCollapsed && (
-            <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-              <img src="/logo-light.png" alt="Fazo Logo" className="w-8 h-8 dark:hidden object-contain" />
-              <img src="/logo-dark.png" alt="Fazo Logo" className="w-8 h-8 hidden dark:block object-contain" />
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-                Fazo
-              </span>
+            <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden whitespace-nowrap pl-1">
+              <img src="/logo-light.png" alt="Fazo Logo" className="w-16 h-16 dark:hidden object-contain" />
+              <img src="/logo-dark.png" alt="Fazo Logo" className="w-16 h-16 hidden dark:block object-contain" />
+              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', 'Merriweather', 'Georgia', serif" }}>Fazo</span>
             </Link>
           )}
           

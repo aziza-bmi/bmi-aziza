@@ -1,6 +1,7 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
+import GeoBg from '@/components/landing/GeoBg'
 import { useAuth } from '@/context/AuthContext'
 import { getLeaderboard, getUserRank, getPeriodicLeaderboard } from '@/lib/firestore'
 import { Trophy, Medal, Crown, Calendar, Sparkles } from 'lucide-react'
@@ -17,6 +18,17 @@ export default function LeaderboardPage() {
   // New States
   const [period, setPeriod] = useState<'all' | 'monthly' | 'weekly'>('all')
   const [displayCount, setDisplayCount] = useState(10)
+  
+  // Parallax scroll state
+  const [scrollTop, setScrollTop] = useState(0)
+
+  useEffect(() => {
+    const mainEl = document.querySelector('main')
+    if (!mainEl) return
+    const handleScroll = () => setScrollTop(mainEl.scrollTop)
+    mainEl.addEventListener('scroll', handleScroll)
+    return () => mainEl.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     async function fetchLeaderboard() {
@@ -57,15 +69,16 @@ export default function LeaderboardPage() {
   }, [user, userData, period])
 
   const getRankStyle = (rank: number) => {
+    const base = 'backdrop-blur-sm hover:-translate-y-0.5 hover:shadow-md transition-all'
     switch (rank) {
       case 1:
-        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700/50'
+        return `${base} bg-yellow-50/80 dark:bg-yellow-900/30 border-2 border-yellow-200 dark:border-yellow-700/50`
       case 2:
-        return 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-600/50'
+        return `${base} bg-slate-50/80 dark:bg-slate-800/50 border-2 border-slate-200 dark:border-slate-600/50`
       case 3:
-        return 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700/50'
+        return `${base} bg-orange-50/80 dark:bg-orange-900/30 border-2 border-orange-200 dark:border-orange-700/50`
       default:
-        return 'bg-white/50 dark:bg-slate-800/30 border-transparent hover:border-slate-200 dark:hover:border-slate-700/50'
+        return `${base} bg-white/40 dark:bg-slate-800/30 border-2 border-transparent hover:border-slate-200/60 dark:hover:border-slate-700/50 hover:bg-white/60 dark:hover:bg-slate-800/50`
     }
   }
 
@@ -88,12 +101,20 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="p-6 lg:p-8 max-w-4xl mx-auto flex flex-col min-h-screen lg:min-h-0 relative"
-    >
+    <div className="relative min-h-full pb-10">
+      <div 
+        style={{ transform: `translateY(${-scrollTop * 0.5}px)` }} 
+        className="absolute top-0 left-0 w-full h-[150%] pointer-events-none z-0"
+      >
+        <GeoBg count={10} />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="p-6 lg:p-8 max-w-4xl mx-auto flex flex-col min-h-screen lg:min-h-0 relative z-10"
+      >
       <div className="flex items-center gap-3 mb-6">
         <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl text-indigo-600 dark:text-indigo-400">
           <Trophy size={24} />
@@ -105,7 +126,7 @@ export default function LeaderboardPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-slate-100 dark:bg-slate-800/50 p-1 mb-6 rounded-2xl w-full sm:w-max mx-auto shadow-inner border border-slate-200 dark:border-slate-700/50">
+      <div className="flex bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl p-1 mb-6 rounded-2xl w-full sm:w-max mx-auto shadow-sm border-2 border-white/60 dark:border-slate-800/60">
         {[
           { id: 'all', label: 'Umumiy' },
           { id: 'monthly', label: 'Oylik' },
@@ -128,7 +149,7 @@ export default function LeaderboardPage() {
         ))}
       </div>
 
-      <GlassCard className="flex-1 overflow-hidden flex flex-col p-0 border border-slate-100 dark:border-slate-700/40 shadow-sm relative">
+      <GlassCard className="flex-1 overflow-hidden flex flex-col p-0 border-2 border-white/60 dark:border-slate-800/60 bg-white/80 dark:bg-slate-900/50 backdrop-blur-xl shadow-lg shadow-indigo-100/10 rounded-3xl relative">
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
             <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
@@ -214,7 +235,7 @@ export default function LeaderboardPage() {
       {/* Sticky Bottom Rank Card */}
       {currentUserRank !== null && userData && (
         <div className="fixed lg:sticky bottom-20 lg:bottom-4 left-4 right-4 lg:left-0 lg:right-0 mt-4 z-40">
-          <GlassCard className="p-4 bg-white/90 dark:bg-slate-800/95 backdrop-blur-xl border-indigo-200 dark:border-indigo-700 shadow-xl shadow-indigo-500/10">
+          <GlassCard className="p-4 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-indigo-200/60 dark:border-indigo-500/30 shadow-xl shadow-indigo-500/20 rounded-3xl hover:-translate-y-1 transition-all">
             <div className="flex items-center gap-4">
               <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 shrink-0 border border-indigo-200 dark:border-indigo-800">
                 <span className="font-bold text-lg">#{currentUserRank}</span>
@@ -236,6 +257,7 @@ export default function LeaderboardPage() {
           </GlassCard>
         </div>
       )}
-    </motion.div>
+      </motion.div>
+    </div>
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { logout } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
@@ -8,6 +8,7 @@ import {
   Bell, Moon, Sun, Globe, Shield,
   LogOut, ChevronRight, Monitor
 } from 'lucide-react'
+import GeoBg from '@/components/landing/GeoBg'
 
 export default function SettingsPage() {
   const { user, userData } = useAuth()
@@ -18,6 +19,17 @@ export default function SettingsPage() {
   )
   const [notifications, setNotifications] = useState(true)
   const [language, setLanguage] = useState("O'zbek")
+
+  // Parallax scroll state
+  const [scrollTop, setScrollTop] = useState(0)
+
+  useEffect(() => {
+    const mainEl = document.querySelector('main')
+    if (!mainEl) return
+    const handleScroll = () => setScrollTop(mainEl.scrollTop)
+    mainEl.addEventListener('scroll', handleScroll)
+    return () => mainEl.removeEventListener('scroll', handleScroll)
+  }, [])
 
   function toggleDarkMode() {
     const html = document.documentElement
@@ -100,12 +112,20 @@ export default function SettingsPage() {
   ]
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="max-w-lg md:max-w-2xl"
-    >
+    <div className="relative min-h-full pb-10">
+      <div 
+        style={{ transform: `translateY(${-scrollTop * 0.5}px)` }} 
+        className="absolute top-0 left-0 w-full h-[150%] pointer-events-none z-0"
+      >
+        <GeoBg count={10} />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="max-w-lg md:max-w-2xl relative z-10"
+      >
       <h1 className="text-2xl font-medium text-slate-800 
                      dark:text-slate-100 mb-6">
         Sozlamalar
@@ -118,8 +138,7 @@ export default function SettingsPage() {
                            dark:text-slate-500 uppercase tracking-wider mb-2 px-1">
               {section.title}
             </h2>
-            <div className="glass-card dark:bg-slate-800/60 
-                            dark:border-slate-700/40 overflow-hidden p-0">
+            <div className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl overflow-hidden p-0 transition-all hover:-translate-y-0.5">
               {section.items.map((item, ii) => (
                 <div key={ii}
                   className={`flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 min-h-[56px]
@@ -146,11 +165,9 @@ export default function SettingsPage() {
         ))}
 
         <button onClick={handleLogout}
-          className="w-full glass-card dark:bg-slate-800/60 
-                     dark:border-slate-700/40 px-5 py-4
-                     flex items-center gap-4 hover:bg-red-50 
-                     dark:hover:bg-red-900/20 transition-colors
-                     border-red-100 dark:border-red-900/30 group">
+          className="w-full glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-red-100/10 border-2 border-red-100 dark:border-red-900/30 rounded-3xl px-5 py-4
+                     flex items-center gap-4 hover:bg-red-50/80 
+                     dark:hover:bg-red-900/40 transition-all hover:-translate-y-0.5 group">
           <div className="w-9 h-9 rounded-xl bg-red-100 dark:bg-red-900/40
                           flex items-center justify-center flex-shrink-0">
             <LogOut size={17} className="text-red-500" />
@@ -161,5 +178,6 @@ export default function SettingsPage() {
         </button>
       </div>
     </motion.div>
+    </div>
   )
 }

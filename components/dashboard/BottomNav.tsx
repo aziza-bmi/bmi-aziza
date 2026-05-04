@@ -3,15 +3,16 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, MessageCircle,
-  BookOpen, FlaskConical, Trophy
+  BookOpen, FlaskConical, Trophy, Library
 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Asosiy' },
-  { href: '/chat',      icon: MessageCircle,   label: 'AI' },
-  { href: '/lessons',   icon: BookOpen,        label: 'Darslar' },
-  { href: '/quiz',      icon: FlaskConical,    label: 'Test' },
-  { href: '/leaderboard',icon: Trophy,         label: 'Reyting' },
+  { href: '/dashboard',   icon: LayoutDashboard, label: 'Asosiy' },
+  { href: '/chat',        icon: MessageCircle,   label: 'AI' },
+  { href: '/lessons',     icon: BookOpen,        label: 'Darslar' },
+  { href: '/quiz',        icon: FlaskConical,    label: 'Test' },
+  { href: '/leaderboard', icon: Trophy,          label: 'Reyting' },
+  { href: '/library',     icon: Library,         label: 'Kitoblar' },
 ]
 
 export default function BottomNav() {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronRight, ChevronDown, BrainCircuit, Sparkles,
@@ -12,6 +12,7 @@ import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { getDueQuestions, getAllQuestionStates, QuestionState } from '@/lib/db/repetition'
 import { useAuth } from '@/context/AuthContext'
+import GeoBg from '@/components/landing/GeoBg'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Section { id: string; title: string; order: number }
@@ -61,6 +62,17 @@ export default function QuizPage() {
   const [historyData,      setHistoryData]      = useState<Record<string, QuestionState[]> | null>(null)
   const [historyLoading,   setHistoryLoading]   = useState(false)
   const [openHistoryTopic, setOpenHistoryTopic] = useState<string | null>(null)
+  
+  // Parallax scroll state
+  const [scrollTop, setScrollTop] = useState(0)
+
+  useEffect(() => {
+    const mainEl = document.querySelector('main')
+    if (!mainEl) return
+    const handleScroll = () => setScrollTop(mainEl.scrollTop)
+    mainEl.addEventListener('scroll', handleScroll)
+    return () => mainEl.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // ── Load sections on mount ──────────────────────────────────────────────────
   useEffect(() => {
@@ -229,8 +241,15 @@ export default function QuizPage() {
 
   // ══════════════════════════════════════════════════════════════════════ RENDER
   return (
-    <>
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto space-y-6">
+    <div className="relative min-h-full pb-10">
+      <div 
+        style={{ transform: `translateY(${-scrollTop * 0.5}px)` }} 
+        className="absolute top-0 left-0 w-full h-[150%] pointer-events-none z-0"
+      >
+        <GeoBg count={10} />
+      </div>
+
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto space-y-6 relative z-10">
 
         {/* Header */}
         <div className="p-4 md:p-6">
@@ -292,7 +311,7 @@ export default function QuizPage() {
               </div>
             )}
             {sections.map(section => (
-              <div key={section.id} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+              <div key={section.id} className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl overflow-hidden transition-all">
 
                 {/* Section header */}
                 <button onClick={() => toggleSection(section.id)}
@@ -415,7 +434,7 @@ export default function QuizPage() {
                 const topic = topicMap[topicId] || { title: `Noma'lum mavzu (${topicId.slice(0, 4)}...)`, id: topicId }
                 
                 return (
-                  <div key={topicId} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-sm">
+                  <div key={topicId} className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl p-5 flex items-center justify-between transition-all hover:-translate-y-0.5">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-rose-50 dark:bg-rose-950 rounded-xl flex items-center justify-center text-rose-500 shrink-0">
                         <RotateCcw className="w-5 h-5" />
@@ -465,7 +484,7 @@ export default function QuizPage() {
                 const topicName = topicMap[topicId]?.title || topicId
 
                 return (
-                  <div key={topicId} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                  <div key={topicId} className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl overflow-hidden transition-all">
                     <button
                       onClick={() => setOpenHistoryTopic(isOpen ? null : topicId)}
                       className="w-full flex items-center justify-between p-5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left gap-4"
@@ -650,6 +669,6 @@ export default function QuizPage() {
           </>
         )}
       </AnimatePresence>
-    </>
+    </div>
   )
 }

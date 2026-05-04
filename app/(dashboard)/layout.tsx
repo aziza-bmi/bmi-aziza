@@ -51,9 +51,9 @@ export default function DashboardLayout({
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-20 shrink-0 sticky top-0">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-              Fazo
-            </span>
+            <img src="/logo-light.png" alt="Fazo Logo" className="w-12 h-12 dark:hidden object-contain" />
+            <img src="/logo-dark.png" alt="Fazo Logo" className="w-12 h-12 hidden dark:block object-contain" />
+            <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', 'Merriweather', 'Georgia', serif" }}>Fazo</span>
           </Link>
           <button 
             onClick={() => setSidebarOpen(true)}

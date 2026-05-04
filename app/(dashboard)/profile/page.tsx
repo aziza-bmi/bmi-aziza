@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
 import { getUserProgress, getUserQuizResults, subscribeToUserData, getUserRank, updateUserDocument } from '@/lib/firestore'
@@ -7,6 +7,7 @@ import { updateUserAuthProfile, updateUserAuthPassword, getAuthErrorMessage } fr
 import { Mail, Calendar, Edit3, BookOpen, Star, Flame, BarChart3, Trophy, ChevronRight, X, Check, Lock, User as UserIcon } from 'lucide-react'
 
 import Link from 'next/link'
+import GeoBg from '@/components/landing/GeoBg'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -26,6 +27,17 @@ export default function ProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editError, setEditError] = useState('')
   const [editSuccess, setEditSuccess] = useState('')
+
+  // Parallax scroll state
+  const [scrollTop, setScrollTop] = useState(0)
+
+  useEffect(() => {
+    const mainEl = document.querySelector('main')
+    if (!mainEl) return
+    const handleScroll = () => setScrollTop(mainEl.scrollTop)
+    mainEl.addEventListener('scroll', handleScroll)
+    return () => mainEl.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const MOOD_AVATARS = [
     { id: 'happy',   url: 'https://api.dicebear.com/7.x/micah/svg?seed=Felix&backgroundColor=b6e3f4', label: 'Xursand' },
@@ -168,16 +180,24 @@ export default function ProfilePage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto"
-    >
+    <div className="relative min-h-full pb-10">
+      <div 
+        style={{ transform: `translateY(${-scrollTop * 0.5}px)` }} 
+        className="absolute top-0 left-0 w-full h-[150%] pointer-events-none z-0"
+      >
+        <GeoBg count={10} />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto relative z-10"
+      >
       <h1 className="text-2xl font-medium text-slate-800 dark:text-slate-100 mb-6">Profil</h1>
 
       {/* User card */}
-      <div className="glass-card dark:bg-slate-800/60 dark:border-slate-700/40 p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 relative">
+      <div className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 relative transition-all hover:-translate-y-0.5">
         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 overflow-hidden flex items-center justify-center text-white text-2xl font-medium flex-shrink-0">
           {(userData?.photoURL || user?.photoURL) ? (
             <img src={userData?.photoURL || user?.photoURL} alt="Avatar" className="w-full h-full object-cover" />
@@ -216,7 +236,7 @@ export default function ProfilePage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {stats.map((stat, i) => (
-          <div key={i} className="glass-card dark:bg-slate-800/60 dark:border-slate-700/40 p-4">
+          <div key={i} className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl p-5 transition-all hover:-translate-y-1">
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${colorMap[stat.color]}`}>
               <stat.icon size={18} />
             </div>
@@ -227,7 +247,7 @@ export default function ProfilePage() {
       </div>
 
       {/* XP Progress */}
-      <div className="glass-card dark:bg-slate-800/60 dark:border-slate-700/40 p-6 mb-6">
+      <div className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl p-6 mb-6 transition-all hover:-translate-y-0.5">
         <div className="flex justify-between mb-3">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
             Daraja {userData?.level || 1} → Daraja {(userData?.level || 1) + 1}
@@ -250,7 +270,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Achievements */}
-      <div className="glass-card dark:bg-slate-800/60 dark:border-slate-700/40 p-6">
+      <div className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl p-6 transition-all hover:-translate-y-0.5">
         <h3 className="text-base font-medium text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
           <Trophy size={18} className="text-amber-500" />
           Yutuqlar ({achievements.filter(a => a.earned).length}/{achievements.length})
@@ -277,7 +297,7 @@ export default function ProfilePage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-card dark:bg-slate-800 dark:border-slate-700 w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+            className="glass-card dark:bg-slate-900/80 bg-white/90 backdrop-blur-2xl border-2 border-white/60 dark:border-slate-700 shadow-2xl rounded-3xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
           >
             <div className="p-4 border-b border-indigo-100 dark:border-slate-700 flex justify-between items-center bg-indigo-50/50 dark:bg-slate-900/50">
               <h2 className="text-xl font-medium text-slate-800 dark:text-slate-100 flex items-center gap-2">
@@ -424,5 +444,6 @@ export default function ProfilePage() {
         </div>
       )}
     </motion.div>
+    </div>
   )
 }

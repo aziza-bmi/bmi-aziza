@@ -68,10 +68,10 @@ export default function Navbar() {
             : 'bg-transparent'
         }`}
       >
-        <Link href="/" className="flex items-center gap-2 z-[60]">
-          <img src="/logo-light.png" alt="Fazo Logo" className="w-8 h-8 dark:hidden object-contain" />
-          <img src="/logo-dark.png" alt="Fazo Logo" className="w-8 h-8 hidden dark:block object-contain" />
-          <span className="gradient-text text-lg font-medium">Fazo</span>
+        <Link href="/" className="flex items-center gap-3 z-[60]">
+          <img src="/logo-light.png" alt="Fazo Logo" className="w-16 h-16 dark:hidden object-contain" />
+          <img src="/logo-dark.png" alt="Fazo Logo" className="w-16 h-16 hidden dark:block object-contain" />
+          <span className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white" style={{ fontFamily: "'Playfair Display', 'Merriweather', 'Georgia', serif" }}>Fazo</span>
         </Link>
 
         {/* Desktop Links */}

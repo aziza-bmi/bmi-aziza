@@ -1,8 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import GeoBg from '@/components/landing/GeoBg'
 import { useAuth } from '@/context/AuthContext'
 import { db } from '@/lib/firebase'
 import {
@@ -22,6 +23,15 @@ export default function SectionPage() {
   const [chapters, setChapters] = useState<any[]>([])
   const [completedTopics, setCompletedTopics] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
+  const [scrollTop, setScrollTop] = useState(0)
+
+  useEffect(() => {
+    const mainEl = document.querySelector('main')
+    if (!mainEl) return
+    const handleScroll = () => setScrollTop(mainEl.scrollTop)
+    mainEl.addEventListener('scroll', handleScroll)
+    return () => mainEl.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     async function load() {
@@ -100,11 +110,19 @@ export default function SectionPage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="max-w-4xl"
-    >
+    <div className="relative min-h-full">
+      <div 
+        style={{ transform: `translateY(${-scrollTop * 0.5}px)` }} 
+        className="absolute top-0 left-0 w-full h-[150%] pointer-events-none z-0"
+      >
+        <GeoBg count={10} />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-4xl mx-auto relative z-10"
+      >
       {/* Back */}
       <Link href="/lessons"
         className="inline-flex items-center gap-1.5 text-sm
@@ -116,8 +134,7 @@ export default function SectionPage() {
       </Link>
 
       {/* Header */}
-      <div className="glass-card dark:bg-slate-800/60
-                      dark:border-slate-700/40 p-6 mb-6">
+      <div className="glass-card dark:bg-slate-900/50 p-6 mb-6 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl transition-all">
         <div className="flex items-center gap-4">
           <span className="text-5xl">{section.emoji}</span>
           <div>
@@ -148,8 +165,7 @@ export default function SectionPage() {
         </div>
       </div>
 
-      <div className="glass-card dark:bg-slate-800/60
-                      dark:border-slate-700/40 p-6 mb-6">
+      <div className="glass-card dark:bg-slate-900/50 p-6 mb-6 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl transition-all">
         <h2 className="text-base font-medium text-slate-800
                        dark:text-slate-100 mb-4 flex items-center gap-2">
           <Info size={18} className="text-indigo-500" />
@@ -255,8 +271,7 @@ export default function SectionPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: ci * 0.1 }}
           >
-            <div className="glass-card dark:bg-slate-800/60
-                            dark:border-slate-700/40 overflow-hidden">
+            <div className="glass-card dark:bg-slate-900/50 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl overflow-hidden transition-all">
               {/* Chapter header */}
               <div className="px-5 py-4 border-b border-slate-100
                               dark:border-slate-700/40
@@ -355,6 +370,7 @@ export default function SectionPage() {
           </motion.div>
         ))}
       </div>
-    </motion.div>
+      </motion.div>
+    </div>
   )
 }

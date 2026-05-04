@@ -100,5 +100,11 @@ service cloud.firestore {
                      && incomingData().userId == request.auth.uid;
        allow delete: if isAuthenticated() && existingData().userId == request.auth.uid;
     }
+
+    // 9. Library Books
+    match /libraryBooks/{bookId} {
+       allow read: if isAuthenticated();
+       allow write: if isAuthenticated(); // Seed qilish uchun vaqtincha ochiq
+    }
   }
 }

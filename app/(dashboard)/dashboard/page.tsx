@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
 import {
@@ -17,6 +17,7 @@ import {
   ChevronRight, ArrowUp, Clock
 } from 'lucide-react'
 import Link from 'next/link'
+import GeoBg from '@/components/landing/GeoBg'
 
 export default function DashboardPage() {
   const { user, userData: ctxUserData } = useAuth()
@@ -28,6 +29,16 @@ export default function DashboardPage() {
   const [totalTopics, setTotalTopics] = useState(9) // Fallback initially
   const [topicsMap, setTopicsMap] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
+  const [scrollTop, setScrollTop] = useState(0)
+
+  useEffect(() => {
+    // Parallax logic attached to layout's scrolling main element
+    const mainEl = document.querySelector('main')
+    if (!mainEl) return
+    const handleScroll = () => setScrollTop(mainEl.scrollTop)
+    mainEl.addEventListener('scroll', handleScroll)
+    return () => mainEl.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     if (!user) return
@@ -70,7 +81,7 @@ export default function DashboardPage() {
   const stats = [
     {
       icon: BookOpen,
-      value: `${completedLessons} / ${totalTopics}`,
+      value: completedLessons === 0 ? `${totalTopics}` : `${completedLessons} / ${totalTopics}`,
       label: 'Jami darslar',
       color: 'indigo',
       progress: Math.round((completedLessons / totalTopics) * 100),
@@ -121,13 +132,22 @@ export default function DashboardPage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="max-w-7xl mx-auto p-4 md:p-8 pt-6 md:pt-8"
-    >
-      {/* Header */}
+    <div className="relative min-h-full">
+      {/* Safe Background Layer for Parallax */}
+      <div 
+        style={{ transform: `translateY(${-scrollTop * 0.5}px)` }} 
+        className="absolute top-0 left-0 w-full h-[150%] pointer-events-none z-0"
+      >
+        <GeoBg count={10} />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="max-w-7xl mx-auto p-4 md:p-8 pt-6 md:pt-8 relative z-10"
+      >
+        {/* Header */}
       <div className="flex items-start justify-between mb-6 md:mb-8">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
@@ -152,8 +172,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.1 }}
-            className="glass-card dark:bg-slate-800/60 
-                       dark:border-slate-700/40 p-5 bg-white shadow-sm border border-slate-100 rounded-3xl"
+            className="glass-card dark:bg-slate-900/50 p-5 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/20 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl hover:-translate-y-1 hover:shadow-2xl hover:border-indigo-200 dark:hover:border-indigo-500/50 transition-all"
           >
             <div className={`w-10 h-10 rounded-xl flex items-center 
                             justify-center mb-4 ${colorMap[stat.color]}`}>
@@ -192,8 +211,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Topic progress */}
-          <div className="glass-card dark:bg-slate-800/60 
-                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl">
+          <div className="glass-card dark:bg-slate-900/50 p-6 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl transition-all">
             <h2 className="text-base font-bold text-slate-800 
                            dark:text-slate-100 mb-6 flex items-center gap-2">
               <span className="w-2 h-6 bg-indigo-500 rounded-full" /> Bo'limlar bo'yicha daraja
@@ -238,8 +256,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent activity */}
-          <div className="glass-card dark:bg-slate-800/60 
-                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl">
+          <div className="glass-card dark:bg-slate-900/50 p-6 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl transition-all">
             <h2 className="text-base font-bold text-slate-800 
                            dark:text-slate-100 mb-6 flex items-center gap-2">
               <span className="w-2 h-6 bg-blue-500 rounded-full" /> So'nggi natijalar
@@ -298,8 +315,7 @@ export default function DashboardPage() {
         <div className="space-y-6">
           
           {/* Quick actions */}
-          <div className="glass-card dark:bg-slate-800/60 
-                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl">
+          <div className="glass-card dark:bg-slate-900/50 p-6 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl transition-all">
             <h2 className="text-base font-bold text-slate-800 
                            dark:text-slate-100 mb-5">
               Tezkor harakatlar
@@ -314,8 +330,8 @@ export default function DashboardPage() {
                   className={`flex items-center justify-between w-full
                              px-3 md:px-4 py-3 md:py-3.5 rounded-2xl text-sm font-bold transition-all shadow-sm group
                              ${btn.primary
-                               ? 'btn-gradient text-white hover:-translate-y-0.5 shadow-indigo-500/20'
-                               : 'bg-white dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-200 hover:bg-indigo-50/50'}`}>
+                               ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/25'
+                               : 'bg-white/80 dark:bg-slate-800/50 backdrop-blur-xl border-2 border-slate-200/60 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:-translate-y-1 hover:shadow-md'}`}>
                   <span className="flex items-center gap-2"><span>{btn.icon}</span> {btn.label}</span>
                   <ChevronRight size={16} className={btn.primary ? 'opacity-80 group-hover:opacity-100' : 'text-slate-400 group-hover:text-indigo-500'} />
                 </Link>
@@ -324,8 +340,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Leaderboard */}
-          <div className="glass-card dark:bg-slate-800/60 
-                          dark:border-slate-700/40 p-6 bg-white shadow-sm border border-slate-100 rounded-3xl relative overflow-hidden">
+          <div className="glass-card dark:bg-slate-900/50 p-6 bg-white/80 backdrop-blur-xl shadow-lg shadow-indigo-100/10 border-2 border-white/60 dark:border-slate-800/60 rounded-3xl relative overflow-hidden transition-all">
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-6xl">🏆</div>
             <h2 className="text-base font-bold text-slate-800 
                            dark:text-slate-100 mb-5 relative z-10">
@@ -375,5 +390,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </motion.div>
+    </div>
   )
 }
